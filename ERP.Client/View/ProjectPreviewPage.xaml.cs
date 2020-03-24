@@ -26,7 +26,7 @@ namespace ERP.Client.View
     /// <summary>
     /// An empty page that can be used on its own or navigated to within a Frame.
     /// </summary>
-    public sealed partial class PdfViewerPreviewPage : Page
+    public sealed partial class ProjectPreviewPage : Page
     {
         public ObservableCollection<FolderModel> Projects { get; set; }
         public ObservableCollection<PlantOrderModel> PlantOrders { get; set; }
@@ -34,7 +34,7 @@ namespace ERP.Client.View
         private int _employeeId;
         private LocalUserSettings _userSettings;
 
-        public PdfViewerPreviewPage()
+        public ProjectPreviewPage()
         {
             this.InitializeComponent();
 

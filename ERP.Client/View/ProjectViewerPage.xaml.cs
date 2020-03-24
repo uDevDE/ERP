@@ -22,12 +22,12 @@ namespace ERP.Client.View
     /// <summary>
     /// An empty page that can be used on its own or navigated to within a Frame.
     /// </summary>
-    public sealed partial class PdfViewerPage : Page
+    public sealed partial class ProjectViewerPage : Page
     {
         private static int index = 0;
         private Dictionary<string, FolderModel> _projects;
 
-        public PdfViewerPage()
+        public ProjectViewerPage()
         {
             this.InitializeComponent();
             LoadingControl.IsLoading = true;
@@ -52,7 +52,7 @@ namespace ERP.Client.View
 
             Frame frame = new Frame();
             frame.Navigated += Frame_Navigated;
-            var result = frame.Navigate(typeof(PdfViewerPreviewPage));
+            var result = frame.Navigate(typeof(ProjectPreviewPage));
 
             newItem.Content = frame;
             return newItem;
@@ -62,7 +62,7 @@ namespace ERP.Client.View
         {
             if (sender is Frame frame)
             {
-                if (e.Content is PdfViewerPreviewPage pdfViewerPreviewPage)
+                if (e.Content is ProjectPreviewPage pdfViewerPreviewPage)
                 {
                     pdfViewerPreviewPage.Load(_projects);
                 }

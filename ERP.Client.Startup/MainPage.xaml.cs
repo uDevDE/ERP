@@ -43,7 +43,7 @@ namespace ERP.Client.Startup
         {
             { "Administration", typeof(AdministrationPage) },
             { "Configuration", typeof(ConfigurationPage) },
-            { "PdfViewer", typeof(PdfViewerPage) }
+            { "PdfViewer", typeof(ProjectViewerPage) }
         };
 
         public MainPage()

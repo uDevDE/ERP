@@ -176,14 +176,14 @@
     <Compile Include="View\ConfigurationPage.xaml.cs">
       <DependentUpon>ConfigurationPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\PdfViewerContentPage.xaml.cs">
-      <DependentUpon>PdfViewerContentPage.xaml</DependentUpon>
+    <Compile Include="View\ProjectContentPage.xaml.cs">
+      <DependentUpon>ProjectContentPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\PdfViewerPage.xaml.cs">
-      <DependentUpon>PdfViewerPage.xaml</DependentUpon>
+    <Compile Include="View\ProjectViewerPage.xaml.cs">
+      <DependentUpon>ProjectViewerPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\PdfViewerPreviewPage.xaml.cs">
-      <DependentUpon>PdfViewerPreviewPage.xaml</DependentUpon>
+    <Compile Include="View\ProjectPreviewPage.xaml.cs">
+      <DependentUpon>ProjectPreviewPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\SettingsPage.xaml.cs">
       <DependentUpon>SettingsPage.xaml</DependentUpon>
@@ -257,15 +257,15 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="View\PdfViewerContentPage.xaml">
+    <Page Include="View\ProjectContentPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="View\PdfViewerPage.xaml">
+    <Page Include="View\ProjectViewerPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="View\PdfViewerPreviewPage.xaml">
+    <Page Include="View\ProjectPreviewPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -274,7 +274,9 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="View\PdfViewer\" />
+  </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
   </PropertyGroup>
