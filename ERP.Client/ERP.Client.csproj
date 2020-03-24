@@ -128,6 +128,8 @@
     <Compile Include="Converter\ReverseNullVisibilityConverter.cs" />
     <Compile Include="Converter\StringVisibilityConverter.cs" />
     <Compile Include="Core\Enums\InfoDialogType.cs" />
+    <Compile Include="Core\Enums\PdfViewerViewType.cs" />
+    <Compile Include="Core\Enums\ProjectPreviewType.cs" />
     <Compile Include="Core\LocalUserSettings.cs" />
     <Compile Include="Dialogs\Core\Enums\YesNoDialogType.cs" />
     <Compile Include="Dialogs\DivisionDialog.xaml.cs">
@@ -170,6 +172,7 @@
     <Compile Include="ViewModel\AdministrationViewModel.cs" />
     <Compile Include="ViewModel\EmployeeViewModel.cs" />
     <Compile Include="ViewModel\LoadingViewModel.cs" />
+    <Compile Include="ViewModel\PdfViewerViewModel.cs" />
     <Compile Include="View\AdministrationPage.xaml.cs">
       <DependentUpon>AdministrationPage.xaml</DependentUpon>
     </Compile>

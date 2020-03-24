@@ -18,6 +18,7 @@ using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
+using ERP.Client.Core.Enums;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=234238
 
@@ -28,11 +29,21 @@ namespace ERP.Client.View
     /// </summary>
     public sealed partial class ProjectPreviewPage : Page
     {
+        public int Index { get; private set; }
         public ObservableCollection<FolderModel> Projects { get; set; }
         public ObservableCollection<PlantOrderModel> PlantOrders { get; set; }
         public PdfDocument PdfDocument { get; private set; }
         private int _employeeId;
         private LocalUserSettings _userSettings;
+        private ProjectPreviewType _currentProjectPreviewType;
+
+        public string SelectedProject { get; private set; }
+        public FileEntryModel SelectedFileEntry { get; private set; }
+        public PlantOrderModel SelectedPlantOrder { get; private set; }
+
+        private const string BUTTON_LABEL_PLANT_ORDER = "Von Werkauftrag öffnen";
+        private const string BUTTON_LABEL_FILE_ENTRY = "Von Datei öffnen";
+        
 
         public ProjectPreviewPage()
         {
@@ -41,6 +52,16 @@ namespace ERP.Client.View
             Projects = new ObservableCollection<FolderModel>();
             PlantOrders = new ObservableCollection<PlantOrderModel>();
             LoadUserSettings();
+        }
+
+        protected override void OnNavigatedTo(NavigationEventArgs e)
+        {
+            if (e.Parameter is int index)
+            {
+                Index = index;
+            }
+
+            base.OnNavigatedTo(e);
         }
 
         private void LoadUserSettings()
@@ -63,6 +84,40 @@ namespace ERP.Client.View
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
 
+        }
+
+
+        private void ToggleAppBarButtons(bool enable)
+        {
+            if (ButtonOpenProject.IsEnabled == !enable) ButtonOpenProject.IsEnabled = enable;
+            if (ButtonFavorite.IsEnabled == !enable) ButtonFavorite.IsEnabled = enable;
+            if (ButtonRefresh.IsEnabled == !enable) ButtonRefresh.IsEnabled = enable;
+        }
+
+        private void UpdateAppBarButtons()
+        {
+            if (_currentProjectPreviewType == ProjectPreviewType.PdfFile)
+            {
+                if (SelectedFileEntry != null)
+                {
+                    ToggleAppBarButtons(true);
+                }
+                else
+                {
+                    ToggleAppBarButtons(false);
+                }
+            }
+            else if (_currentProjectPreviewType == ProjectPreviewType.PlantOrder)
+            {
+                if (SelectedPlantOrder != null)
+                {
+                    ToggleAppBarButtons(true);
+                }
+                else
+                {
+                    ToggleAppBarButtons(false);
+                }
+            }
         }
 
         public void Load(Dictionary<string, FolderModel> projects)
@@ -127,8 +182,16 @@ namespace ERP.Client.View
                     var pdfFile = await Proxy.GetPdfFile(filePath);
                     if (pdfFile?.Buffer?.Length > 0)
                     {
+                        SelectedFileEntry = fileEntry;
+                        _currentProjectPreviewType = ProjectPreviewType.PdfFile;
+                        ButtonOpenProject.Label = BUTTON_LABEL_FILE_ENTRY;
+                        UpdateAppBarButtons();
                         LoadPreviewPage(pdfFile.Buffer);
                     }
+                }
+                else
+                {
+                    SelectedFileEntry = null;
                 }
             }
         }
@@ -139,7 +202,12 @@ namespace ERP.Client.View
             PdfDocument = await PdfDocument.LoadFromStreamAsync(stream);
             if (PdfDocument.PageCount > 0)
             {
-                PdfViewerPreview.Page = PdfDocument.GetPage(0);
+                //PdfViewerPreview.Page = PdfDocument.GetPage(0);
+                var page = PdfDocument.GetPage(0);
+                if (page != null)
+                {
+                    await PdfViewerPreview.Load(page);
+                }
             }
         }
 
@@ -180,6 +248,68 @@ namespace ERP.Client.View
             }
         }
 
+        private async void ButtonOpenProject_Click(object sender, RoutedEventArgs e)
+        {
+            string text = string.Empty;
+            if (_currentProjectPreviewType == ProjectPreviewType.PdfFile)
+            {
+                text = SelectedFileEntry?.Name;
+            }
+            else
+            {
+                text = SelectedPlantOrder?.Name;
+            }
 
+            if (string.IsNullOrEmpty(text))
+                return;
+
+            var dialog = new Windows.UI.Popups.MessageDialog(text);
+            await dialog.ShowAsync();
+        }
+
+        private void ProjectPreviewPivot_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (sender is Pivot pivot)
+            {
+               if (pivot.SelectedItem is PivotItem pivotItem)
+                {
+                    if (pivotItem.Tag is string tag)
+                    {
+                        if (tag == "po")
+                        {
+                            _currentProjectPreviewType = ProjectPreviewType.PlantOrder;
+                            ButtonOpenProject.Label = BUTTON_LABEL_PLANT_ORDER;
+                        }
+                        else if (tag == "pdf")
+                        {
+                            _currentProjectPreviewType = ProjectPreviewType.PdfFile;
+                            ButtonOpenProject.Label = BUTTON_LABEL_FILE_ENTRY;
+                        }
+                    }
+                }
+
+                UpdateAppBarButtons();
+            }
+        }
+
+        private void DataGridPlantOrder_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (sender is DataGrid dataGrid)
+            {
+                if (dataGrid.SelectedItem is PlantOrderModel plantOrder)
+                {
+                    SelectedPlantOrder = plantOrder;
+                    _currentProjectPreviewType = ProjectPreviewType.PlantOrder;
+                    UpdateAppBarButtons();
+                    ButtonOpenProject.Label = BUTTON_LABEL_PLANT_ORDER;
+                }
+                else
+                {
+                    SelectedPlantOrder = null;
+                }
+            }
+        }
     }
+
+
 }

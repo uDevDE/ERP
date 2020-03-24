@@ -7,13 +7,14 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
     d:DesignHeight="300"
-    d:DesignWidth="400">
+    d:DesignWidth="400"
+    Loaded="UserControl_Loaded"
+    EffectiveViewportChanged="UserControl_EffectiveViewportChanged">
 
     <Grid>
-        <Border HorizontalAlignment="Stretch" VerticalAlignment="Stretch" BorderThickness="0 0 0 1"
-                BorderBrush="Black" x:Name="PdfPageBorder">
-            <Image x:Name="PdfPageImage" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
-               Stretch="None"/>
-        </Border>
+        <Viewbox Margin="2" x:Name="PdfViewBox">
+            <Image x:Name="PdfImage" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+               Stretch="None" Tapped="PdfImage_Tapped"/>
+        </Viewbox>
     </Grid>
 </UserControl>

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Windows.Data.Pdf;
 using Windows.Storage.Streams;
 using Windows.UI.Xaml;
@@ -21,67 +22,123 @@ namespace ERP.Client.Controls
         const int WrongPassword = unchecked((int)0x8007052b); // HRESULT_FROM_WIN32(ERROR_WRONG_PASSWORD)
         const int GenericFail = unchecked((int)0x80004005);   // E_FAIL
 
-        private PdfPage _page;
-        private uint _pageIndex;
+        public double ImageRotation { get; private set; }
+
+        public PdfPage Page { get; private set; }
+        public double DistanceX { get; private set; }
+        public double DistanceY { get; private set; }
+        public bool PageLoaded { get; private set; }
+        public bool IsFirstPage => Page?.Index == 0 ? true : false;
+        public bool PreviewMode { get; private set; }
 
         public PdfPageControl()
         {
             this.InitializeComponent();
-        }
 
-        public uint PageIndex
-        {
-            get { return _pageIndex; }
-            set
-            {
-                if (_pageIndex != value)
-                {
-                    _pageIndex = value;
-                }
-            }
+            this.DataContext = this;
+            SetPreviewMode(PreviewMode);
         }
 
         public ImageSource Source
         {
-            get { return PdfPageImage.Source; }
-            set { PdfPageImage.Source = value; }
+            get { return PdfImage.Source; }
+            set { PdfImage.Source = value; }
         }
 
         public Stretch Stretch
         {
-            get { return PdfPageImage.Stretch; }
-            set { PdfPageImage.Stretch = value; }
-        }
-
-        public PdfPage Page
-        {
-            get { return _page; }
-            set
-            {
-                if (_page != value)
-                {
-                    _page = value;
-                    _pageIndex = _page.Index;
-                    RenderPage();
-                }
-            }
+            get { return PdfImage.Stretch; }
+            set { PdfImage.Stretch = value; }
         }
 
         public UIElement RootUIElement
         {
-            get { return PdfPageBorder; }
+            get { return PdfViewBox; }
         }
 
-        private async void RenderPage()
+        public void SetPreviewMode(bool mode)
         {
-            var stream = new InMemoryRandomAccessStream();
-            await _page.RenderToStreamAsync(stream);
-            BitmapImage src = new BitmapImage();
-            PdfPageImage.Source = src;
-            await src.SetSourceAsync(stream);
-            PdfPageLoaded?.Invoke();
+            if (mode)
+            {
+                PdfImage.Width = 460;
+                PdfImage.Height = 580;
+                PdfImage.Stretch = Stretch.Fill;
+            }
+            else
+            {
+                PdfImage.Height = double.NaN;
+                PdfImage.Width = double.NaN;
+                PdfImage.Stretch = Stretch.None;
+            }
+
+            PreviewMode = mode;
         }
 
+        public async Task Load(PdfPage page)
+        {
+            using (var stream = new InMemoryRandomAccessStream())
+            {
+                Page = page;
+                var bitmap = new BitmapImage();
+                await page.RenderToStreamAsync(stream);
+                await bitmap.SetSourceAsync(stream);
+                PdfImage.Source = bitmap;
+            }
+        }
 
+        private void UserControl_Loaded(object sender, RoutedEventArgs e)
+        {
+            PageLoaded = true;
+        }
+
+        private void UserControl_EffectiveViewportChanged(FrameworkElement sender, EffectiveViewportChangedEventArgs args)
+        {
+            DistanceX = args.BringIntoViewDistanceX;
+            DistanceY = args.BringIntoViewDistanceY;
+        }
+
+        public void RotateRight()
+        {
+            var newValue = ImageRotation + 90;
+            if (newValue > 360)
+            {
+                newValue = 90;
+            }
+            ImageRotation = newValue;
+
+            var rotateTransform = new RotateTransform()
+            {
+                CenterX = PdfImage.ActualWidth / 2,
+                CenterY = PdfImage.ActualHeight / 2,
+                Angle = ImageRotation
+            };
+            PdfImage.RenderTransform = rotateTransform;
+        }
+
+        public void RotateLeft()
+        {
+            var newValue = ImageRotation - 90;
+            if (newValue < 0)
+            {
+                newValue = 270;
+            }
+            ImageRotation = newValue;
+
+            var rotateTransform = new RotateTransform()
+            {
+                CenterX = PdfImage.ActualWidth / 2,
+                CenterY = PdfImage.ActualHeight / 2,
+                Angle = ImageRotation
+            };
+            PdfImage.RenderTransform = rotateTransform;
+        }
+
+        private void PdfImage_Tapped(object sender, Windows.UI.Xaml.Input.TappedRoutedEventArgs e)
+        {
+            if (PreviewMode)
+            {
+                PdfPageClicked?.Invoke(this);
+            }
+        }
     }
 }

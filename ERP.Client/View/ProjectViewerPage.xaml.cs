@@ -36,23 +36,25 @@ namespace ERP.Client.View
 
         private void ButtonAddTag_Click(object sender, RoutedEventArgs e)
         {
-            var tab = CreateNewTab($"Dokument {index++}");
+            var tab = CreateNewTab();
             TabViewControl.Items.Add(tab);
             tab.IsSelected = true;
         }
 
 
-        private TabViewItem CreateNewTab(string header)
+        private TabViewItem CreateNewTab()
         {
+            index++;
             TabViewItem newItem = new TabViewItem
             {
-                Header = header,
-                Icon = new SymbolIcon(Symbol.Document)
+                Header = $"Dokument {index}",
+                Icon = new SymbolIcon(Symbol.Document),
+                Tag = index
             };
 
             Frame frame = new Frame();
             frame.Navigated += Frame_Navigated;
-            var result = frame.Navigate(typeof(ProjectPreviewPage));
+            var result = frame.Navigate(typeof(ProjectPreviewPage), index);
 
             newItem.Content = frame;
             return newItem;
@@ -73,7 +75,7 @@ namespace ERP.Client.View
         {
             _projects = await Proxy.GetAllProjects();
             //_ = _projects;
-            TabViewControl.Items.Add(CreateNewTab($"Dokument {index++}"));
+            TabViewControl.Items.Add(CreateNewTab());
 
             LoadingControl.IsLoading = false;
         }

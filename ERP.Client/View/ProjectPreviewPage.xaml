@@ -16,6 +16,37 @@
         <converters:ReverseNullVisibilityConverter x:Key="ReverseNullToVisibilityConverter"/>
         <converters:NullVisibilityConverter x:Key="NullToVisibilityConverter"/>
         <converters:StringVisibilityConverter x:Key="StringToVisibilityConverter"/>
+
+        <DataTemplate x:DataType="model:FileEntryModel" x:Key="FileEntryModelTemplate">
+            <RelativePanel>
+                <TextBlock Text="{Binding Name}" Visibility="{Binding FileInfo, Converter={StaticResource ReverseNullToVisibilityConverter}}"/>
+
+                <Grid Visibility="{Binding FileInfo, Converter={StaticResource NullToVisibilityConverter}}" Width="300">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="80"/>
+                    </Grid.ColumnDefinitions>
+
+                    <RelativePanel>
+                        <TextBlock HorizontalAlignment="Left" VerticalAlignment="Top" x:Name="TextProjectIdentifier">
+                                                        <Run Text="Projekt:  " FontSize="14" FontStyle="Italic"/>
+                                                        <Run Text="{Binding FileInfo.ProjectIdentifier}" FontSize="16" FontWeight="Medium"/>
+                        </TextBlock>
+                        <TextBlock HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0 4 0 0" 
+                                                                RelativePanel.Below="TextProjectIdentifier" x:Name="TextSection">
+                                                        <Run Text="Los:        " FontSize="14" FontStyle="Italic"/>
+                                                        <Run Text="{Binding FileInfo.Section}" FontSize="16" FontWeight="Medium"/>
+                        </TextBlock>
+                        <TextBlock Text="{Binding FileInfo.Description}" FontStyle="Italic" RelativePanel.Below="TextSection"
+                                                                Foreground="{ThemeResource ApplicationSecondaryForegroundThemeBrush}" Margin="0 4 0 0"
+                                                                Visibility="{Binding FileInfo.Description, Converter={StaticResource StringToVisibilityConverter}}"/>
+                    </RelativePanel>
+
+                    <TextBlock Text="{Binding FileInfo.ProjectNumber}" HorizontalAlignment="Right" Grid.Column="1"
+                                                            Foreground="{ThemeResource ApplicationSecondaryForegroundThemeBrush}"/>
+                </Grid>
+            </RelativePanel>
+        </DataTemplate>
     </Page.Resources>
     
     <Grid>
@@ -50,40 +81,8 @@
                                     <ComboBox ItemsSource="{x:Bind SubFolders.Values}" SelectedIndex="1" DisplayMemberPath="Name" SelectedItem="{Binding Name}"
                                                 x:Name="ComboBoxWorkDir" SelectionChanged="ComboBoxWorkDir_SelectionChanged" Width="350" Margin="0 16 0 0"
                                                 DataContextChanged="ComboBoxWorkDir_DataContextChanged" RelativePanel.Below="WorkingDirHeader"/>
-                                    <ListBox RelativePanel.Below="ComboBoxWorkDir" Width="350" Margin="0 12 0 0" SelectionChanged="ListBox_SelectionChanged">
-                                        <ListBox.ItemTemplate>
-                                            <DataTemplate x:DataType="model:FileEntryModel">
-                                                <RelativePanel>
-                                                    <TextBlock Text="{Binding Name}" Visibility="{Binding FileInfo, Converter={StaticResource ReverseNullToVisibilityConverter}}"/>
-
-                                                    <Grid Visibility="{Binding FileInfo, Converter={StaticResource NullToVisibilityConverter}}" Width="300">
-                                                        <Grid.ColumnDefinitions>
-                                                            <ColumnDefinition Width="*"/>
-                                                            <ColumnDefinition Width="80"/>
-                                                        </Grid.ColumnDefinitions>
-
-                                                        <RelativePanel>
-                                                            <TextBlock HorizontalAlignment="Left" VerticalAlignment="Top" x:Name="TextProjectIdentifier">
-                                                        <Run Text="Projekt:  " FontSize="14" FontStyle="Italic"/>
-                                                        <Run Text="{Binding FileInfo.ProjectIdentifier}" FontSize="16" FontWeight="Medium"/>
-                                                            </TextBlock>
-                                                            <TextBlock HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0 4 0 0" 
-                                                                RelativePanel.Below="TextProjectIdentifier" x:Name="TextSection">
-                                                        <Run Text="Los:        " FontSize="14" FontStyle="Italic"/>
-                                                        <Run Text="{Binding FileInfo.Section}" FontSize="16" FontWeight="Medium"/>
-                                                            </TextBlock>
-                                                            <TextBlock Text="{Binding FileInfo.Description}" FontStyle="Italic" RelativePanel.Below="TextSection"
-                                                                Foreground="{ThemeResource ApplicationSecondaryForegroundThemeBrush}" Margin="0 4 0 0"
-                                                                Visibility="{Binding FileInfo.Description, Converter={StaticResource StringToVisibilityConverter}}"/>
-                                                        </RelativePanel>
-
-                                                        <TextBlock Text="{Binding FileInfo.ProjectNumber}" HorizontalAlignment="Right" Grid.Column="1"
-                                                            Foreground="{ThemeResource ApplicationSecondaryForegroundThemeBrush}"/>
-                                                    </Grid>
-                                                </RelativePanel>
-                                            </DataTemplate>
-                                        </ListBox.ItemTemplate>
-                                    </ListBox>
+                                    <ListBox RelativePanel.Below="ComboBoxWorkDir" Width="350" Margin="0 12 0 0" SelectionChanged="ListBox_SelectionChanged"
+                                             SelectedIndex="0" ItemTemplate="{StaticResource FileEntryModelTemplate}"/>
                                 </RelativePanel>
                             </DataTemplate>
                         </controls:MasterDetailsView.DetailsTemplate>
@@ -92,33 +91,53 @@
             </Pivot.ItemTemplate>
         </Pivot>
 
-        <Pivot Grid.Column="1" Margin="0 150 0 0">
-            <PivotItem Header="Datei Vorschau">
-                <ScrollViewer Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Top" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto"
+        <Grid Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <StackPanel Orientation="Horizontal" Margin="20">
+                <AppBarButton Icon="OpenFile" Label="Von Datei öffnen" Width="120" x:Name="ButtonOpenProject"
+                              Click="ButtonOpenProject_Click" IsEnabled="False"/>
+                <AppBarSeparator/>
+                <AppBarButton Icon="UnFavorite" Label="Project favorisieren" Width="120" x:Name="ButtonFavorite"
+                              IsEnabled="False"/>
+                <AppBarSeparator/>
+                <AppBarButton Icon="Refresh" Label="Aktualisieren" Width="100" x:Name="ButtonRefresh"
+                              IsEnabled="False"/>
+            </StackPanel>
+            
+            <Pivot Grid.Row="1" x:Name="ProjectPreviewPivot" SelectionChanged="ProjectPreviewPivot_SelectionChanged">
+                <PivotItem Header="Datei Vorschau" Tag="pdf">
+                    <ScrollViewer Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Top" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto"
                       ZoomMode="Enabled" MaxZoomFactor="4" MinZoomFactor="1" Margin="0 20 20 0" Width="800" Height="Auto">
-                    <uc:PdfPageControl x:Name="PdfViewerPreview"/>
-                </ScrollViewer>
-            </PivotItem>
-            <PivotItem Header="Werkaufträge">
-                <controls:DataGrid x:Name="DataGridPlantOrder" Margin="12" ItemsSource="{x:Bind PlantOrders}"
+                        <uc:PdfPageControl x:Name="PdfViewerPreview"/>
+                    </ScrollViewer>
+                </PivotItem>
+                <PivotItem Header="Werkaufträge" Tag="po">
+                    <controls:DataGrid x:Name="DataGridPlantOrder" Margin="12" ItemsSource="{x:Bind PlantOrders}"
                                     HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalScrollBarVisibility="Auto"
                                     VerticalScrollBarVisibility="Auto" AlternatingRowBackground="Transparent" AlternatingRowForeground="Gray"
                                     AreRowDetailsFrozen="False" AreRowGroupHeadersFrozen="True" AutoGenerateColumns="False"
                                     CanUserSortColumns="True" CanUserResizeColumns="True" ColumnHeaderHeight="32" MaxColumnWidth="400"
                                     FrozenColumnCount="0" GridLinesVisibility="Horizontal" HeadersVisibility="Column"
                                     RowDetailsVisibilityMode="Collapsed" SelectionMode="Extended" RowGroupHeaderPropertyNameAlternative="Range"
-                                    IsRightTapEnabled="True" IsTapEnabled="True">
-                    <controls:DataGrid.Columns>
-                        <controls:DataGridTextColumn Header="Werkauftragnummer" Tag="Number" IsReadOnly="True" Binding="{Binding Number}"/>
-                        <controls:DataGridTextColumn Header="Name" Tag="Name" IsReadOnly="True" Binding="{Binding Name}"/>
-                        <controls:DataGridTextColumn Header="Prozess" Tag="ProcessTemplate" IsReadOnly="True" Binding="{Binding ProcessTemplate}"/>
-                        <controls:DataGridTextColumn Header="Beschreibung" Tag="Description" IsReadOnly="True" Binding="{Binding Description}"/>
-                        <controls:DataGridTextColumn Header="Los" Tag="Section" IsReadOnly="True" Binding="{Binding Section}"/>
-                        <controls:DataGridTextColumn Header="Kürzel" Tag="Contraction" IsReadOnly="True" Binding="{Binding Contraction}"/>
-                        <controls:DataGridCheckBoxColumn Header="Abgeschlossen" Tag="IsFinished" IsReadOnly="True" Binding="{Binding IsFinished}"/>
-                    </controls:DataGrid.Columns>
-                </controls:DataGrid>
-            </PivotItem>
-        </Pivot>
+                                    IsRightTapEnabled="True" IsTapEnabled="True" SelectionChanged="DataGridPlantOrder_SelectionChanged"
+                                    SelectedIndex="0">
+                        <controls:DataGrid.Columns>
+                            <controls:DataGridTextColumn Header="Werkauftragnummer" Tag="Number" IsReadOnly="True" Binding="{Binding Number}"/>
+                            <controls:DataGridTextColumn Header="Name" Tag="Name" IsReadOnly="True" Binding="{Binding Name}"/>
+                            <controls:DataGridTextColumn Header="Prozess" Tag="ProcessTemplate" IsReadOnly="True" Binding="{Binding ProcessTemplate}"/>
+                            <controls:DataGridTextColumn Header="Beschreibung" Tag="Description" IsReadOnly="True" Binding="{Binding Description}"/>
+                            <controls:DataGridTextColumn Header="Los" Tag="Section" IsReadOnly="True" Binding="{Binding Section}"/>
+                            <controls:DataGridTextColumn Header="Kürzel" Tag="Contraction" IsReadOnly="True" Binding="{Binding Contraction}"/>
+                            <controls:DataGridCheckBoxColumn Header="Abgeschlossen" Tag="IsFinished" IsReadOnly="True" Binding="{Binding IsFinished}"/>
+                        </controls:DataGrid.Columns>
+                    </controls:DataGrid>
+                </PivotItem>
+            </Pivot>
+        </Grid>
+        
     </Grid>
 </Page>
