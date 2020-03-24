@@ -1,0 +1,34 @@
+﻿<ContentDialog
+    x:Class="ERP.Client.Dialogs.EmployeeDialog"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:ERP.Client.Dialogs"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Title="Mitarbeiter hinzufügen"
+    PrimaryButtonText="Hinzufügen"
+    SecondaryButtonText="Abbrechen"
+    PrimaryButtonClick="ContentDialog_PrimaryButtonClick"
+    SecondaryButtonClick="ContentDialog_SecondaryButtonClick">
+
+    <Grid>
+        <StackPanel>
+            <TextBox x:Name="TextBoxNumber" PlaceholderText="Personalnummer" Margin="0 0 0 10" BeforeTextChanging="TextBoxNumber_BeforeTextChanging"/>
+            <TextBox x:Name="TextBoxFirstname" PlaceholderText="Vorname" Margin="0 0 0 10"/>
+            <TextBox x:Name="TextBoxLastname" PlaceholderText="Nachname" Margin="0 0 0 10"/>
+            <ComboBox Width="268" SelectedIndex="0" Margin="0 0 0 10" ItemsSource="{x:Bind Devices}" DisplayMemberPath="Hostname" SelectedItem="{Binding DeviceId}"
+                      x:Name="ComboBoxDevice"/>
+            <TextBox x:Name="TextBoxDescription" PlaceholderText="Beschreibung (Optional)" Margin="0 0 0 10" Height="120" TextWrapping="Wrap"/>
+            <TextBox x:Name="TextBoxAlias" PlaceholderText="Alias (Optional)" Margin="0 0 0 2"/>
+            <TextBlock FontSize="11" FontStyle="Italic" Text="Wenn das 'Alias' Textfeld freigelassen wird, wird 'Vorname Nachname' als Alias verwendet" 
+                       TextWrapping="Wrap" Margin="0 0 0 16" Width="264"/>
+            <PasswordBox x:Name="PasswordBoxPassword" Header="Passwort"/>
+            <PasswordBox x:Name="PasswordBoxPasswordRepeat" Header="Passwort wiederholen"/>
+            <TextBlock Foreground="#9e0f05" Margin="0 20 0 0" Text="Ungültige Eingabe. Bitte überprüfe die rot markierte Eingabefelder" TextWrapping="Wrap" Width="264"
+                       Visibility="Collapsed" x:Name="TextErrorMessage"/>
+            <TextBlock Foreground="#9e0f05" Margin="0 20 0 0" Text="Die eingegebenen Passwörter stimmen nicht überein" TextWrapping="Wrap" Width="264"
+                       Visibility="Collapsed" x:Name="TextPasswordErrorMessage"/>
+        </StackPanel>
+    </Grid>
+</ContentDialog>

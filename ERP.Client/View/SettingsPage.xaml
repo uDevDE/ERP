@@ -1,0 +1,68 @@
+﻿<Page
+    x:Class="ERP.Client.View.SettingsPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:ERP.Client.View"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:muxc="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:controls="using:Microsoft.Toolkit.Uwp.UI.Controls"
+    mc:Ignorable="d"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <Grid Margin="20 20 0 0">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <StackPanel Margin="12">
+            <TextBlock Text="Profil" FontWeight="Medium" FontSize="22"/>
+            <muxc:ColorPicker IsMoreButtonVisible="False" IsColorSliderVisible="True" IsColorChannelTextInputVisible="False"
+                        IsHexInputVisible="False" IsAlphaEnabled="False" IsAlphaSliderVisible="True" IsAlphaTextInputVisible="True" 
+                        HorizontalAlignment="Left" Margin="10 16 0 20"
+                              x:Name="ColorPickerEmployee" ColorChanged="ColorPickerEmployee_ColorChanged"/>
+
+            <Button Margin="10 20 0 0" IsEnabled="False" x:Name="ButtonSaveColor" Click="ButtonSaveColor_Click">
+                <TextBlock>
+                    <Run Text="&#xE74E;" FontFamily="Segoe MDL2 Assets"/>
+                    <Run Text="  Farbe speichern" FontSize="18"/>
+                </TextBlock>
+            </Button>
+        </StackPanel>
+        <Border HorizontalAlignment="Stretch" Height="1" Grid.Row="1" Grid.ColumnSpan="2" VerticalAlignment="Bottom" BorderBrush="Silver"
+                BorderThickness="1" Margin="0 0 20 0"/>
+        <StackPanel Grid.Row="2" Margin="12 20 0 0">
+            <TextBlock Text="Sicherheit" FontWeight="Medium" FontSize="22"/>
+            <PasswordBox Header="Passwort" Width="300" Margin="10" HorizontalAlignment="Left" x:Name="PasswordBoxPassword"/>
+            <PasswordBox Header="Passwort wiederholen" Width="300" Margin="10" HorizontalAlignment="Left" x:Name="PasswordBoxPasswordRepeat"/>
+            <PasswordBox Header="Neues Passwort" Width="300" Margin="10" HorizontalAlignment="Left" x:Name="PasswordBoxNewPassword"/>
+            <TextBlock Margin="10 20 20 0" TextWrapping="Wrap" Foreground="#ff9e0f05" Visibility="Collapsed" x:Name="ErrorText"
+                       MaxWidth="300"/>
+            <Button Margin="10 20 0 0" x:Name="ButtonChangePassword" Click="ButtonChangePassword_Click">
+                <TextBlock>
+                    <Run Text="&#xE72C;" FontFamily="Segoe MDL2 Assets"/>
+                    <Run Text="  Passwort ändern" FontSize="18"/>
+                </TextBlock>
+            </Button>
+        </StackPanel>
+
+        <TextBlock Grid.Column="2" HorizontalAlignment="Left" VerticalAlignment="Top" FontStyle="Italic" Foreground="Silver" Margin="10 55 0 0"
+                   MaxWidth="300" TextWrapping="Wrap"
+                   Text="Verändere hier die Farbe Deiner Anmeldeinformationsbox. Dies dient dazu anhand der Farbe schnell und einfach zu sehen, ob Du bereits angemeldet bist."/>
+        <StackPanel Grid.Column="2" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="20 0 0 60">
+            <TextBlock Text="Vorschau" FontSize="22" FontWeight="Medium"/>
+            <PersonPicture Margin="0 20 0 0" x:Name="PersonPicturePreview" BadgeNumber="42" BorderThickness="2"/>
+        </StackPanel>
+
+        <TextBlock Grid.Row="2" Grid.Column="2" HorizontalAlignment="Left" VerticalAlignment="Top" FontStyle="Italic" Foreground="Silver"
+                   Margin="10 75 0 0" MaxWidth="300" TextWrapping="Wrap"
+                   Text="Ändere Dein Passwort, um sicherzustellen, dass nur Du Zugriff auf Deinen Account hast."/>
+    </Grid>
+</Page>

@@ -1,0 +1,25 @@
+﻿<ContentDialog
+    x:Class="ERP.Client.Dialogs.InfoDialog"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:ERP.Client.Dialogs"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Title="Information"
+    PrimaryButtonText="Ok"
+    SecondaryButtonText="Schließen"
+    PrimaryButtonClick="ContentDialog_PrimaryButtonClick"
+    SecondaryButtonClick="ContentDialog_SecondaryButtonClick">
+
+    <Grid>
+        <StackPanel Orientation="Horizontal">
+            <TextBlock Text="&#xEB90;" FontFamily="Segoe MDL2 Assets" VerticalAlignment="Center" FontSize="48"
+                       Visibility="Collapsed" x:Name="ErrorIcon"/>
+            <TextBlock Text="&#xF167;" FontFamily="Segoe MDL2 Assets" VerticalAlignment="Center" FontSize="48"
+                       x:Name="InfoIcon"/>
+            <TextBlock FontSize="16" TextWrapping="Wrap" MaxWidth="400" FontWeight="Medium" x:Name="MessageText" VerticalAlignment="Center"
+                       Margin="10 0 0 0"/>
+        </StackPanel>
+    </Grid>
+</ContentDialog>

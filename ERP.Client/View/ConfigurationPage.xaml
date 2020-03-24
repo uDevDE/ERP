@@ -1,0 +1,50 @@
+﻿<Page
+    x:Class="ERP.Client.View.ConfigurationPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="using:Microsoft.Toolkit.Uwp.UI.Controls"
+    xmlns:local="using:ERP.Client.View"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
+    Loaded="Page_Loaded">
+
+    <Grid>
+        <Pivot Title="Konfiguration">
+            <PivotItem Header="Abteilungstypen">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="100"/>
+                    </Grid.RowDefinitions>
+                    
+                    <controls:DataGrid x:Name="DataGridDevisionInfo" ItemsSource="{x:Bind DivisionInfos, Mode=OneWay}" Margin="12"
+                                    HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalScrollBarVisibility="Auto"
+                                    VerticalScrollBarVisibility="Auto" AlternatingRowBackground="Transparent" AlternatingRowForeground="Gray"
+                                    AreRowDetailsFrozen="False" AreRowGroupHeadersFrozen="True" AutoGenerateColumns="False"
+                                    CanUserSortColumns="True" CanUserResizeColumns="True" ColumnHeaderHeight="32" MaxColumnWidth="600"
+                                    FrozenColumnCount="0" GridLinesVisibility="Horizontal" HeadersVisibility="Column"
+                                    RowDetailsVisibilityMode="Collapsed" SelectionMode="Extended" RowGroupHeaderPropertyNameAlternative="Range">
+                        <controls:DataGrid.Columns>
+                            <controls:DataGridTextColumn Header="Id" Tag="DivisionInfoId" Binding="{Binding DivisionInfoId}" IsReadOnly="True"/>
+                            <controls:DataGridTextColumn Header="Name" Tag="Name" Binding="{Binding Name}"/>
+                            <controls:DataGridTextColumn Header="Beschreibung" Tag="Description" Binding="{Binding Description}"/>
+                            <controls:DataGridComboBoxColumn Header="Typ" Tag="DivisionType" ItemsSource="{x:Bind DivisionTypes, Mode=OneWay}"
+                                                             Binding="{Binding DivisionType}"/>
+                            <controls:DataGridTextColumn Header="Maschinen Pfad" Tag="MachinePath" Binding="{Binding MachinePath}" IsReadOnly="True"/>
+                        </controls:DataGrid.Columns>
+                    </controls:DataGrid>
+
+                    <Button x:Name="ButtonAddDivisionInfo" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10 0 0 0" Grid.Row="2"
+                            Click="ButtonAddDivisionInfo_Click">
+                        <TextBlock FontSize="18">
+                            <Run Text="&#xE710;" FontFamily="Segoe MDL2 Assets"/>
+                            <Run Text="  Abteilungstyp hinzufügen"/>
+                        </TextBlock>
+                    </Button>
+                </Grid>
+            </PivotItem>
+        </Pivot>
+    </Grid>
+</Page>

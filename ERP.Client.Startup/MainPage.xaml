@@ -1,0 +1,195 @@
+﻿<Page
+    x:Class="ERP.Client.Startup.MainPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="using:Microsoft.Toolkit.Uwp.UI.Controls"
+    xmlns:local="using:ERP.Client.Startup"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:muxc="using:Microsoft.UI.Xaml.Controls"
+    xmlns:converters="using:Microsoft.Toolkit.Uwp.UI.Converters"
+    mc:Ignorable="d" Loaded="Page_Loaded" IsEnabled="False"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
+    MinWidth="1200" MinHeight="600">
+
+    <Page.Resources>
+        <converters:BoolToObjectConverter x:Key="BoolToVisibilityConverter" TrueValue="Visible" FalseValue="Collapsed"/>
+    </Page.Resources>
+    
+    <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+        <NavigationView x:Name="Navigator" IsSettingsVisible="True" IsBackButtonVisible="Auto"
+                        IsBackEnabled="False" SelectionChanged="Navigator_SelectionChanged"
+                        AlwaysShowHeader="True" PaneTitle="Navigation"
+                        PaneDisplayMode="Left"  ExpandedModeThresholdWidth="500"
+                        SelectionFollowsFocus="Disabled" IsTabStop="False" Loaded="Navigator_Loaded"
+                        HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+            <NavigationView.MenuItems>
+                <NavigationViewItem Content="Startseite" Tag="SamplePage1" x:Name="SamplePage1Item">
+                    <NavigationViewItem.Icon>
+                        <SymbolIcon Symbol="Home"/>
+                    </NavigationViewItem.Icon>
+                </NavigationViewItem>
+                <NavigationViewItemHeader Content="Fertigung"/>
+                <NavigationViewItem Content="Zeichnungen" Tag="PdfViewer" x:Name="SamplePage2Item" SelectsOnInvoked="True">
+                    <NavigationViewItem.Icon>
+                        <SymbolIcon Symbol="OpenFile" />
+                    </NavigationViewItem.Icon>
+                </NavigationViewItem>
+                <NavigationViewItem Content="Live Ansicht" Tag="SamplePage3" x:Name="SamplePage3Item">
+                    <NavigationViewItem.Icon>
+                        <SymbolIcon Symbol="ViewAll" />
+                    </NavigationViewItem.Icon>
+                </NavigationViewItem>
+                <NavigationViewItem Content="Auslöser">
+                    <NavigationViewItem.Icon>
+                        <SymbolIcon Symbol="AllApps" />
+                    </NavigationViewItem.Icon>
+                </NavigationViewItem>
+                <NavigationViewItemHeader Content="Administration" Visibility="{x:Bind Path=AdministrationViewModel.IsAdministrator, Mode=OneWay, 
+                                            Converter={StaticResource BoolToVisibilityConverter}}"/>
+                <NavigationViewItem Content="Konfiguration" Tag="Configuration" >
+                    <NavigationViewItem.Icon>
+                        <SymbolIcon Symbol="Setting"/>
+                    </NavigationViewItem.Icon>
+                </NavigationViewItem>
+                <NavigationViewItem Content="Mitarbeiter" Tag="Administration" >
+                    <NavigationViewItem.Icon>
+                        <SymbolIcon Symbol="Contact"/>
+                    </NavigationViewItem.Icon>
+                </NavigationViewItem>
+                <NavigationViewItem Content="Kalendar Ansicht" Visibility="{x:Bind Path=AdministrationViewModel.IsAdministrator, Mode=OneWay, 
+                                            Converter={StaticResource BoolToVisibilityConverter}}">
+                    <NavigationViewItem.Icon>
+                        <SymbolIcon Symbol="Calendar"/>
+                    </NavigationViewItem.Icon>
+                </NavigationViewItem>
+            </NavigationView.MenuItems>
+
+            <NavigationView.PaneCustomContent>
+                <HyperlinkButton x:Name="PaneHyperlink" Content="More info" Margin="12,0" Visibility="Collapsed" />
+            </NavigationView.PaneCustomContent>
+
+            <NavigationView.AutoSuggestBox>
+                <AutoSuggestBox QueryIcon="Find" AutomationProperties.Name="Search" />
+            </NavigationView.AutoSuggestBox>
+
+            <NavigationView.PaneFooter>
+                <StackPanel x:Name="FooterStackPanel" Orientation="Vertical" Visibility="Collapsed">
+                    <NavigationViewItem Icon="Download" AutomationProperties.Name="download" />
+                    <NavigationViewItem Icon="Favorite" AutomationProperties.Name="favorite" />
+                </StackPanel>
+            </NavigationView.PaneFooter>
+
+            <Frame x:Name="ContentFrame" />
+
+            <NavigationView.Header>
+                <Grid>
+                    <TextBlock Text="Header" x:Name="NavigationHeader"/>
+
+                    <PersonPicture DisplayName="{x:Bind Path=Client.Employees.Employee.Fullname, Mode=OneWay}" 
+                                   HorizontalAlignment="Right" Margin="0 8 8 0"  Width="48" Height="48" 
+                                   x:Name="PersonEmployee" Tapped="PersonEmployee_Tapped"
+                                   Foreground="{x:Bind Path=Client.Employees.Employee.Foreground, Mode=OneWay}">
+                        <FlyoutBase.AttachedFlyout>
+                            <Flyout>
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="*"/>
+                                    </Grid.RowDefinitions>
+
+                                    <TextBlock HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="14">
+                                        <Run Text="Angemeldet als: "/>
+                                        <Run Text="{x:Bind Path=Client.Employees.Name, Mode=OneWay}" FontWeight="Medium"/>
+                                    </TextBlock>
+
+                                    <StackPanel Orientation="Horizontal" Margin="20 0 0 0" RelativePanel.RightOf="TextName" 
+                                                HorizontalAlignment="Right">
+                                        <Button Background="Transparent">
+                                            <SymbolIcon Symbol="LeaveChat"/>
+                                        </Button>
+                                        
+                                        <Button Background="Transparent">
+                                            <SymbolIcon Symbol="Setting"/>
+                                        </Button>
+                                    </StackPanel>
+                                    <Button Margin="20 0 0 0" RelativePanel.RightOf="TextName" Background="Transparent"
+                                            HorizontalAlignment="Right" x:Name="ButtonEmloyeeSettings" Click="ButtonEmloyeeSettings_Click"
+                                            Tag="Current">
+                                        <SymbolIcon Symbol="Setting"/>
+                                    </Button>
+
+                                    <RelativePanel Grid.Row="2" Margin="0 10 0 0">
+                                        <ListBox HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                                                    MaxHeight="400" ItemsSource="{x:Bind Employees}" x:Name="ListBoxEmployee"
+                                                    SelectedIndex="0">
+                                            <ListBox.ItemTemplate>
+                                                <DataTemplate>
+                                                    <StackPanel Margin="4 4 10 0" Orientation="Horizontal">
+                                                        <PersonPicture DisplayName="{Binding Fullname, Mode=OneWay}" Width="36" Height="36" Margin="6 0 12 0"
+                                                                       Foreground="{Binding Foreground, Mode=OneWay}"/>
+                                                        <RelativePanel Margin="10 0 0 0">
+                                                            <TextBlock FontSize="16" x:Name="TextName" FontWeight="Medium">
+                                                                <Run Text="{Binding Lastname}"/>
+                                                                <Run Text=", "/>
+                                                                <Run Text="{Binding Firstname}"/>
+                                                                <Run Text=" ("/>
+                                                                <Run Text="{Binding Alias}"/>
+                                                                <Run Text=")"/>
+                                                            </TextBlock>
+                                                            <TextBlock RelativePanel.Below="TextName">
+                                                                <Run Text="Personalnummer: " FontStyle="Italic"/>
+                                                                <Run Text="{Binding Number}" FontWeight="Medium"/>
+                                                            </TextBlock>
+                                                            <Button Margin="20 0 0 0" RelativePanel.RightOf="TextName" Background="Transparent"
+                                                                    HorizontalAlignment="Right" VerticalAlignment="Bottom"
+                                                                    Click="ButtonEmloyeeSettings_Click" Tag="Import">
+                                                                <SymbolIcon Symbol="Setting"/>
+                                                            </Button>
+                                                        </RelativePanel>
+                                                    </StackPanel>
+                                                </DataTemplate>
+                                            </ListBox.ItemTemplate>
+                                        </ListBox>
+
+                                        <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                                              RelativePanel.Below="ListBoxEmployee" Margin="0 10 0 0">
+                                            <Button x:Name="ButtonLogin" HorizontalAlignment="Left" Click="ButtonLogin_Click">
+                                                <TextBlock>
+                                                    <Run Text="&#xE748;" FontFamily="Segoe MDL2 Assets"/>
+                                                    <Run Text="Anmelden" FontSize="14"/>
+                                                </TextBlock>
+                                            </Button>
+
+                                            <Button x:Name="ButtonImport" Click="ButtonImport_Click" HorizontalAlignment="Right"
+                                                    Margin="200 0 0 0">
+                                                <SymbolIcon Symbol="Import"/>
+                                            </Button>
+                                        </Grid>
+                                    </RelativePanel>
+                                </Grid>
+                            </Flyout>
+                        </FlyoutBase.AttachedFlyout>
+                        <PersonPicture.Resources>
+                            <muxc:TeachingTip x:Name="TeachingTipEmployee" Target="{x:Bind PersonEmployee}" Title="Anmeldung erforderlich"
+                                              Subtitle="Bitte melde Dich an diesem Gerät mit Deinem Benutzer an"
+                                              PreferredPlacement="Auto" PlacementMargin="0 6 0 0"/>
+                        </PersonPicture.Resources>
+                    </PersonPicture>
+                </Grid>
+            </NavigationView.Header>
+
+        </NavigationView>
+
+        <controls:Loading x:Name="LoadingControl">
+            <StackPanel Padding="12" Opacity="0.9" HorizontalAlignment="Center" VerticalAlignment="Center">
+                <ProgressRing IsActive="True" Width="120" Height="120"/>
+                <TextBlock VerticalAlignment="Center" FontSize="18" FontWeight="Medium" Margin="0 30 0 0" x:Name="LoadingText"
+                           TextWrapping="Wrap" MaxWidth="600"/>
+            </StackPanel>
+        </controls:Loading>
+
+        <controls:InAppNotification x:Name="NotificationControl" ShowDismissButton="True" AnimationDuration="00:00:00.1000000"
+                                    VerticalOffset="100" HorizontalOffset="0" StackMode="Replace"/>
+    </Grid>
+</Page>

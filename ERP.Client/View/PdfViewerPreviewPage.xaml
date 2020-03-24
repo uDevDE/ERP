@@ -1,0 +1,124 @@
+﻿<Page
+    x:Class="ERP.Client.View.PdfViewerPreviewPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="using:Microsoft.Toolkit.Uwp.UI.Controls"
+    xmlns:uc="using:ERP.Client.Controls"
+    xmlns:converters="using:ERP.Client.Converter"
+    xmlns:model="using:ERP.Client.Model"
+    xmlns:local="using:ERP.Client.View"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
+    Loaded="Page_Loaded">
+    <Page.Resources>
+        <converters:ReverseNullVisibilityConverter x:Key="ReverseNullToVisibilityConverter"/>
+        <converters:NullVisibilityConverter x:Key="NullToVisibilityConverter"/>
+        <converters:StringVisibilityConverter x:Key="StringToVisibilityConverter"/>
+    </Page.Resources>
+    
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="800"/>
+            <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
+        
+        <Pivot Title="Projekte" ItemsSource="{x:Bind Projects}">
+            <Pivot.HeaderTemplate>
+                <DataTemplate x:DataType="model:FolderModel">
+                    <TextBlock Text="{x:Bind Name}"/>
+                </DataTemplate>
+            </Pivot.HeaderTemplate>
+
+            <Pivot.ItemTemplate>
+                <DataTemplate x:DataType="model:FolderModel">
+                    <controls:MasterDetailsView BackButtonBehavior="Automatic" ItemsSource="{x:Bind SubFolders.Values}"
+                                                NoSelectionContent="Select an item to view" CompactModeThresholdWidth="720"
+                                                SelectionChanged="MasterDetailsView_SelectionChanged" Loaded="MasterDetailsView_Loaded">
+                        <controls:MasterDetailsView.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Margin="0,8">
+                                    <TextBlock Text="{Binding Name}"  Style="{ThemeResource SubtitleTextBlockStyle}"/>
+                                </StackPanel>
+                            </DataTemplate>
+                        </controls:MasterDetailsView.ItemTemplate>
+                        <controls:MasterDetailsView.DetailsTemplate>
+                            <DataTemplate x:DataType="model:FolderModel">
+                                <RelativePanel Margin="8">
+                                    <TextBlock Text="Fertigungsaufträge und Ansichten" FontSize="18" FontWeight="Medium" x:Name="WorkingDirHeader"/>
+                                    <ComboBox ItemsSource="{x:Bind SubFolders.Values}" SelectedIndex="1" DisplayMemberPath="Name" SelectedItem="{Binding Name}"
+                                                x:Name="ComboBoxWorkDir" SelectionChanged="ComboBoxWorkDir_SelectionChanged" Width="350" Margin="0 16 0 0"
+                                                DataContextChanged="ComboBoxWorkDir_DataContextChanged" RelativePanel.Below="WorkingDirHeader"/>
+                                    <ListBox RelativePanel.Below="ComboBoxWorkDir" Width="350" Margin="0 12 0 0" SelectionChanged="ListBox_SelectionChanged">
+                                        <ListBox.ItemTemplate>
+                                            <DataTemplate x:DataType="model:FileEntryModel">
+                                                <RelativePanel>
+                                                    <TextBlock Text="{Binding Name}" Visibility="{Binding FileInfo, Converter={StaticResource ReverseNullToVisibilityConverter}}"/>
+
+                                                    <Grid Visibility="{Binding FileInfo, Converter={StaticResource NullToVisibilityConverter}}" Width="300">
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="*"/>
+                                                            <ColumnDefinition Width="80"/>
+                                                        </Grid.ColumnDefinitions>
+
+                                                        <RelativePanel>
+                                                            <TextBlock HorizontalAlignment="Left" VerticalAlignment="Top" x:Name="TextProjectIdentifier">
+                                                        <Run Text="Projekt:  " FontSize="14" FontStyle="Italic"/>
+                                                        <Run Text="{Binding FileInfo.ProjectIdentifier}" FontSize="16" FontWeight="Medium"/>
+                                                            </TextBlock>
+                                                            <TextBlock HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0 4 0 0" 
+                                                                RelativePanel.Below="TextProjectIdentifier" x:Name="TextSection">
+                                                        <Run Text="Los:        " FontSize="14" FontStyle="Italic"/>
+                                                        <Run Text="{Binding FileInfo.Section}" FontSize="16" FontWeight="Medium"/>
+                                                            </TextBlock>
+                                                            <TextBlock Text="{Binding FileInfo.Description}" FontStyle="Italic" RelativePanel.Below="TextSection"
+                                                                Foreground="{ThemeResource ApplicationSecondaryForegroundThemeBrush}" Margin="0 4 0 0"
+                                                                Visibility="{Binding FileInfo.Description, Converter={StaticResource StringToVisibilityConverter}}"/>
+                                                        </RelativePanel>
+
+                                                        <TextBlock Text="{Binding FileInfo.ProjectNumber}" HorizontalAlignment="Right" Grid.Column="1"
+                                                            Foreground="{ThemeResource ApplicationSecondaryForegroundThemeBrush}"/>
+                                                    </Grid>
+                                                </RelativePanel>
+                                            </DataTemplate>
+                                        </ListBox.ItemTemplate>
+                                    </ListBox>
+                                </RelativePanel>
+                            </DataTemplate>
+                        </controls:MasterDetailsView.DetailsTemplate>
+                    </controls:MasterDetailsView>
+                </DataTemplate>
+            </Pivot.ItemTemplate>
+        </Pivot>
+
+        <Pivot Grid.Column="1" Margin="0 150 0 0">
+            <PivotItem Header="Datei Vorschau">
+                <ScrollViewer Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Top" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto"
+                      ZoomMode="Enabled" MaxZoomFactor="4" MinZoomFactor="1" Margin="0 20 0 0">
+                    <uc:PdfPageControl x:Name="PdfViewerPreview"/>
+                </ScrollViewer>
+            </PivotItem>
+            <PivotItem Header="Werkaufträge">
+                <controls:DataGrid x:Name="DataGridPlantOrder" Margin="12" ItemsSource="{x:Bind PlantOrders}"
+                                    HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalScrollBarVisibility="Auto"
+                                    VerticalScrollBarVisibility="Auto" AlternatingRowBackground="Transparent" AlternatingRowForeground="Gray"
+                                    AreRowDetailsFrozen="False" AreRowGroupHeadersFrozen="True" AutoGenerateColumns="False"
+                                    CanUserSortColumns="True" CanUserResizeColumns="True" ColumnHeaderHeight="32" MaxColumnWidth="400"
+                                    FrozenColumnCount="0" GridLinesVisibility="Horizontal" HeadersVisibility="Column"
+                                    RowDetailsVisibilityMode="Collapsed" SelectionMode="Extended" RowGroupHeaderPropertyNameAlternative="Range"
+                                    IsRightTapEnabled="True" IsTapEnabled="True">
+                    <controls:DataGrid.Columns>
+                        <controls:DataGridTextColumn Header="Werkauftragnummer" Tag="Number" IsReadOnly="True" Binding="{Binding Number}"/>
+                        <controls:DataGridTextColumn Header="Name" Tag="Name" IsReadOnly="True" Binding="{Binding Name}"/>
+                        <controls:DataGridTextColumn Header="Prozess" Tag="ProcessTemplate" IsReadOnly="True" Binding="{Binding ProcessTemplate}"/>
+                        <controls:DataGridTextColumn Header="Beschreibung" Tag="Description" IsReadOnly="True" Binding="{Binding Description}"/>
+                        <controls:DataGridTextColumn Header="Los" Tag="Section" IsReadOnly="True" Binding="{Binding Section}"/>
+                        <controls:DataGridTextColumn Header="Kürzel" Tag="Contraction" IsReadOnly="True" Binding="{Binding Contraction}"/>
+                        <controls:DataGridCheckBoxColumn Header="Abgeschlossen" Tag="IsFinished" IsReadOnly="True" Binding="{Binding IsFinished}"/>
+                    </controls:DataGrid.Columns>
+                </controls:DataGrid>
+            </PivotItem>
+        </Pivot>
+    </Grid>
+</Page>
