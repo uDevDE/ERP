@@ -1,12 +1,12 @@
 ﻿<Page
-    x:Class="ERP.Client.View.ProjectPreviewPage"
+    x:Class="ERP.Client.Startup.View.ProjectPreviewPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:controls="using:Microsoft.Toolkit.Uwp.UI.Controls"
     xmlns:uc="using:ERP.Client.Controls"
     xmlns:converters="using:ERP.Client.Converter"
     xmlns:model="using:ERP.Client.Model"
-    xmlns:local="using:ERP.Client.View"
+    xmlns:local="using:ERP.Client.Startup.View"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
@@ -82,7 +82,7 @@
                                                 x:Name="ComboBoxWorkDir" SelectionChanged="ComboBoxWorkDir_SelectionChanged" Width="350" Margin="0 16 0 0"
                                                 DataContextChanged="ComboBoxWorkDir_DataContextChanged" RelativePanel.Below="WorkingDirHeader"/>
                                     <ListBox RelativePanel.Below="ComboBoxWorkDir" Width="350" Margin="0 12 0 0" SelectionChanged="ListBox_SelectionChanged"
-                                             SelectedIndex="0" ItemTemplate="{StaticResource FileEntryModelTemplate}"/>
+                                             ItemTemplate="{StaticResource FileEntryModelTemplate}" x:Name="JobListBox"/>
                                 </RelativePanel>
                             </DataTemplate>
                         </controls:MasterDetailsView.DetailsTemplate>

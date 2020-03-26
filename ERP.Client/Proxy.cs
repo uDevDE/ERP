@@ -320,5 +320,17 @@ namespace ERP.Client
             return await Task.FromResult<List<PlantOrderModel>>(null);
         }
 
+        public async static Task<List<MaterialRequirementModel>> GetMaterialRequirements(string[] materialRequirements)
+        {
+            if (IsConnected && IsDeviceIdValid)
+            {
+                var list = await _proxy.GetMaterialRequirements(materialRequirements);
+                var result = AutoMapperConfiguration.Mapper.Map<List<MaterialRequirementDTO>, List<MaterialRequirementModel>>(list);
+                return await Task.FromResult(result);
+            }
+
+            return await Task.FromResult<List<MaterialRequirementModel>>(null);
+        }
+
     }
 }

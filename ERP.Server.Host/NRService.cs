@@ -510,5 +510,26 @@ namespace ERP.Server.Host
             }
         }
 
+        public Task<List<MaterialRequirementDTO>> GetMaterialRequirements(string[] materialRequirements)
+        {
+            try
+            {
+                var filename = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "materialrequirements.json");
+                if (!File.Exists(filename))
+                {
+                    return Task.FromResult<List<MaterialRequirementDTO>>(null);
+                }
+
+                var json = File.ReadAllText(filename);
+                var result = JsonConvert.DeserializeObject<List<MaterialRequirementDTO>>(json);
+                return Task.FromResult(result);
+            }
+            catch (Exception ex)
+            {
+                PrintException(ex);
+                throw new FaultException(ex.Message, new FaultCode("GetMaterialRequirements"), "GetMaterialRequirements");
+            }
+        }
+
     }
 }

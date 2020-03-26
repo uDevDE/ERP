@@ -1,7 +1,6 @@
 ﻿using ERP.Client.Dialogs;
 using ERP.Client.Mapper;
 using ERP.Client.Model;
-using ERP.Client.View;
 using System;
 using System.Linq;
 using System.Security.Principal;
@@ -24,6 +23,7 @@ using Windows.UI.ViewManagement;
 using Windows.Foundation;
 using ERP.Client.Core.Enums;
 using ERP.Client.ViewModel;
+using ERP.Client.Startup.View;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
@@ -43,7 +43,7 @@ namespace ERP.Client.Startup
         {
             { "Administration", typeof(AdministrationPage) },
             { "Configuration", typeof(ConfigurationPage) },
-            { "PdfViewer", typeof(ProjectViewerPage) }
+            { "ProjectViewer", typeof(ProjectViewerPage) }
         };
 
         public MainPage()

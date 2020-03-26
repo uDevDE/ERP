@@ -123,10 +123,12 @@
     <Compile Include="Controls\PdfPageControl.xaml.cs">
       <DependentUpon>PdfPageControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Converter\DecimalStringConverter.cs" />
     <Compile Include="Converter\NullVisibilityConverter.cs" />
     <Compile Include="Converter\NumberVisibilityConverter.cs" />
     <Compile Include="Converter\ReverseNullVisibilityConverter.cs" />
     <Compile Include="Converter\StringVisibilityConverter.cs" />
+    <Compile Include="Core\Enums\ElementType.cs" />
     <Compile Include="Core\Enums\InfoDialogType.cs" />
     <Compile Include="Core\Enums\PdfViewerViewType.cs" />
     <Compile Include="Core\Enums\ProjectPreviewType.cs" />
@@ -172,25 +174,11 @@
     <Compile Include="ViewModel\AdministrationViewModel.cs" />
     <Compile Include="ViewModel\EmployeeViewModel.cs" />
     <Compile Include="ViewModel\LoadingViewModel.cs" />
-    <Compile Include="ViewModel\PdfViewerViewModel.cs" />
-    <Compile Include="View\AdministrationPage.xaml.cs">
-      <DependentUpon>AdministrationPage.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="View\ConfigurationPage.xaml.cs">
-      <DependentUpon>ConfigurationPage.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="View\ProjectContentPage.xaml.cs">
-      <DependentUpon>ProjectContentPage.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="View\ProjectViewerPage.xaml.cs">
-      <DependentUpon>ProjectViewerPage.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="View\ProjectPreviewPage.xaml.cs">
-      <DependentUpon>ProjectPreviewPage.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="View\SettingsPage.xaml.cs">
-      <DependentUpon>SettingsPage.xaml</DependentUpon>
-    </Compile>
+    <Compile Include="ViewModel\MaterialRequirementsViewModel.cs" />
+    <Compile Include="ViewModel\PdfViewer\PdfPageViewModel.cs" />
+    <Compile Include="ViewModel\PdfViewer\PdfViewerPageSource.cs" />
+    <Compile Include="ViewModel\PdfViewer\PdfViewerPageSourceItem.cs" />
+    <Compile Include="ViewModel\PdfViewer\PdfViewerViewModel.cs" />
     <EmbeddedResource Include="Properties\NR.Client.rd.xml" />
   </ItemGroup>
   <ItemGroup>
@@ -221,8 +209,8 @@
   </ItemGroup>
   <ItemGroup>
     <Page Include="Controls\PdfPageControl.xaml">
-      <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Dialogs\DivisionDialog.xaml">
       <SubType>Designer</SubType>
@@ -252,34 +240,8 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="View\AdministrationPage.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="View\ConfigurationPage.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="View\ProjectContentPage.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="View\ProjectViewerPage.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="View\ProjectPreviewPage.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="View\SettingsPage.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="View\PdfViewer\" />
-  </ItemGroup>
+  <ItemGroup />
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
   </PropertyGroup>

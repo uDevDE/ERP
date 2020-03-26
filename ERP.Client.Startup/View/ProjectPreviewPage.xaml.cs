@@ -19,16 +19,20 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using ERP.Client.Core.Enums;
+using System.Threading.Tasks;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=234238
 
-namespace ERP.Client.View
+namespace ERP.Client.Startup.View
 {
     /// <summary>
     /// An empty page that can be used on its own or navigated to within a Frame.
     /// </summary>
     public sealed partial class ProjectPreviewPage : Page
     {
+        public delegate void ButtonOpenProjectClickedHandler(ProjectPreviewPage projectPreviewPage, ProjectPreviewType projectPreviewType, FolderModel project);
+        public event ButtonOpenProjectClickedHandler ButtonOpenProjectClicked;
+
         public int Index { get; private set; }
         public ObservableCollection<FolderModel> Projects { get; set; }
         public ObservableCollection<PlantOrderModel> PlantOrders { get; set; }
@@ -37,9 +41,12 @@ namespace ERP.Client.View
         private LocalUserSettings _userSettings;
         private ProjectPreviewType _currentProjectPreviewType;
 
-        public string SelectedProject { get; private set; }
         public FileEntryModel SelectedFileEntry { get; private set; }
         public PlantOrderModel SelectedPlantOrder { get; private set; }
+        public FolderModel SelectedProject { get; private set; }
+
+        public List<PlantOrderModel> CurrentPlantOrders { get; private set; }
+        public List<FileEntryModel> CurrentFileEntries { get; private set; }
 
         private const string BUTTON_LABEL_PLANT_ORDER = "Von Werkauftrag öffnen";
         private const string BUTTON_LABEL_FILE_ENTRY = "Von Datei öffnen";
@@ -51,6 +58,10 @@ namespace ERP.Client.View
 
             Projects = new ObservableCollection<FolderModel>();
             PlantOrders = new ObservableCollection<PlantOrderModel>();
+
+            CurrentPlantOrders = new List<PlantOrderModel>();
+            CurrentFileEntries = new List<FileEntryModel>();
+
             LoadUserSettings();
         }
 
@@ -135,6 +146,9 @@ namespace ERP.Client.View
             {
                 if (masterDetailsView.SelectedItem is FolderModel folder)
                 {
+                    SelectedProject = folder;
+                    SelectedFileEntry = null;
+                    SelectedPlantOrder = null;
                     var number = System.Text.RegularExpressions.Regex.Split(folder.Name, @"\D+").FirstOrDefault().Trim();
                     if (int.TryParse(number, out int plantOrderNumber))
                     {
@@ -146,6 +160,7 @@ namespace ERP.Client.View
                             {
                                 PlantOrders.Add(plantOrder);
                             }
+                            CurrentPlantOrders = plantOrders;
                         });
                     }
 
@@ -166,7 +181,9 @@ namespace ERP.Client.View
                 {
                     if ((sender as ComboBox).SelectedItem is FolderModel folder)
                     {
-                        listBox.ItemsSource = folder.Files?.Values.ToList();
+                        var fileEntries = folder.Files?.Values.ToList();
+                        listBox.ItemsSource = fileEntries;
+                        CurrentFileEntries = fileEntries;
                     }
                 }
             }
@@ -248,23 +265,12 @@ namespace ERP.Client.View
             }
         }
 
-        private async void ButtonOpenProject_Click(object sender, RoutedEventArgs e)
+        private void ButtonOpenProject_Click(object sender, RoutedEventArgs e)
         {
-            string text = string.Empty;
-            if (_currentProjectPreviewType == ProjectPreviewType.PdfFile)
+            if (SelectedProject != null)
             {
-                text = SelectedFileEntry?.Name;
+                ButtonOpenProjectClicked?.Invoke(this, _currentProjectPreviewType, SelectedProject);
             }
-            else
-            {
-                text = SelectedPlantOrder?.Name;
-            }
-
-            if (string.IsNullOrEmpty(text))
-                return;
-
-            var dialog = new Windows.UI.Popups.MessageDialog(text);
-            await dialog.ShowAsync();
         }
 
         private void ProjectPreviewPivot_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -309,6 +315,29 @@ namespace ERP.Client.View
                 }
             }
         }
+
+        public FileEntryModel FindFilename(PlantOrderModel plantOrder)
+        {
+            var projectIdentifier = plantOrder.Number.Replace('.', '-').Trim();
+
+            foreach (var folder in SelectedProject.SubFolders)
+            {
+                foreach (var entry in folder.Value.Files)
+                {
+                    var fileInfo = entry.Value.FileInfo;
+                    if (fileInfo != null)
+                    {
+                        if (projectIdentifier == fileInfo.ProjectIdentifier)
+                        {
+                            return entry.Value;
+                        }
+                    }
+                }
+            }
+
+            return null;
+        }
+
     }
 
 

@@ -30,7 +30,7 @@
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
                 <NavigationViewItemHeader Content="Fertigung"/>
-                <NavigationViewItem Content="Zeichnungen" Tag="PdfViewer" x:Name="SamplePage2Item" SelectsOnInvoked="True">
+                <NavigationViewItem Content="Zeichnungen" Tag="ProjectViewer" x:Name="SamplePage2Item" SelectsOnInvoked="True">
                     <NavigationViewItem.Icon>
                         <SymbolIcon Symbol="OpenFile" />
                     </NavigationViewItem.Icon>
