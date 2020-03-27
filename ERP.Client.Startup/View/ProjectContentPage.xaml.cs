@@ -91,6 +91,8 @@ namespace ERP.Client.Startup.View
                 await dialog.ShowAsync();
             }
 
+
+
             var materialRequirements = await Proxy.GetMaterialRequirements(new string[] { "1", "2" });
             if (materialRequirements != null)
             {
