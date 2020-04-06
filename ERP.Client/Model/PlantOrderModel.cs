@@ -1,4 +1,5 @@
 ﻿using ERP.Contracts.Domain.Core;
+using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
@@ -17,6 +18,7 @@ namespace ERP.Client.Model
         private string _section;
         private string _materialRequirement;
         private int _losId;
+        private string _processId;
 
         public int Id
         {
@@ -146,6 +148,18 @@ namespace ERP.Client.Model
                 if (_losId != value)
                 {
                     _losId = value;
+                    RaisePropertyChanged();
+                }
+            }
+        }
+        public string ProcessId
+        {
+            get { return _processId; }
+            set
+            {
+                if (_processId != value)
+                {
+                    _processId = value;
                     RaisePropertyChanged();
                 }
             }

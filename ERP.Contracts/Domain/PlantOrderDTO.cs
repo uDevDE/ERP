@@ -38,5 +38,8 @@ namespace ERP.Contracts.Domain
 
         [DataMember]
         public int LosId { get; set; }
+        
+        [DataMember]
+        public string ProcessId { get; set; }
     }
 }

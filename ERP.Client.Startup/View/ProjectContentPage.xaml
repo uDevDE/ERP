@@ -108,6 +108,10 @@
             <PivotItem Header="Elementfertigungsansichten"/>
             
             <PivotItem Header="Details"/>
+            <PivotItem Header="Stempeln">
+                <Image HorizontalAlignment="Center" VerticalAlignment="Center" Stretch="None"
+                       Source="{x:Bind ProcessViewModel.QRImageSource}" x:Name="QRImage"/>
+            </PivotItem>
         </Pivot>
 
         <Grid Grid.Column="1" Margin="2 20 2 0">

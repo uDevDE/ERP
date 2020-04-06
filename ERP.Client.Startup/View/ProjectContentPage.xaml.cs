@@ -1,4 +1,5 @@
 ﻿using ERP.Client.Core.Enums;
+using ERP.Client.Lib;
 using ERP.Client.Model;
 using ERP.Client.ViewModel;
 using ERP.Client.ViewModel.PdfViewer;
@@ -8,6 +9,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.ServiceModel.Channels;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.UI.Popups;
@@ -36,6 +38,7 @@ namespace ERP.Client.Startup.View
         public PlantOrderModel PlantOrder { get; private set; }
 
         public MaterialRequirementsViewModel MaterialRequirementsViewModel { get; set; }
+        public ProcessQRImageViewModel ProcessViewModel { get; set; }
         public PdfPageViewModel PageViewModel { get; set; }
 
         public ProjectContentPage()
@@ -43,6 +46,7 @@ namespace ERP.Client.Startup.View
             this.InitializeComponent();
 
             MaterialRequirementsViewModel = new MaterialRequirementsViewModel();
+            ProcessViewModel = new ProcessQRImageViewModel();
             LoadingControl.IsLoading = true;
         }
 
@@ -92,6 +96,9 @@ namespace ERP.Client.Startup.View
             }
 
 
+            QRImage.Source = await QRCodeImageGenerator.Generate(PlantOrder.ProcessId, 12);
+            var qrdialog = new MessageDialog(PlantOrder.ProcessId);
+            await qrdialog.ShowAsync();
 
             var materialRequirements = await Proxy.GetMaterialRequirements(new string[] { "1", "2" });
             if (materialRequirements != null)

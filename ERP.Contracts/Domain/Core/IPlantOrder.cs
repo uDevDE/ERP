@@ -50,5 +50,9 @@ namespace ERP.Contracts.Domain.Core
         /// Column LosID - Sekundärer Schlüssel zur Tabelle Lose
         /// </summary>
         int LosId { get; set; }
+        /// <summary>
+        /// Column GuidID - Zeichenfolge zum Stempeln
+        /// </summary>
+        string ProcessId { get; set; }
     }
 }
