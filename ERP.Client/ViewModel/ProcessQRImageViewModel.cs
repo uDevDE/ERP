@@ -1,14 +1,13 @@
 ﻿using System.ComponentModel;
 using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Media.Imaging;
 
 namespace ERP.Client.ViewModel
 {
     public class ProcessQRImageViewModel : INotifyPropertyChanged
     {
-        private BitmapImage _qrImageSource;
+        private ImageSource _qrImageSource;
 
-        public BitmapImage QRImageSource
+        public ImageSource QRImageSource
         {
             get { return _qrImageSource; }
             set

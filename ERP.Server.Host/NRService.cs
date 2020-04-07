@@ -531,5 +531,26 @@ namespace ERP.Server.Host
             }
         }
 
+        public Task<List<PlantOrderProcessDTO>> GetPlantOrderProcesses(int plantOrderId)
+        {
+            try
+            {
+                var filename = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "plantorderprocesses.json");
+                if (!File.Exists(filename))
+                {
+                    return Task.FromResult<List<PlantOrderProcessDTO>>(null);
+                }
+
+                var json = File.ReadAllText(filename);
+                var result = JsonConvert.DeserializeObject<List<PlantOrderProcessDTO>>(json);
+                return Task.FromResult(result);
+            }
+            catch (Exception ex)
+            {
+                PrintException(ex);
+                throw new FaultException(ex.Message, new FaultCode("GetPlantOrderProcesses"), "GetPlantOrderProcesses");
+            }
+        }
+
     }
 }

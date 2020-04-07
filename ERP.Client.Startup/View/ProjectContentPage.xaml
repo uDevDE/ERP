@@ -8,6 +8,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:converters="using:ERP.Client.Converter" 
     xmlns:muxc="using:Microsoft.UI.Xaml.Controls"
     xmlns:ctl="using:ERP.Client.Controls"
+    xmlns:model="using:ERP.Client.Model"
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
     Loaded="Page_Loaded">
@@ -109,8 +110,24 @@
             
             <PivotItem Header="Details"/>
             <PivotItem Header="Stempeln">
-                <Image HorizontalAlignment="Center" VerticalAlignment="Center" Stretch="None"
-                       Source="{x:Bind ProcessViewModel.QRImageSource}" x:Name="QRImage"/>
+                <!--<Image HorizontalAlignment="Center" VerticalAlignment="Center" Stretch="None"
+                       Source="{x:Bind ProcessViewModel.QRImageSource}" x:Name="QRImage"/>-->
+
+                <FlipView x:Name="QRCodeImageView" SelectedIndex="0" ItemsSource="{x:Bind ProcessQRImages, Mode=OneWay}"
+                          HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0 60 0 0"
+                          MaxWidth="500" MaxHeight="460">
+                    <FlipView.ItemTemplate>
+                        <DataTemplate x:DataType="model:ProcessQRImageModel">
+                            <StackPanel Margin="0 60 0 0">
+                                <Image Source="{Binding Source, Mode=OneWay}" Stretch="None"/>
+                                <Border Height="60" Width="Auto">
+                                    <TextBlock FontWeight="Medium" FontSize="24" Text="{Binding ProcessName}"
+                                               HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+                            </StackPanel>
+                        </DataTemplate>
+                    </FlipView.ItemTemplate>
+                </FlipView>
             </PivotItem>
         </Pivot>
 

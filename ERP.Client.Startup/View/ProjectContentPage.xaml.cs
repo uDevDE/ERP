@@ -6,6 +6,7 @@ using ERP.Client.ViewModel.PdfViewer;
 using Microsoft.Toolkit.Uwp.UI.Controls;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
@@ -38,7 +39,7 @@ namespace ERP.Client.Startup.View
         public PlantOrderModel PlantOrder { get; private set; }
 
         public MaterialRequirementsViewModel MaterialRequirementsViewModel { get; set; }
-        public ProcessQRImageViewModel ProcessViewModel { get; set; }
+        public ObservableCollection<ProcessQRImageModel> ProcessQRImages { get; private set; }
         public PdfPageViewModel PageViewModel { get; set; }
 
         public ProjectContentPage()
@@ -46,7 +47,7 @@ namespace ERP.Client.Startup.View
             this.InitializeComponent();
 
             MaterialRequirementsViewModel = new MaterialRequirementsViewModel();
-            ProcessViewModel = new ProcessQRImageViewModel();
+            ProcessQRImages = new ObservableCollection<ProcessQRImageModel>();
             LoadingControl.IsLoading = true;
         }
 
@@ -95,8 +96,17 @@ namespace ERP.Client.Startup.View
                 await dialog.ShowAsync();
             }
 
+            var plantOrderProcesses = await Proxy.GetPlantOrderProcesses(PlantOrder.Id);
+            foreach (var plantOrderProcess in plantOrderProcesses)
+            {
+                ProcessQRImages.Add(new ProcessQRImageModel()
+                {
+                    ProcessName = plantOrderProcess.Process,
+                    Source = await QRCodeImageGenerator.Generate(plantOrderProcess.ProcessGuid.ToString())
+                });
+            }
 
-            QRImage.Source = await QRCodeImageGenerator.Generate(PlantOrder.ProcessId, 12);
+            //QRImage.Source = await QRCodeImageGenerator.Generate(PlantOrder.ProcessId, 12);
             var qrdialog = new MessageDialog(PlantOrder.ProcessId);
             await qrdialog.ShowAsync();
 

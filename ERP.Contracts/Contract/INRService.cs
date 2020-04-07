@@ -63,5 +63,8 @@ namespace ERP.Contracts.Contract
 
         [OperationContract(IsOneWay = false)]
         Task<List<MaterialRequirementDTO>> GetMaterialRequirements(string[] materialRequirements);
+
+        [OperationContract(IsOneWay = false)]
+        Task<List<PlantOrderProcessDTO>> GetPlantOrderProcesses(int plantOrderId);
     }
 }
