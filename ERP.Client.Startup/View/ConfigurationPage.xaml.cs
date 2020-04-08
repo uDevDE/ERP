@@ -27,7 +27,7 @@ namespace ERP.Client.Startup.View
     public sealed partial class ConfigurationPage : Page
     {
         public ObservableCollection<DivisionInfoModel> DivisionInfos { get; set; }
-        public List<DivisionType> DivisionTypes { get; set; }
+        public List<DivisionType> DivisionTypes { get; set; }    
 
         public ConfigurationPage()
         {
@@ -36,6 +36,7 @@ namespace ERP.Client.Startup.View
 
             DivisionInfos = new ObservableCollection<DivisionInfoModel>();
             DivisionTypes = new List<DivisionType>();
+            
 
             foreach (DivisionType divisionType in (DivisionType[])Enum.GetValues(typeof(DivisionType)))
             {

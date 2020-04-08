@@ -1,6 +1,8 @@
 ﻿using ERP.Client.Model;
 using ERP.Contracts.Domain.Core.Enums;
+using Microsoft.Toolkit.Uwp.UI.Controls.TextToolbarSymbols;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using Windows.UI.Xaml.Controls;
@@ -11,12 +13,14 @@ namespace ERP.Client.Dialogs
     {
         public DivisionModel Division { get; set; }
         public ObservableCollection<DivisionInfoModel> DivisionInfos { get; set; }
+        public List<ProcessTemplateModel> ProcessTemplates { get; private set; }
 
-        public DivisionDialog(ObservableCollection<DivisionInfoModel> divisionInfos)
+        public DivisionDialog(ObservableCollection<DivisionInfoModel> divisionInfos, List<ProcessTemplateModel> processTemplates)
         {
             this.InitializeComponent();
             Division = new DivisionModel();
             DivisionInfos = divisionInfos;
+            ProcessTemplates = processTemplates;
             this.DataContext = this;
         }
 

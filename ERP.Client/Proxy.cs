@@ -345,5 +345,18 @@ namespace ERP.Client
             return await Task.FromResult<List<PlantOrderProcessModel>>(null);
         }
 
+        public async static Task<List<ProcessTemplateModel>> GetProcessTemplates()
+        {
+            if (IsConnected && IsDeviceIdValid)
+            {
+                var list = await _proxy.GetProcessTemplates();
+                var result = AutoMapperConfiguration.Mapper.Map<List<ProcessTemplateDTO>, List<ProcessTemplateModel>>(list);
+                return await Task.FromResult(result);
+            }
+
+            return await Task.FromResult<List<ProcessTemplateModel>>(null);
+        }
+
+
     }
 }

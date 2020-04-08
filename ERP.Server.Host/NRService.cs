@@ -552,5 +552,26 @@ namespace ERP.Server.Host
             }
         }
 
+        public Task<List<ProcessTemplateDTO>> GetProcessTemplates()
+        {
+            try
+            {
+                var filename = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "processtemplates.json");
+                if (!File.Exists(filename))
+                {
+                    return Task.FromResult<List<ProcessTemplateDTO>>(null);
+                }
+
+                var json = File.ReadAllText(filename);
+                var result = JsonConvert.DeserializeObject<List<ProcessTemplateDTO>>(json);
+                return Task.FromResult(result);
+            }
+            catch (Exception ex)
+            {
+                PrintException(ex);
+                throw new FaultException(ex.Message, new FaultCode("GetProcessTemplates"), "GetProcessTemplates");
+            }
+        }
+
     }
 }

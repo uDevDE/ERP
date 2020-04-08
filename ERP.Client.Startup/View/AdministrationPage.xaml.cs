@@ -26,6 +26,8 @@ namespace ERP.Client.Startup.View
         public ObservableCollection<DivisionModel> Divisions { get; set; }
         public ObservableCollection<DivisionInfoModel> DivisionInfos { get; set; }
         public ObservableCollection<EmployeeModel> Employees { get; set; }
+        public List<ProcessTemplateModel> ProcessTemplates { get; private set; }
+
 
         private DivisionModel _divisionCell;
         private DeviceModel _deviceCell;
@@ -39,7 +41,9 @@ namespace ERP.Client.Startup.View
             DivisionInfos = new ObservableCollection<DivisionInfoModel>();
             Devices = new ObservableCollection<DeviceModel>();
             Divisions = new ObservableCollection<DivisionModel>();
-            Employees = new ObservableCollection<EmployeeModel>();   
+            Employees = new ObservableCollection<EmployeeModel>();
+
+            ProcessTemplates = new List<ProcessTemplateModel>();
         }
 
 
@@ -50,6 +54,7 @@ namespace ERP.Client.Startup.View
             await LoadEmployees();
             await LoadDivisionInfos();
             await LoadDivisions();
+            ProcessTemplates = await Proxy.GetProcessTemplates();
             LoadingControl.IsLoading = false;
         }
 
@@ -91,7 +96,7 @@ namespace ERP.Client.Startup.View
 
         private async void ButtonAddDivision_Click(object sender, RoutedEventArgs e)
         {
-            var dialog = new DivisionDialog(DivisionInfos);
+            var dialog = new DivisionDialog(DivisionInfos, ProcessTemplates);
             var dialogResult = await dialog.ShowAsync();
             var division = dialog.Division;
             if (dialogResult == ContentDialogResult.Primary && division != null)

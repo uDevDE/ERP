@@ -66,5 +66,8 @@ namespace ERP.Contracts.Contract
 
         [OperationContract(IsOneWay = false)]
         Task<List<PlantOrderProcessDTO>> GetPlantOrderProcesses(int plantOrderId);
+
+        [OperationContract(IsOneWay = false)]
+        Task<List<ProcessTemplateDTO>> GetProcessTemplates();
     }
 }

@@ -21,74 +21,19 @@
                       SelectedItem="{Binding DivisionInfoId}" DisplayMemberPath="Name"/>
 
             <TextBlock Text="Prozesse" Margin="0 16 0 0" FontSize="16"/>
-            <GridView SelectionMode="Multiple" MaxHeight="400" Margin="0 8 0 0">
+            <GridView SelectionMode="Multiple" MaxHeight="400" Margin="0 8 0 0"
+                      ItemsSource="{x:Bind ProcessTemplates}">
                 <GridView.ItemsPanel>
                     <ItemsPanelTemplate>
                         <StackPanel/>
                     </ItemsPanelTemplate>
                 </GridView.ItemsPanel>
-
-                <GridViewItem>
-                    <StackPanel Margin="0 2 0 2">
-                        <TextBlock Text="Alu Druck- Deckleisten" FontWeight="Medium"/>
-                        <TextBlock Text="Fertigung" FontStyle="Italic"/>
-                        <TextBlock Text="1   Wareneingang / Lager" FontStyle="Italic"/>
-                    </StackPanel>
-                </GridViewItem>
-                <GridViewItem>
-                    <StackPanel Margin="0 2 0 2">
-                        <TextBlock Text="Alu Druck- Deckleisten" FontWeight="Medium"/>
-                        <TextBlock Text="Fertigung" FontStyle="Italic"/>
-                        <TextBlock Text="1   Wareneingang / Lager" FontStyle="Italic"/>
-                    </StackPanel>
-                </GridViewItem>
-                <GridViewItem>
-                    <StackPanel Margin="0 2 0 2">
-                        <TextBlock Text="Alu Druck- Deckleisten" FontWeight="Medium"/>
-                        <TextBlock Text="Fertigung" FontStyle="Italic"/>
-                        <TextBlock Text="1   Wareneingang / Lager" FontStyle="Italic"/>
-                    </StackPanel>
-                </GridViewItem>
-                <GridViewItem>
-                    <StackPanel Margin="0 2 0 2">
-                        <TextBlock Text="Alu Druck- Deckleisten" FontWeight="Medium"/>
-                        <TextBlock Text="Fertigung" FontStyle="Italic"/>
-                        <TextBlock Text="1   Wareneingang / Lager" FontStyle="Italic"/>
-                    </StackPanel>
-                </GridViewItem>
-                <GridViewItem>
-                    <StackPanel Margin="0 2 0 2">
-                        <TextBlock Text="Alu Druck- Deckleisten" FontWeight="Medium"/>
-                        <TextBlock Text="Fertigung" FontStyle="Italic"/>
-                        <TextBlock Text="1   Wareneingang / Lager" FontStyle="Italic"/>
-                    </StackPanel>
-                </GridViewItem>
-                <GridViewItem>
-                    <StackPanel Margin="0 2 0 2">
-                        <TextBlock Text="Alu Druck- Deckleisten" FontWeight="Medium"/>
-                        <TextBlock Text="Fertigung" FontStyle="Italic"/>
-                        <TextBlock Text="1   Wareneingang / Lager" FontStyle="Italic"/>
-                    </StackPanel>
-                </GridViewItem>
-                <GridViewItem>
-                    <StackPanel Margin="0 2 0 2">
-                        <TextBlock Text="Alu Druck- Deckleisten" FontWeight="Medium"/>
-                        <TextBlock Text="Fertigung" FontStyle="Italic"/>
-                        <TextBlock Text="1   Wareneingang / Lager" FontStyle="Italic"/>
-                    </StackPanel>
-                </GridViewItem>
-                <GridViewItem>
-                    <StackPanel Margin="0 2 0 2">
-                        <TextBlock Text="Alu Druck- Deckleisten" FontWeight="Medium"/>
-                        <TextBlock Text="Fertigung" FontStyle="Italic"/>
-                        <TextBlock Text="1   Wareneingang / Lager" FontStyle="Italic"/>
-                    </StackPanel>
-                </GridViewItem>
                 <GridView.ItemTemplate>
                     <DataTemplate x:DataType="model:ProcessTemplateModel">
                         <StackPanel>
-                            <TextBlock Text="{Binding ProcessTemplateName}"/>
-                            
+                            <TextBlock Text="{Binding ProcessTemplateName}" FontWeight="Medium" FontSize="18"/>
+                            <TextBlock Text="{Binding Process}" FontWeight="Medium" FontSize="16"/>
+                            <TextBlock Text="{Binding Description}" FontStyle="Italic" Margin="0 0 0 8"/>
                         </StackPanel>
                     </DataTemplate>
                 </GridView.ItemTemplate>
