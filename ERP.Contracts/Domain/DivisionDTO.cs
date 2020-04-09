@@ -1,4 +1,5 @@
 ﻿using ERP.Contracts.Domain.Core;
+using System.Collections.Generic;
 using System.Runtime.Serialization;
 
 namespace ERP.Contracts.Domain
@@ -6,7 +7,11 @@ namespace ERP.Contracts.Domain
     [DataContract]
     public class DivisionDTO : IDivision
     {
-        public DivisionDTO() => DivisionType = new DivisionInfoDTO();
+        public DivisionDTO()
+        {
+            DivisionType = new DivisionInfoDTO();
+            ProcessTemplates = new List<ProcessTemplateDTO>();
+        }
 
         [DataMember]
         public int DivisionId { get; set; }
@@ -22,5 +27,8 @@ namespace ERP.Contracts.Domain
 
         [DataMember]
         public DivisionInfoDTO DivisionType { get; set; }
+
+        [DataMember]
+        public List<ProcessTemplateDTO> ProcessTemplates { get; set; }
     }
 }

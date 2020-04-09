@@ -56,6 +56,7 @@
     <Compile Include="Entity\Division.cs" />
     <Compile Include="Entity\DivisionInfo.cs" />
     <Compile Include="Entity\Employee.cs" />
+    <Compile Include="Entity\ProcessTemplate.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

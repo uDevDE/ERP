@@ -22,7 +22,7 @@ namespace ERP.Client.Mapper
                 cfg.CreateMap<DivisionInfoDTO, DivisionInfoModel>().ReverseMap();
                 cfg.CreateMap<ProcessTemplateDTO, ProcessTemplateModel>().ReverseMap();
                 cfg.CreateMap<PlantOrderProcessDTO, PlantOrderProcessModel>().ReverseMap();
-                cfg.CreateMap<DivisionDTO, DivisionModel>().ReverseMap().ForMember(dest => dest.DivisionType, opt => opt.MapFrom(src => src.DivisionType));
+                cfg.CreateMap<DivisionDTO, DivisionModel>().ReverseMap().ForMember(dest => dest.DivisionType, opt => opt.MapFrom(src => src.DivisionType)).ForMember(dest => dest.ProcessTemplates, opt => opt.MapFrom(src => src.ProcessTemplates));
                 cfg.CreateMap<EmployeeModel, EmployeeDTO>().ReverseMap().ForMember(dest => dest.Device, opt => opt.MapFrom(src => src.Device));
                 cfg.CreateMap<DeviceModel, DeviceDTO>().ReverseMap().ForMember(dest => dest.Employee, opt => opt.MapFrom(src => src.Employee));
                 cfg.CreateMap<DeviceModel, DeviceDTO>().ReverseMap().ForMember(dest => dest.Division, opt => opt.MapFrom(src => src.Division));

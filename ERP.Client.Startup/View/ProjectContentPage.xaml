@@ -113,7 +113,7 @@
                 <!--<Image HorizontalAlignment="Center" VerticalAlignment="Center" Stretch="None"
                        Source="{x:Bind ProcessViewModel.QRImageSource}" x:Name="QRImage"/>-->
 
-                <FlipView x:Name="QRCodeImageView" SelectedIndex="0" ItemsSource="{x:Bind ProcessQRImages, Mode=OneWay}"
+                <!--<FlipView x:Name="QRCodeImageView" SelectedIndex="0" ItemsSource="{x:Bind ProcessQRImages, Mode=OneWay}"
                           HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0 60 0 0"
                           MaxWidth="500" MaxHeight="460">
                     <FlipView.ItemTemplate>
@@ -127,7 +127,22 @@
                             </StackPanel>
                         </DataTemplate>
                     </FlipView.ItemTemplate>
-                </FlipView>
+                </FlipView>-->
+
+                <GridView SelectionMode="None" VerticalAlignment="Center" HorizontalAlignment="Center"
+                          Margin="0 60 0 0" ItemsSource="{x:Bind ProcessQRImages, Mode=OneWay}">
+                    <GridView.ItemTemplate>
+                        <DataTemplate x:DataType="model:ProcessQRImageModel">
+                            <StackPanel Margin="30 60 30 0">
+                                <Image Source="{Binding Source, Mode=OneWay}" Stretch="None"/>
+                                <Border Height="60" Width="Auto">
+                                    <TextBlock FontWeight="Medium" FontSize="24" Text="{Binding ProcessName}"
+                                               HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+                            </StackPanel>
+                        </DataTemplate>
+                    </GridView.ItemTemplate>
+                </GridView>
             </PivotItem>
         </Pivot>
 

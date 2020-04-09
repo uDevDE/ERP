@@ -2,6 +2,7 @@
 using ERP.Contracts.Domain.Core.Enums;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
@@ -14,6 +15,7 @@ namespace ERP.Client.Model
         private string _description;
         private DivisionInfoModel _divisionType;
         private int _divisionInfoId;
+        private ObservableCollection<ProcessTemplateModel> _processTemplates;
 
         public DivisionModel() => _divisionType = new DivisionInfoModel();
         public DivisionModel(DivisionModel division)
@@ -81,6 +83,18 @@ namespace ERP.Client.Model
                 if (_divisionInfoId != value)
                 {
                     _divisionInfoId = value;
+                    RaisePropertyChanged();
+                }
+            }
+        }
+        public ObservableCollection<ProcessTemplateModel> ProcessTemplates
+        {
+            get { return _processTemplates; }
+            set
+            {
+                if (_processTemplates != value)
+                {
+                    _processTemplates = value;
                     RaisePropertyChanged();
                 }
             }

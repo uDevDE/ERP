@@ -23,14 +23,9 @@
             <TextBlock Text="Prozesse" Margin="0 16 0 0" FontSize="16"/>
             <GridView SelectionMode="Multiple" MaxHeight="400" Margin="0 8 0 0"
                       ItemsSource="{x:Bind ProcessTemplates}">
-                <GridView.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <StackPanel/>
-                    </ItemsPanelTemplate>
-                </GridView.ItemsPanel>
                 <GridView.ItemTemplate>
                     <DataTemplate x:DataType="model:ProcessTemplateModel">
-                        <StackPanel>
+                        <StackPanel MinWidth="250">
                             <TextBlock Text="{Binding ProcessTemplateName}" FontWeight="Medium" FontSize="18"/>
                             <TextBlock Text="{Binding Process}" FontWeight="Medium" FontSize="16"/>
                             <TextBlock Text="{Binding Description}" FontStyle="Italic" Margin="0 0 0 8"/>

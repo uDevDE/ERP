@@ -49,7 +49,7 @@ namespace ERP.Client.Startup.View
             index++;
             TabViewItem newItem = new TabViewItem
             {
-                Header = $"Dokument {index}",
+                Header = "Neues Projekt",
                 Icon = new SymbolIcon(Symbol.Document),
                 Tag = index
             };
