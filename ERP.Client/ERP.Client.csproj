@@ -143,6 +143,9 @@
     <Compile Include="Dialogs\EmployeeDialog.xaml.cs">
       <DependentUpon>EmployeeDialog.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Dialogs\FileSelectionDialog.xaml.cs">
+      <DependentUpon>FileSelectionDialog.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Dialogs\ImportEmployeeDialog.xaml.cs">
       <DependentUpon>ImportEmployeeDialog.xaml</DependentUpon>
     </Compile>
@@ -175,6 +178,7 @@
     <Compile Include="NRServiceCallback.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Proxy.cs" />
+    <Compile Include="utils\GroupInfoCollection.cs" />
     <Compile Include="ViewModel\AdministrationViewModel.cs" />
     <Compile Include="ViewModel\EmployeeViewModel.cs" />
     <Compile Include="ViewModel\LoadingViewModel.cs" />
@@ -184,6 +188,7 @@
     <Compile Include="ViewModel\PdfViewer\PdfViewerPageSourceItem.cs" />
     <Compile Include="ViewModel\PdfViewer\PdfViewerViewModel.cs" />
     <Compile Include="ViewModel\ProcessQRImageViewModel.cs" />
+    <Compile Include="ViewModel\TabViewCollectionModel.cs" />
     <EmbeddedResource Include="Properties\NR.Client.rd.xml" />
   </ItemGroup>
   <ItemGroup>
@@ -229,6 +234,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Dialogs\EmployeeDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Dialogs\FileSelectionDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

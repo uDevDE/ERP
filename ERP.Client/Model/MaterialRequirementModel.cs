@@ -1,10 +1,11 @@
 ﻿using ERP.Contracts.Domain.Core;
+using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
 namespace ERP.Client.Model
 {
-    public class MaterialRequirementModel : INotifyPropertyChanged, IMaterialRequirement
+    public class MaterialRequirementModel : INotifyPropertyChanged, IMaterialRequirement, IComparable
     {
         private int _id;
         private int _materialNumber;
@@ -152,6 +153,12 @@ namespace ERP.Client.Model
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
+
+        public int CompareTo(object obj)
+        {
+            return _materialNumber.CompareTo((obj as MaterialRequirementModel).MaterialNumber);
+        }
+
         private void RaisePropertyChanged([CallerMemberName] string propertyName = null) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 }

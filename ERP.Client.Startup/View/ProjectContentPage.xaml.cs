@@ -1,4 +1,5 @@
 ﻿using ERP.Client.Core.Enums;
+using ERP.Client.Dialogs;
 using ERP.Client.Lib;
 using ERP.Client.Model;
 using ERP.Client.ViewModel;
@@ -114,15 +115,26 @@ namespace ERP.Client.Startup.View
             if (materialRequirements != null)
             {
                 MaterialRequirementsViewModel.Load(materialRequirements);
+                DataGridMaterialRequirements.ItemsSource = MaterialRequirementsViewModel.GroupData().View;
             }
 
             LoadingControl.IsLoading = false;
             PageLoaded = true;
         }
 
-        private void DataGridMaterialRequirements_Loaded(object sender, RoutedEventArgs e)
+        private void DataGridMaterialRequirements_LoadingRowGroup(object sender, DataGridRowGroupHeaderEventArgs e)
         {
-
+            ICollectionViewGroup group = e.RowGroupHeader.CollectionViewGroup;
+            MaterialRequirementModel item = group.GroupItems[0] as MaterialRequirementModel;
+            e.RowGroupHeader.PropertyValue = item.MaterialNumber.ToString();
         }
+
+        private async void ButtonNewPivotItem_Click(object sender, RoutedEventArgs e)
+        {
+            var dialog = new FileSelectionDialog(Folder);
+            await dialog.ShowAsync();
+        }
+
+
     }
 }

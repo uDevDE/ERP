@@ -1,0 +1,18 @@
+﻿<ContentDialog
+    x:Class="ERP.Client.Dialogs.FileSelectionDialog"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:ERP.Client.Dialogs"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Title="Datei öffnen"
+    PrimaryButtonText="OK"
+    SecondaryButtonText="Abbrechen"
+    PrimaryButtonClick="ContentDialog_PrimaryButtonClick"
+    SecondaryButtonClick="ContentDialog_SecondaryButtonClick">
+
+    <Grid>
+        <TreeView x:Name="FileTreeView" ItemInvoked="FileTreeView_ItemInvoked"/>
+    </Grid>
+</ContentDialog>

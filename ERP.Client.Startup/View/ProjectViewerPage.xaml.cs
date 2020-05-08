@@ -16,6 +16,7 @@ using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using ERP.Client.Core.Enums;
 using ERP.Client.Dialogs;
+using ERP.Client.ViewModel;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=234238
 
@@ -29,17 +30,33 @@ namespace ERP.Client.Startup.View
         private static int index = 0;
         private Dictionary<string, FolderModel> _projects;
 
+        public TabViewCollectionModel TabViewCollection { get; private set; }
+
         public ProjectViewerPage()
         {
             this.InitializeComponent();
             LoadingControl.IsLoading = true;
             _projects = new Dictionary<string, FolderModel>();
+            TabViewCollection = new TabViewCollectionModel();
+
+            this.DataContext = this;
+        }
+
+        protected override void OnNavigatedTo(NavigationEventArgs e)
+        {
+            if (e.Parameter is TabViewCollectionModel tabViewCollection)
+            {
+                TabViewCollection = tabViewCollection;
+            }
+
+            base.OnNavigatedTo(e);
         }
 
         private void ButtonAddTag_Click(object sender, RoutedEventArgs e)
         {
             var tab = CreateNewTab();
-            TabViewControl.Items.Add(tab);
+            //TabViewControl.Items.Add(tab);
+            TabViewCollection.Tabs.Add(tab);
             tab.IsSelected = true;
         }
 
@@ -76,7 +93,7 @@ namespace ERP.Client.Startup.View
 
         private TabViewItem FindTab(int index)
         {
-            foreach (var tab in TabViewControl.Items)
+            foreach (var tab in TabViewCollection.Tabs)
             {
                 if (tab is TabViewItem tabItem)
                 {
@@ -169,8 +186,8 @@ namespace ERP.Client.Startup.View
         private async void Page_Loaded(object sender, RoutedEventArgs e)
         {
             _projects = await Proxy.GetAllProjects();
-            //_ = _projects;
-            TabViewControl.Items.Add(CreateNewTab());
+            //TabViewControl.Items.Add(CreateNewTab());
+            TabViewCollection.Tabs.Add(CreateNewTab());
 
             LoadingControl.IsLoading = false;
         }

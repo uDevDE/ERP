@@ -16,7 +16,8 @@
             <ColumnDefinition Width="Auto"/>
         </Grid.ColumnDefinitions>
 
-        <controls:TabView TabWidthBehavior="Equal" CanCloseTabs="True" IsCloseButtonOverlay="True" x:Name="TabViewControl">
+        <controls:TabView TabWidthBehavior="Equal" CanCloseTabs="True" IsCloseButtonOverlay="True" x:Name="TabViewControl"
+                          ItemsSource="{x:Bind TabViewCollection.Tabs}">
             <controls:TabView.Resources>
                 <x:Double x:Key="TabViewItemHeaderMinHeight">40</x:Double>
                 <x:Double x:Key="TabViewItemHeaderMinWidth">200</x:Double>

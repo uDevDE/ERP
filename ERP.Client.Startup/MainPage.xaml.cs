@@ -24,6 +24,7 @@ using Windows.Foundation;
 using ERP.Client.Core.Enums;
 using ERP.Client.ViewModel;
 using ERP.Client.Startup.View;
+using Newtonsoft.Json;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
@@ -37,13 +38,17 @@ namespace ERP.Client.Startup
         public ObservableCollection<EmployeeModel> Employees { get; set; }
         public AdministrationViewModel AdministrationViewModel { get; set; }
 
+        private string CurrentPageKey;
+        private TabViewCollectionModel CurrentTabView;
+
         public LocalClient Client { get; set; }
 
         private readonly Dictionary<string, Type> _pages = new Dictionary<string, Type>()
         {
             { "Administration", typeof(AdministrationPage) },
             { "Configuration", typeof(ConfigurationPage) },
-            { "ProjectViewer", typeof(ProjectViewerPage) }
+            { "ProjectViewer", typeof(ProjectViewerPage) },
+            { "Settings", typeof(SettingsPage) }
         };
 
         public MainPage()
@@ -105,7 +110,23 @@ namespace ERP.Client.Startup
             {
                 if (_pages.TryGetValue(tag, out Type type))
                 {
-                    ContentFrame.Navigate(type, null, navigationTransitionInfo);
+                    object parameter = null;
+
+                    if (tag == "ProjectViewer" && CurrentTabView != null)
+                    {
+                        parameter = CurrentTabView;
+                    }
+
+                    if (ContentFrame.Navigate(type, parameter, navigationTransitionInfo))
+                    {
+                        CurrentPageKey = tag;
+
+                        if (tag == "ProjectViewer" && CurrentTabView == null)
+                        {
+                            CurrentTabView = (ContentFrame.Content as ProjectViewerPage).TabViewCollection;
+                        }
+                    }
+
                 }
             }
 
@@ -236,7 +257,7 @@ namespace ERP.Client.Startup
 
                 if (device.Employee != null)
                 {
-                    NotificationControl.Show($"Wilkommen, {device.Employee.Alias}", 3500);
+                    NotificationControl.Show($"Willkommen, {device.Employee.Alias}", 3500);
                     SetCurrentEmployee(device.Employee);
                 }
                 else
@@ -311,5 +332,6 @@ namespace ERP.Client.Startup
                 }
             }
         }
+
     }
 }

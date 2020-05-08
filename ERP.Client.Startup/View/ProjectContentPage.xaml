@@ -21,8 +21,8 @@
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="Auto"/>
         </Grid.ColumnDefinitions>
-        
-        <Pivot Title="Mappe">
+
+        <Pivot Title="{x:Bind Folder.Name}" x:Name="MainPivot">
             <PivotItem Header="Mappe">
                 <Grid>
                     <Grid.RowDefinitions>
@@ -80,17 +80,16 @@
                     </RelativePanel>
                 </Grid>
             </PivotItem>
-            
+
             <PivotItem Header="Materialanforderungen">
-                <controls:DataGrid x:Name="DataGridMaterialRequirements" Margin="12" ItemsSource="{x:Bind MaterialRequirementsViewModel.MaterialRequirements}"
+                <controls:DataGrid x:Name="DataGridMaterialRequirements" Margin="12"
                                     HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalScrollBarVisibility="Auto"
                                     VerticalScrollBarVisibility="Auto" AlternatingRowBackground="Transparent" AlternatingRowForeground="Gray"
                                     AreRowDetailsFrozen="False" AreRowGroupHeadersFrozen="True" AutoGenerateColumns="False"
                                     CanUserSortColumns="True" CanUserResizeColumns="True" ColumnHeaderHeight="32" MaxColumnWidth="400"
                                     FrozenColumnCount="0" GridLinesVisibility="Horizontal" HeadersVisibility="Column"
-                                    RowDetailsVisibilityMode="Collapsed" SelectionMode="Extended" RowGroupHeaderPropertyNameAlternative="Range"
-                                    IsRightTapEnabled="True" IsTapEnabled="True" Loaded="DataGridMaterialRequirements_Loaded"
-                                    SelectedIndex="0">
+                                    RowDetailsVisibilityMode="Collapsed" SelectionMode="Extended" RowGroupHeaderPropertyNameAlternative="Materialnummer"
+                                    IsRightTapEnabled="True" IsTapEnabled="True" SelectedIndex="0" LoadingRowGroup="DataGridMaterialRequirements_LoadingRowGroup">
                     <controls:DataGrid.Columns>
                         <controls:DataGridTextColumn Header="Materialnummer" Tag="MaterialNumber" IsReadOnly="True" Binding="{Binding MaterialNumber}"/>
                         <controls:DataGridTextColumn Header="Artikelnummer" Tag="ArticleNumber" IsReadOnly="True" Binding="{Binding ArticleNumber}"/>
@@ -105,10 +104,7 @@
                     </controls:DataGrid.Columns>
                 </controls:DataGrid>
             </PivotItem>
-            
-            <PivotItem Header="Elementfertigungsansichten"/>
-            
-            <PivotItem Header="Details"/>
+
             <PivotItem Header="Stempeln">
                 <!--<Image HorizontalAlignment="Center" VerticalAlignment="Center" Stretch="None"
                        Source="{x:Bind ProcessViewModel.QRImageSource}" x:Name="QRImage"/>-->
@@ -143,6 +139,14 @@
                         </DataTemplate>
                     </GridView.ItemTemplate>
                 </GridView>
+            </PivotItem>
+
+            <PivotItem>
+                <PivotItem.Header>
+                    <Button RelativePanel.RightOf="MainPivot" Content="&#xE710;" FontFamily="Segoe MDL2 Assets"
+                            HorizontalAlignment="Left" VerticalAlignment="Top" x:Name="ButtonNewPivotItem"
+                            Click="ButtonNewPivotItem_Click"/>
+                </PivotItem.Header>
             </PivotItem>
         </Pivot>
 
