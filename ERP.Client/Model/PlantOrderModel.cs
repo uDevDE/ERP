@@ -5,7 +5,7 @@ using System.Runtime.CompilerServices;
 
 namespace ERP.Client.Model
 {
-    public class PlantOrderModel : INotifyPropertyChanged, IPlantOrder
+    public class PlantOrderModel : INotifyPropertyChanged, IPlantOrder, IComparable
     {
         private int _id;
         private string _number;
@@ -166,6 +166,12 @@ namespace ERP.Client.Model
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
+
+        public int CompareTo(object obj)
+        {
+            return _number.CompareTo((obj as PlantOrderModel).Number);
+        }
+
         private void RaisePropertyChanged([CallerMemberName] string propertyName = null) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 }

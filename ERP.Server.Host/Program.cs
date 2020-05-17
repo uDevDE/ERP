@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.ServiceModel;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace ERP.Server.Host
@@ -16,7 +17,7 @@ namespace ERP.Server.Host
             AutoMapperConfiguration.Configure();
             NRService.Configure();
 
-            Console.WindowWidth = 100;
+            Console.WindowWidth = 90;
 
             var tagFilename = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "tag.txt");
             if (System.IO.File.Exists(tagFilename))

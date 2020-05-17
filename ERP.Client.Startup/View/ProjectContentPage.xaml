@@ -109,36 +109,43 @@
                 <!--<Image HorizontalAlignment="Center" VerticalAlignment="Center" Stretch="None"
                        Source="{x:Bind ProcessViewModel.QRImageSource}" x:Name="QRImage"/>-->
 
-                <!--<FlipView x:Name="QRCodeImageView" SelectedIndex="0" ItemsSource="{x:Bind ProcessQRImages, Mode=OneWay}"
+                <Grid>
+                    <ToggleSwitch Header="Ansicht" OffContent="Einzelansicht" OnContent="Alle anzeigen" IsOn="false" 
+                                  HorizontalAlignment="Right" VerticalAlignment="Top" x:Name="ProcessToggle"
+                                  Toggled="ProcessToggle_Toggled"/>
+                    
+                    <FlipView x:Name="QRCodeFlipView" SelectedIndex="0" ItemsSource="{x:Bind ProcessQRImages, Mode=OneWay}"
                           HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0 60 0 0"
-                          MaxWidth="500" MaxHeight="460">
-                    <FlipView.ItemTemplate>
-                        <DataTemplate x:DataType="model:ProcessQRImageModel">
-                            <StackPanel Margin="0 60 0 0">
-                                <Image Source="{Binding Source, Mode=OneWay}" Stretch="None"/>
-                                <Border Height="60" Width="Auto">
-                                    <TextBlock FontWeight="Medium" FontSize="24" Text="{Binding ProcessName}"
+                          MaxWidth="500" MaxHeight="460" Visibility="Visible">
+                        <FlipView.ItemTemplate>
+                            <DataTemplate x:DataType="model:ProcessQRImageModel">
+                                <StackPanel Margin="0 60 0 0">
+                                    <Image Source="{Binding Source, Mode=OneWay}" Stretch="None"/>
+                                    <Border Height="60" Width="Auto">
+                                        <TextBlock FontWeight="Medium" FontSize="24" Text="{Binding ProcessName}"
                                                HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                </Border>
-                            </StackPanel>
-                        </DataTemplate>
-                    </FlipView.ItemTemplate>
-                </FlipView>-->
+                                    </Border>
+                                </StackPanel>
+                            </DataTemplate>
+                        </FlipView.ItemTemplate>
+                    </FlipView>
 
-                <GridView SelectionMode="None" VerticalAlignment="Center" HorizontalAlignment="Center"
-                          Margin="0 60 0 0" ItemsSource="{x:Bind ProcessQRImages, Mode=OneWay}">
-                    <GridView.ItemTemplate>
-                        <DataTemplate x:DataType="model:ProcessQRImageModel">
-                            <StackPanel Margin="30 60 30 0">
-                                <Image Source="{Binding Source, Mode=OneWay}" Stretch="None"/>
-                                <Border Height="60" Width="Auto">
-                                    <TextBlock FontWeight="Medium" FontSize="24" Text="{Binding ProcessName}"
+                    <GridView SelectionMode="None" VerticalAlignment="Center" HorizontalAlignment="Center"
+                          Margin="0 60 0 0" ItemsSource="{x:Bind ProcessQRImages, Mode=OneWay}"
+                              Visibility="Collapsed" x:Name="QRCodeGridView">
+                        <GridView.ItemTemplate>
+                            <DataTemplate x:DataType="model:ProcessQRImageModel">
+                                <StackPanel Margin="30 60 30 0">
+                                    <Image Source="{Binding Source, Mode=OneWay}" Stretch="None"/>
+                                    <Border Height="60" Width="Auto">
+                                        <TextBlock FontWeight="Medium" FontSize="24" Text="{Binding ProcessName}"
                                                HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                </Border>
-                            </StackPanel>
-                        </DataTemplate>
-                    </GridView.ItemTemplate>
-                </GridView>
+                                    </Border>
+                                </StackPanel>
+                            </DataTemplate>
+                        </GridView.ItemTemplate>
+                    </GridView>
+                </Grid>
             </PivotItem>
 
             <PivotItem>

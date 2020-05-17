@@ -187,6 +187,7 @@
     <Compile Include="ViewModel\PdfViewer\PdfViewerPageSource.cs" />
     <Compile Include="ViewModel\PdfViewer\PdfViewerPageSourceItem.cs" />
     <Compile Include="ViewModel\PdfViewer\PdfViewerViewModel.cs" />
+    <Compile Include="ViewModel\PlantOrderViewModel.cs" />
     <Compile Include="ViewModel\ProcessQRImageViewModel.cs" />
     <Compile Include="ViewModel\TabViewCollectionModel.cs" />
     <EmbeddedResource Include="Properties\NR.Client.rd.xml" />

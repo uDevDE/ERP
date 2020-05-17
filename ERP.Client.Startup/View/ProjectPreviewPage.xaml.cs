@@ -21,6 +21,7 @@ using Windows.UI.Xaml.Navigation;
 using ERP.Client.Core.Enums;
 using System.Threading.Tasks;
 using Windows.UI.Popups;
+using ERP.Client.ViewModel;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=234238
 
@@ -46,7 +47,7 @@ namespace ERP.Client.Startup.View
         public PlantOrderModel SelectedPlantOrder { get; private set; }
         public FolderModel SelectedProject { get; private set; }
 
-        public List<PlantOrderModel> CurrentPlantOrders { get; private set; }
+        public PlantOrderViewModel CurrentPlantOrders { get; private set; }
         public List<FileEntryModel> CurrentFileEntries { get; private set; }
 
         private const string BUTTON_LABEL_PLANT_ORDER = "Von Werkauftrag öffnen";
@@ -60,7 +61,7 @@ namespace ERP.Client.Startup.View
             Projects = new ObservableCollection<FolderModel>();
             PlantOrders = new ObservableCollection<PlantOrderModel>();
 
-            CurrentPlantOrders = new List<PlantOrderModel>();
+            CurrentPlantOrders = new PlantOrderViewModel();
             CurrentFileEntries = new List<FileEntryModel>();
 
             LoadUserSettings();
@@ -161,7 +162,8 @@ namespace ERP.Client.Startup.View
                             {
                                 PlantOrders.Add(plantOrder);
                             }
-                            CurrentPlantOrders = plantOrders;
+                            CurrentPlantOrders.Load(plantOrders);
+                            DataGridPlantOrder.ItemsSource = CurrentPlantOrders.GroupData().View;
                         });
                     }
 
@@ -339,6 +341,12 @@ namespace ERP.Client.Startup.View
             return null;
         }
 
+        private void DataGridPlantOrder_LoadingRowGroup(object sender, DataGridRowGroupHeaderEventArgs e)
+        {
+            ICollectionViewGroup group = e.RowGroupHeader.CollectionViewGroup;
+            PlantOrderModel item = group.GroupItems[0] as PlantOrderModel;
+            e.RowGroupHeader.PropertyValue = PlantOrderViewModel.GetPlantOrderMainNumber(item.Number);
+        }
     }
 
 

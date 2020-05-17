@@ -22,7 +22,7 @@ namespace ERP.Client.Dialogs
 
         private void LoadFolderIntoTreeView(FolderModel folder)
         {
-            TreeViewNode rootNode = CreateTreeViewNode(folder);
+            /*TreeViewNode rootNode = CreateTreeViewNode(folder);
             
             foreach (var subFolder in Folder.SubFolders)
             {
@@ -31,12 +31,12 @@ namespace ERP.Client.Dialogs
             }
 
             rootNode.IsExpanded = true;
-            FileTreeView.RootNodes.Add(rootNode);
+            FileTreeView.RootNodes.Add(rootNode);*/
         }
 
         private TreeViewNode LoadFolderIntoTreeViewAsync(FolderModel folder)
         {
-            TreeViewNode node = CreateTreeViewNode(folder);
+            /*TreeViewNode node = CreateTreeViewNode(folder);
             foreach (var fileEntry in folder.Files)
             {
                 node.Children.Add(CreateTreeViewNode(fileEntry.Value));
@@ -50,7 +50,8 @@ namespace ERP.Client.Dialogs
                 }
             }
 
-            return node;
+            return node;*/
+            return null;
         }
 
         private StackPanel CreateTreeViewNode(FolderModel folder)

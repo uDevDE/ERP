@@ -135,6 +135,20 @@ namespace ERP.Client.Startup.View
             await dialog.ShowAsync();
         }
 
+        private void ProcessToggle_Toggled(object sender, RoutedEventArgs e)
+        {
+            var isOn = (sender as ToggleSwitch).IsOn;
 
+            if (isOn == true)
+            {
+                QRCodeFlipView.Visibility = Visibility.Collapsed;
+                QRCodeGridView.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                QRCodeGridView.Visibility = Visibility.Collapsed;
+                QRCodeFlipView.Visibility = Visibility.Visible;
+            }
+        }
     }
 }

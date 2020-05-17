@@ -116,15 +116,15 @@
                     </ScrollViewer>
                 </PivotItem>
                 <PivotItem Header="Werkaufträge" Tag="po">
-                    <controls:DataGrid x:Name="DataGridPlantOrder" Margin="12" ItemsSource="{x:Bind PlantOrders}"
+                    <controls:DataGrid x:Name="DataGridPlantOrder" Margin="12"
                                     HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalScrollBarVisibility="Auto"
                                     VerticalScrollBarVisibility="Auto" AlternatingRowBackground="Transparent" AlternatingRowForeground="Gray"
                                     AreRowDetailsFrozen="False" AreRowGroupHeadersFrozen="True" AutoGenerateColumns="False"
                                     CanUserSortColumns="True" CanUserResizeColumns="True" ColumnHeaderHeight="32" MaxColumnWidth="400"
                                     FrozenColumnCount="0" GridLinesVisibility="Horizontal" HeadersVisibility="Column"
-                                    RowDetailsVisibilityMode="Collapsed" SelectionMode="Extended" RowGroupHeaderPropertyNameAlternative="Range"
+                                    RowDetailsVisibilityMode="Collapsed" SelectionMode="Extended" RowGroupHeaderPropertyNameAlternative="Werkauftragsnummer"
                                     IsRightTapEnabled="True" IsTapEnabled="True" SelectionChanged="DataGridPlantOrder_SelectionChanged"
-                                    SelectedIndex="0">
+                                    SelectedIndex="0" LoadingRowGroup="DataGridPlantOrder_LoadingRowGroup">
                         <controls:DataGrid.Columns>
                             <controls:DataGridTextColumn Header="Werkauftragnummer" Tag="Number" IsReadOnly="True" Binding="{Binding Number}"/>
                             <controls:DataGridTextColumn Header="Name" Tag="Name" IsReadOnly="True" Binding="{Binding Name}"/>
@@ -138,6 +138,6 @@
                 </PivotItem>
             </Pivot>
         </Grid>
-        
+
     </Grid>
 </Page>
