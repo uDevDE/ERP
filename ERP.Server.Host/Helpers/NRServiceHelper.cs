@@ -25,6 +25,8 @@ namespace ERP.Server.Host.Helpers
 
         public static List<string> GetProjectPaths() => ConfigurationManager.AppSettings["ProjectPaths"].Split(',').ToList();
 
+        public static string GetProjectRootPath() => ConfigurationManager.AppSettings["RootPath"];
+
 
     }
 }

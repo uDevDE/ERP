@@ -29,6 +29,7 @@ namespace ERP.Server.Host
 
         private static string _projectBasePath;
         private static List<string> _projectPaths;
+        private static string _clientRootPath;
 
         public NRService()
         {
@@ -40,6 +41,7 @@ namespace ERP.Server.Host
         {
             _projectBasePath = Helpers.NRServiceHelper.GetProjectBasePath();
             _projectPaths = Helpers.NRServiceHelper.GetProjectPaths();
+            _clientRootPath = Helpers.NRServiceHelper.GetProjectRootPath();
         }
 
         private static void PrintException(Exception ex)
@@ -570,6 +572,19 @@ namespace ERP.Server.Host
             {
                 PrintException(ex);
                 throw new FaultException(ex.Message, new FaultCode("GetProcessTemplates"), "GetProcessTemplates");
+            }
+        }
+
+        public Task<string> GetRemoteRootPath()
+        {
+            try
+            {
+                return Task.FromResult(_clientRootPath);
+            }
+            catch (Exception ex)
+            {
+                PrintException(ex);
+                throw new FaultException(ex.Message, new FaultCode("GetRemoteRootPath"), "GetRemoteRootPath");
             }
         }
 

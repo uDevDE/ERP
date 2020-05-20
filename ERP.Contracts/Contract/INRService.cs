@@ -69,5 +69,8 @@ namespace ERP.Contracts.Contract
 
         [OperationContract(IsOneWay = false)]
         Task<List<ProcessTemplateDTO>> GetProcessTemplates();
+
+        [OperationContract(IsOneWay = false)]
+        Task<string> GetRemoteRootPath();
     }
 }

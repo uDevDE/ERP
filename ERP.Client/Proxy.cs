@@ -357,6 +357,15 @@ namespace ERP.Client
             return await Task.FromResult<List<ProcessTemplateModel>>(null);
         }
 
+        public static Task<string> GetRemoteRootPath()
+        {
+            if (IsConnected && IsDeviceIdValid)
+            {
+                return _proxy.GetRemoteRootPath();
+            }
+
+            return Task.FromResult<string>(null);
+        }
 
     }
 }

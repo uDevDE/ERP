@@ -14,6 +14,7 @@ using System.Runtime.InteropServices.WindowsRuntime;
 using System.ServiceModel.Channels;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.Storage;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -33,6 +34,7 @@ namespace ERP.Client.Startup.View
     public sealed partial class ProjectContentPage : Page
     {
         public bool PageLoaded { get; private set; }
+        public string RemoteRootPath { get; private set; }
 
         public ProjectPreviewType ProjectPreviewType { get; private set; }
         public FolderModel Folder { get; private set; }
@@ -93,8 +95,15 @@ namespace ERP.Client.Startup.View
 
             if (FileEntry == null && PlantOrder != null)
             {
-                var dialog = new MessageDialog(PlantOrder.Number);
-                await dialog.ShowAsync();
+                var infoDialog = new InfoDialog("Fehler beim Bestimmen der Datei oder des Werkauftrags!", "Information", InfoDialogType.Error);
+                await infoDialog.ShowAsync();
+            }
+
+            RemoteRootPath = await Proxy.GetRemoteRootPath();
+            if (string.IsNullOrEmpty(RemoteRootPath))
+            {
+                var infoDialog = new InfoDialog("Beim Abfragen des Stammverzeichnisses ist etwas schief gelaufen!", "Information", InfoDialogType.Error);
+                await infoDialog.ShowAsync();
             }
 
             var plantOrderProcesses = await Proxy.GetPlantOrderProcesses(PlantOrder.Id);
@@ -108,14 +117,23 @@ namespace ERP.Client.Startup.View
             }
 
             //QRImage.Source = await QRCodeImageGenerator.Generate(PlantOrder.ProcessId, 12);
-            var qrdialog = new MessageDialog(PlantOrder.ProcessId);
-            await qrdialog.ShowAsync();
+            //var qrdialog = new MessageDialog(PlantOrder.ProcessId);
+            //await qrdialog.ShowAsync();
 
             var materialRequirements = await Proxy.GetMaterialRequirements(new string[] { "1", "2" });
             if (materialRequirements != null)
             {
                 MaterialRequirementsViewModel.Load(materialRequirements);
                 DataGridMaterialRequirements.ItemsSource = MaterialRequirementsViewModel.GroupData().View;
+            }
+
+            var fullFilePath = Path.Combine(RemoteRootPath, FileEntry.FilePath).Replace("/", @"\");
+
+            //var remoteFile = await StorageFile.GetFileFromPathAsync(fullFilePath);
+            var remoteFile = await StorageFile.GetFileFromPathAsync(@"J:\AV\2016\21016 - JN - CDPP Aachen\12 - Fertigungsaufträge\4360___21016-MP99-SCH-01.pdf");
+            if (remoteFile != null)
+            {
+                var file = await CopyFileToDeviceAsync(remoteFile);
             }
 
             LoadingControl.IsLoading = false;
@@ -150,5 +168,12 @@ namespace ERP.Client.Startup.View
                 QRCodeFlipView.Visibility = Visibility.Visible;
             }
         }
+
+        private IAsyncOperation<StorageFile> CopyFileToDeviceAsync(StorageFile file, NameCollisionOption options = NameCollisionOption.ReplaceExisting)
+        {
+            var tempFolder = ApplicationData.Current.TemporaryFolder;
+            return file.CopyAsync(tempFolder, file.Name, options);
+        }
+
     }
 }
