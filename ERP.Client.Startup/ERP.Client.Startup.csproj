@@ -130,6 +130,9 @@
     <Compile Include="View\ConfigurationPage.xaml.cs">
       <DependentUpon>ConfigurationPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="View\PdfViewerPage.xaml.cs">
+      <DependentUpon>PdfViewerPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\ProjectContentPage.xaml.cs">
       <DependentUpon>ProjectContentPage.xaml</DependentUpon>
     </Compile>
@@ -174,6 +177,10 @@
     <Page Include="View\ConfigurationPage.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\PdfViewerPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\ProjectContentPage.xaml">
       <Generator>MSBuild:Compile</Generator>

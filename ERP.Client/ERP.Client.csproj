@@ -170,6 +170,7 @@
     <Compile Include="Model\FileEntryModel.cs" />
     <Compile Include="Model\FolderModel.cs" />
     <Compile Include="Model\MaterialRequirementModel.cs" />
+    <Compile Include="Model\PdfFileModel.cs" />
     <Compile Include="Model\PlantOrderModel.cs" />
     <Compile Include="Model\ElementModel.cs" />
     <Compile Include="Model\PlantOrderProcessModel.cs" />

@@ -24,7 +24,7 @@
 
         <Pivot Title="{x:Bind Folder.Name}" x:Name="MainPivot">
             <PivotItem Header="Mappe">
-                <Grid>
+                <!--<Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="*"/>
@@ -78,7 +78,8 @@
                             </ItemsControl>
                         </ScrollViewer>
                     </RelativePanel>
-                </Grid>
+                </Grid>-->
+                <Pivot x:Name="PivotControl"/>
             </PivotItem>
 
             <PivotItem Header="Materialanforderungen">

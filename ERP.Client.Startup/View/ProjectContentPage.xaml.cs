@@ -33,6 +33,11 @@ namespace ERP.Client.Startup.View
     /// </summary>
     public sealed partial class ProjectContentPage : Page
     {
+        public delegate void PdfViewerButtonToggledClickedHandler(PdfViewerPage pdfViewer, PdfFileModel pdfFile);
+        public event PdfViewerButtonToggledClickedHandler PdfViewerButtonToggledClicked;
+
+        public List<TabViewItem> TabViewItems { get; private set; }
+
         public bool PageLoaded { get; private set; }
         public string RemoteRootPath { get; private set; }
 
@@ -129,11 +134,11 @@ namespace ERP.Client.Startup.View
 
             var fullFilePath = Path.Combine(RemoteRootPath, FileEntry.FilePath).Replace("/", @"\");
 
-            //var remoteFile = await StorageFile.GetFileFromPathAsync(fullFilePath);
-            var remoteFile = await StorageFile.GetFileFromPathAsync(@"J:\AV\2016\21016 - JN - CDPP Aachen\12 - Fertigungsaufträge\4360___21016-MP99-SCH-01.pdf");
+            var remoteFile = await StorageFile.GetFileFromPathAsync(fullFilePath);
             if (remoteFile != null)
             {
-                var file = await CopyFileToDeviceAsync(remoteFile);
+                var localFile = await CopyFileToDeviceAsync(remoteFile);
+                LoadPdfViewer(localFile, new PdfFileModel() { FullFilePath = localFile.Path, IsFavorite = false, LastTimeOpened = DateTime.Now });
             }
 
             LoadingControl.IsLoading = false;
@@ -173,6 +178,44 @@ namespace ERP.Client.Startup.View
         {
             var tempFolder = ApplicationData.Current.TemporaryFolder;
             return file.CopyAsync(tempFolder, file.Name, options);
+        }
+
+        private void LoadPdfViewer(StorageFile file, PdfFileModel pdfFile)
+        {
+            PivotItem newItem = new PivotItem
+            {
+                Header = file.DisplayName,
+                //IconSource = new Microsoft.UI.Xaml.Controls.SymbolIconSource() { Symbol = Symbol.Document }
+            };
+
+            Frame frame = new Frame();
+
+            frame.Navigated += Frame_Navigated;
+            frame.Navigate(typeof(PdfViewerPage), new object[] { file, pdfFile, true });
+            newItem.Content = frame;
+
+            PivotControl.Items.Add(newItem);
+            PivotControl.SelectedItem = newItem;
+        }
+
+        private void Frame_Navigated(object sender, NavigationEventArgs e)
+        {
+            if (e.Content is PdfViewerPage pdfViewer)
+            {
+                pdfViewer.ButtonCloseClicked += OnPdfViewerCloseButtonClicked;
+                pdfViewer.ButtonFavoriteToggled += OnButtonFavoriteToggled;
+            }
+        }
+
+        private void OnButtonFavoriteToggled(PdfViewerPage pdfViewer, PdfFileModel pdfFile)
+        {
+            PdfViewerButtonToggledClicked?.Invoke(pdfViewer, pdfFile);
+        }
+
+        private void OnPdfViewerCloseButtonClicked(PdfViewerPage pdfViewer)
+        {
+            var item = PivotControl.Items.Single(x => (((x as PivotItem).Content as Frame).Content as PdfViewerPage) == pdfViewer);
+            PivotControl.Items.Remove(item as PivotItem);
         }
 
     }
