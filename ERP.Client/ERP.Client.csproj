@@ -159,6 +159,7 @@
       <DependentUpon>YesNoDialog.xaml</DependentUpon>
     </Compile>
     <Compile Include="Helpers\ClientHelper.cs" />
+    <Compile Include="Helpers\ProjectDataSingleTon.cs" />
     <Compile Include="Lib\QRCodeImageGenerator.cs" />
     <Compile Include="LocalClient.cs" />
     <Compile Include="Mapper\AutoMapperConfiguration.cs" />

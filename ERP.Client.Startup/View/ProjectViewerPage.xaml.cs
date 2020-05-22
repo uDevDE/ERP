@@ -17,6 +17,7 @@ using Windows.UI.Xaml.Navigation;
 using ERP.Client.Core.Enums;
 using ERP.Client.Dialogs;
 using ERP.Client.ViewModel;
+using Windows.UI.Popups;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=234238
 
@@ -191,5 +192,7 @@ namespace ERP.Client.Startup.View
 
             LoadingControl.IsLoading = false;
         }
+
+
     }
 }
