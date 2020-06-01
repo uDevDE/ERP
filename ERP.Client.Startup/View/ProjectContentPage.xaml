@@ -5,7 +5,9 @@
     xmlns:controls="using:Microsoft.Toolkit.Uwp.UI.Controls"
     xmlns:local="using:ERP.Client.Startup.View"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:converters="using:ERP.Client.Converter" 
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+    xmlns:converters="using:ERP.Client.Converter" 
+    xmlns:formatters="using:ERP.Client.Formatter"
     xmlns:muxc="using:Microsoft.UI.Xaml.Controls"
     xmlns:ctl="using:ERP.Client.Controls"
     xmlns:model="using:ERP.Client.Model"
@@ -14,12 +16,15 @@
     Loaded="Page_Loaded">
     <Page.Resources>
         <converters:DecimalStringConverter x:Key="DecimalToStringConverter"/>
+        <converters:DoubleStringConverter x:Key="DoubleToStringConverter"/>
+        <converters:RoundDoubleConverter x:Key="DoubleRoundConverter"/>
+        <converters:StringVisibilityConverter x:Key="StringToVisibilityConverter"/>
     </Page.Resources>
 
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto" MaxWidth="350"/>
         </Grid.ColumnDefinitions>
 
         <Pivot Title="{x:Bind Folder.Name}" x:Name="MainPivot">
@@ -79,7 +84,16 @@
                         </ScrollViewer>
                     </RelativePanel>
                 </Grid>-->
-                <Pivot x:Name="PivotControl"/>
+                <!--<Pivot x:Name="PivotControl">
+                    <PivotItem>
+                        <PivotItem.Header>
+                            <Button RelativePanel.RightOf="MainPivot" Content="&#xE710;" FontFamily="Segoe MDL2 Assets"
+                            HorizontalAlignment="Left" VerticalAlignment="Top" x:Name="ButtonNewPivotItem"
+                            Click="ButtonNewPivotItem_Click"/>
+                        </PivotItem.Header>
+                    </PivotItem>
+                </Pivot>-->
+                <WebView Source="https://google.de" x:Name="PdfViewerControl"/>
             </PivotItem>
 
             <PivotItem Header="Materialanforderungen">
@@ -114,7 +128,7 @@
                     <ToggleSwitch Header="Ansicht" OffContent="Einzelansicht" OnContent="Alle anzeigen" IsOn="false" 
                                   HorizontalAlignment="Right" VerticalAlignment="Top" x:Name="ProcessToggle"
                                   Toggled="ProcessToggle_Toggled"/>
-                    
+
                     <FlipView x:Name="QRCodeFlipView" SelectedIndex="0" ItemsSource="{x:Bind ProcessQRImages, Mode=OneWay}"
                           HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0 60 0 0"
                           MaxWidth="500" MaxHeight="460" Visibility="Visible">
@@ -148,28 +162,81 @@
                     </GridView>
                 </Grid>
             </PivotItem>
-
-            <PivotItem>
-                <PivotItem.Header>
-                    <Button RelativePanel.RightOf="MainPivot" Content="&#xE710;" FontFamily="Segoe MDL2 Assets"
-                            HorizontalAlignment="Left" VerticalAlignment="Top" x:Name="ButtonNewPivotItem"
-                            Click="ButtonNewPivotItem_Click"/>
-                </PivotItem.Header>
-            </PivotItem>
         </Pivot>
 
         <Grid Grid.Column="1" Margin="2 20 2 0">
             <RelativePanel>
                 <StackPanel x:Name="AmountStackPanel">
-                    <TextBlock Text="Placeholder" Margin="8 0 0 8" FontWeight="Medium"
-                           FontSize="16" MinWidth="250"/>
+                    <TextBlock Text="{Binding ElementViewModel.SelectedElement.Position}" Margin="8 0 0 8"
+                           FontSize="22" MinWidth="250"/>
+                    <TextBlock Text="{Binding ElementViewModel.SelectedElement.Description}" Margin="8 0 0 8"
+                               FontSize="18" MinWidth="250"/>
                     <muxc:NumberBox MaxWidth="250" SmallChange="1" LargeChange="10"
-                            IsHoldingEnabled="False" Minimum="0" Maximum="100"
-                            SpinButtonPlacementMode="Inline" MinWidth="150"
-                            Margin="8 0 10 0" HorizontalAlignment="Left" Value="0"/>
+                                    IsHoldingEnabled="False" Minimum="0" Maximum="{Binding ElementViewModel.SelectedElement.Count}"
+                                    SpinButtonPlacementMode="Inline" MinWidth="150"
+                                    Margin="8 0 10 0" HorizontalAlignment="Left" ValueChanged="NumberBox_ValueChanged"
+                                    Value="{Binding ElementViewModel.SelectedElement.Amount, Mode=OneWay}"/>
                 </StackPanel>
-                <ListView RelativePanel.Below="AmountStackPanel" Margin="0 20 0 0"
-                          MinWidth="350"/>
+                
+                <Button RelativePanel.Below="AmountStackPanel" x:Name="ButtonAddProfile" Margin="8 20 0 0"
+                        Click="ButtonAddProfile_Click">
+                    <StackPanel Orientation="Horizontal">
+                        <SymbolIcon Symbol="Add"/>
+                        <TextBlock Text="Neues Profil anlegen" Margin="10 0 0 0" FontSize="16"/>
+                    </StackPanel>
+                </Button>
+                
+                <ListView RelativePanel.Below="ButtonAddProfile" Margin="0 20 0 0" SelectedIndex="0"
+                          MinWidth="350" x:Name="ElementView" SelectionChanged="ElementView_SelectionChanged">
+                    <ListView.ItemContainerStyle>
+                        <Style TargetType="ListViewItem">
+                            <Setter Property="Padding" Value="0"/>
+                            <Setter Property="BorderThickness" Value="0"/>
+                            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                            <Setter Property="Margin" Value="0 1 0 1"/>
+                        </Style>
+                    </ListView.ItemContainerStyle>
+                    <ListView.ItemTemplate>
+                        <DataTemplate x:DataType="model:ElementModel">
+                            <Grid Canvas.ZIndex="0">
+                                <ProgressBar HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Foreground="Green"
+                                             Minimum="0" Maximum="{Binding Count, Mode=OneWay}" x:Name="ElementProgressBar"
+                                             Canvas.ZIndex="-1" Background="Transparent" ValueChanged="ElementProgressBar_ValueChanged"
+                                             Value="{Binding Amount, Mode=OneWay}"/>
+
+                                <Grid>
+                                    <StackPanel Margin="8" x:Name="ElementPanel">
+                                        <Grid>
+                                            <StackPanel Orientation="Horizontal" >
+                                                <TextBlock Text="{Binding Contraction}" FontSize="22" Margin="0 0 8 0"
+                                                           Visibility="{Binding Contraction, Converter={StaticResource StringToVisibilityConverter}}"/>
+                                                <TextBlock Text="{Binding Position}" FontSize="22" />
+                                            </StackPanel>
+                                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                                                <Button x:Name="ButtonEdit" Content="&#xE70F;" FontFamily="Segoe MDL2 Assets" 
+                                                        Margin="0 0 6 0" Click="ButtonEdit_Click"/>
+                                                <Button x:Name="ButtonDelete" Content="&#xE74D;" FontFamily="Segoe MDL2 Assets" 
+                                                        Margin="0 0 6 0" Click="ButtonDelete_Click"/>
+                                                <Button x:Name="ButtonComment" Content="&#xE90A;" FontFamily="Segoe MDL2 Assets" 
+                                                        Margin="0 0 6 0" Click="ButtonComment_Click"/>
+                                                <Button x:Name="ButtonMore" Content="&#xE712;" FontFamily="Segoe MDL2 Assets" 
+                                                        Margin="0 0 6 0" Click="ButtonMore_Click"/>
+                                            </StackPanel>
+                                        </Grid>
+                                        <TextBlock Text="{Binding Description}" FontSize="18"/>
+                                        <TextBlock Text="{Binding Surface}" FontStyle="Italic"/>
+                                    </StackPanel>
+
+                                    <TextBlock HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0 0 8 5" FontSize="20">
+                                        <Run Text="{Binding Amount, Converter={StaticResource DoubleToStringConverter}}"/>
+                                        <Run Text=" / "/>
+                                        <Run Text="{Binding Count, Converter={StaticResource DoubleToStringConverter}}"/>
+                                    </TextBlock>
+                                </Grid>
+                            </Grid>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
             </RelativePanel>
         </Grid>
 

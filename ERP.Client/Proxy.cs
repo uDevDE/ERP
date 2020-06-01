@@ -26,6 +26,7 @@ namespace ERP.Client
         private static bool _connectionClosed = false;
 
         public static Guid DeviceId { get; set; }
+        public static DeviceModel Device { get; set; }
 
         /// <summary>
         /// Configures NetTcpBinding for NRService
@@ -232,11 +233,11 @@ namespace ERP.Client
             }
         }
 
-        public async static Task<EmployeeModel> SwitchEmployee(int employeeId, string password)
+        public async static Task<EmployeeModel> SwitchEmployee(int employeeId, string password, bool keepConnected)
         {
             if (IsConnected && IsDeviceIdValid)
             {
-                var employee = await _proxy.SwitchEmployeeAsync(DeviceId, employeeId, password);
+                var employee = await _proxy.SwitchEmployeeAsync(DeviceId, employeeId, password, keepConnected);
                 var result = AutoMapperConfiguration.Mapper.Map<EmployeeModel>(employee);
                 return await Task.FromResult(result);
             }
@@ -357,6 +358,18 @@ namespace ERP.Client
             return await Task.FromResult<List<ProcessTemplateModel>>(null);
         }
 
+        public async static Task<List<ElementModel>> GetElements()
+        {
+            if (IsConnected && IsDeviceIdValid)
+            {
+                var list = await _proxy.GetElements();
+                var result = AutoMapperConfiguration.Mapper.Map<List<ElementDTO>, List<ElementModel>>(list);
+                return await Task.FromResult(result);
+            }
+
+            return await Task.FromResult<List<ElementModel>>(null);
+        }
+
         public static Task<string> GetRemoteRootPath()
         {
             if (IsConnected && IsDeviceIdValid)
@@ -365,6 +378,43 @@ namespace ERP.Client
             }
 
             return Task.FromResult<string>(null);
+        }
+
+        public static Task<bool> Logout(int employeeId)
+        {
+            if (IsConnected && IsDeviceIdValid)
+            {
+                return _proxy.Logout(DeviceId, employeeId);
+            }
+
+            return Task.FromResult(false);
+        }
+
+        public static Task<int> CreateProfile(ProfileDTO profile)
+        {
+            if (IsConnected && IsDeviceIdValid)
+            {
+                return _proxy.CreateProfileAsync(profile);
+            }
+
+            return Task.FromResult(0);
+        }
+
+        public async static Task<List<ElementModel>> GetProfiles(int plantOrderId)
+        {
+            if (IsConnected && IsDeviceIdValid)
+            {
+                var profiles = await _proxy.GetProfilesAsync(plantOrderId);
+                List<ElementModel> elements = new List<ElementModel>();
+                foreach (var profile in profiles)
+                {
+                    elements.Add(AutoMapperConfiguration.Map(profile));
+                }
+
+                return await Task.FromResult(elements);
+            }
+
+            return await Task.FromResult<List<ElementModel>>(null);
         }
 
     }

@@ -84,7 +84,7 @@ namespace ERP.Client.Startup
 
         private void SetCurrentEmployee(EmployeeModel employee)
         {
-            LocalClient.EmployeeViewModel.Employee = employee;
+            LocalClient.Employee = employee;
             AdministrationViewModel.IsAdministrator = employee.IsAdministrator;
         }
 
@@ -102,7 +102,7 @@ namespace ERP.Client.Startup
 
             if (args.IsSettingsSelected)
             {
-                NavigateToSettingsPage(LocalClient.EmployeeViewModel.Employee, navigationTransitionInfo);
+                NavigateToSettingsPage(LocalClient.Employee, navigationTransitionInfo);
                 return;
             }
 
@@ -110,9 +110,7 @@ namespace ERP.Client.Startup
             {
                 if (_pages.TryGetValue(tag, out Type type))
                 {
-                    object parameter = null;
-
-                    if (tag == "ProjectViewer" && CurrentTabView != null)
+                    /*if (tag == "ProjectViewer" && CurrentTabView != null)
                     {
                         parameter = CurrentTabView;
                     }
@@ -125,8 +123,20 @@ namespace ERP.Client.Startup
                         {
                             CurrentTabView = (ContentFrame.Content as ProjectViewerPage).TabViewCollection;
                         }
-                    }
+                    }*/
 
+                    if (tag == "ProjectViewer")
+                    {
+                        ContentFrame.Navigate(type, LocalClient.Employee, navigationTransitionInfo);
+                    }
+                    else if (tag == "Administration")
+                    {
+                        ContentFrame.Navigate(type, null, navigationTransitionInfo);
+                    }
+                    else if (tag == "Configuration")
+                    {
+                        ContentFrame.Navigate(type, null, navigationTransitionInfo);
+                    }
                 }
             }
 
@@ -138,7 +148,7 @@ namespace ERP.Client.Startup
             if (employee != null)
             {
                 ContentFrame.Navigate(typeof(SettingsPage), new object[] { employee }, navigationTransitionInfo);
-                NavigationHeader.Text = $"Einstellungen von {employee.Alias}";
+                //NavigationHeader.Text = $"Einstellungen von {employee.Alias}";
             }
         }
 
@@ -147,10 +157,10 @@ namespace ERP.Client.Startup
             FrameworkElement element = sender as FrameworkElement;
             if (element != null)
             {
-                if (TeachingTipEmployee.IsOpen)
-                {
-                    TeachingTipEmployee.IsOpen = false;
-                }
+                //if (TeachingTipEmployee.IsOpen)
+                //{
+                    //TeachingTipEmployee.IsOpen = false;
+                //}
                 FlyoutBase.ShowAttachedFlyout(element);
             }
         }
@@ -259,10 +269,11 @@ namespace ERP.Client.Startup
                 {
                     NotificationControl.Show($"Willkommen, {device.Employee.Alias}", 3500);
                     SetCurrentEmployee(device.Employee);
+                    Proxy.Device = device;
                 }
                 else
                 {
-                    TeachingTipEmployee.IsOpen = true;
+                    //TeachingTipEmployee.IsOpen = true;
                 }
             });
         }
@@ -283,7 +294,7 @@ namespace ERP.Client.Startup
 
         private async void ButtonLogin_Click(object sender, RoutedEventArgs e)
         {
-            if (ListBoxEmployee.SelectedItem is EmployeeModel model)
+            /*if (ListBoxEmployee.SelectedItem is EmployeeModel model)
             {
                 var dialog = new PasswordDialog();
                 var dialogResult = await dialog.ShowAsync();
@@ -302,7 +313,7 @@ namespace ERP.Client.Startup
                         await messageDialog.ShowAsync();
                     }
                 }
-            }
+            }*/
         }
 
         private async void ButtonEmloyeeSettings_Click(object sender, RoutedEventArgs e)
@@ -316,9 +327,9 @@ namespace ERP.Client.Startup
 
                 if (tag == "Current")
                 {
-                    NavigateToSettingsPage(LocalClient.EmployeeViewModel.Employee, navigationTransitionInfo);
+                    NavigateToSettingsPage(LocalClient.Employee, navigationTransitionInfo);
                 }
-                else if (tag == "Import" && button.DataContext is EmployeeModel employee)
+                /*else if (tag == "Import" && button.DataContext is EmployeeModel employee)
                 {
                     var dialog = new PasswordDialog();
                     var dialogResult = await dialog.ShowAsync();
@@ -329,7 +340,7 @@ namespace ERP.Client.Startup
                             NavigateToSettingsPage(employee, navigationTransitionInfo);
                         }
                     }
-                }
+                }*/
             }
         }
 

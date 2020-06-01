@@ -32,7 +32,7 @@ namespace ERP.Contracts.Contract
         Task<List<DivisionDTO>> GetDivisionsAsync();
 
         [OperationContract(IsOneWay = false)]
-        Task<EmployeeDTO> SwitchEmployeeAsync(Guid deviceId, int employeeId, string password);
+        Task<EmployeeDTO> SwitchEmployeeAsync(Guid deviceId, int employeeId, string password, bool keepConnected);
 
         [OperationContract(IsOneWay = false)]
         Task<bool> ChangeEmployeeForegroundColor(int employeeId, string color);
@@ -68,9 +68,22 @@ namespace ERP.Contracts.Contract
         Task<List<PlantOrderProcessDTO>> GetPlantOrderProcesses(int plantOrderId);
 
         [OperationContract(IsOneWay = false)]
+        Task<List<ElementDTO>> GetElements();
+
+        [OperationContract(IsOneWay = false)]
         Task<List<ProcessTemplateDTO>> GetProcessTemplates();
 
         [OperationContract(IsOneWay = false)]
         Task<string> GetRemoteRootPath();
+
+        [OperationContract(IsOneWay = false)]
+        Task<bool> Logout(Guid deviceId, int employeeId);
+
+        [OperationContract(IsOneWay = false)]
+        Task<int> CreateProfileAsync(ProfileDTO profile);
+
+        [OperationContract(IsOneWay = false)]
+        Task<List<ProfileDTO>> GetProfilesAsync(int plantOrderId);
+
     }
 }

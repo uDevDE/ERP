@@ -14,6 +14,9 @@ namespace ERP.Contracts.Domain.Core
         bool IsAdministrator { get; set; }
         System.Guid? DeviceId { get; set; }
         string Color { get; set; }
+        bool IsLoggedIn { get; set; }
+        bool KeepConnected { get; set; }
+        System.DateTime LastLogin { get; set; }
         //IDivision Division { get; set; }
     }
 }

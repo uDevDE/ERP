@@ -32,6 +32,7 @@ namespace ERP.Client.Startup.View
         public bool PdfLoaded { get; private set; }
         public PdfViewerViewType PdfViewerViewType { get; private set; }
         public bool? IsMainPdfFile { get; private set; }
+        public bool PageLoaded { get; private set; }
 
         public PdfViewerPage()
         {
@@ -58,11 +59,12 @@ namespace ERP.Client.Startup.View
                 ButtonClose.IsEnabled = false;
             }
 
-            if (File != null)
+            if (File != null && !PageLoaded)
             {
                 var pdfDocument = await PdfDocument.LoadFromFileAsync(File);
                 var pageCount = pdfDocument.PageCount;
                 NumberBoxPageNumber.Maximum = pageCount;
+                PageLoaded = true;
 
                 if (pageCount == 1)
                 {

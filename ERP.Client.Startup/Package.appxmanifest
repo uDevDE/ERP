@@ -47,6 +47,7 @@
   <Capabilities>
     <Capability Name="internetClient" />
     <Capability Name="privateNetworkClientServer"/>
+    <rescap:Capability Name="extendedBackgroundTaskTime"/>
     <rescap:Capability Name="broadFileSystemAccess" />
     <uap:Capability Name="removableStorage"/>
   </Capabilities>

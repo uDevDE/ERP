@@ -1,0 +1,44 @@
+﻿<ContentDialog
+    x:Class="ERP.Client.Dialogs.ProfileDialog"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:ERP.Client.Dialogs"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Title="Profil anlegen"
+    PrimaryButtonText="Anlegen"
+    SecondaryButtonText="Abbrechen"
+    PrimaryButtonClick="ContentDialog_PrimaryButtonClick"
+    SecondaryButtonClick="ContentDialog_SecondaryButtonClick">
+
+    <Grid>
+        <StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <ComboBox Header="Typ" SelectedIndex="0" x:Name="ConboBoxContraction">
+                    <ComboBoxItem Content="Bl"/>
+                    <ComboBoxItem Content="Fl"/>
+                    <ComboBoxItem Content="Pf"/>
+                    <ComboBoxItem Content="Ri"/>
+                </ComboBox>
+                <TextBox Header="* Profil" PlaceholderText="Profilnummer (z.B. 382180)" x:Name="TextBoxProfileNumber" Margin="10 0 0 12"
+                         Width="262"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <TextBox Header="* Soll" PlaceholderText="Soll Stückzahl" x:Name="TextBoxCount" 
+                         BeforeTextChanging="TextBoxAmount_BeforeTextChanging" Width="103"/>
+                <TextBox Header="* Ist" PlaceholderText="Ist Stückzahl" Margin="8 0 0 0" x:Name="TextBoxAmount" 
+                         BeforeTextChanging="TextBoxAmount_BeforeTextChanging" Width="96"/>
+                <TextBox Header="* Länge" PlaceholderText="Länge des Profils" Margin="8 0 0 0" x:Name="TextBoxLength"
+                         BeforeTextChanging="TextBoxAmount_BeforeTextChanging" Width="122"/>
+            </StackPanel>
+            <TextBox Header="Beschreibung" PlaceholderText="Optionale Beschreibung" Margin="0 12 0 0"
+                     x:Name="TextBoxDescription"/>
+            <TextBox Header="Oberfläche" PlaceholderText="z.B. RAL 9010 (Reinweiß)" Margin="0 12 0 0"
+                     x:Name="TextBoxSurface"/>
+
+            <TextBlock Foreground="Crimson" Margin="0 12 0 0" TextWrapping="Wrap" MaxWidth="320"
+                       x:Name="ErrorText" Visibility="Collapsed" Text="Ungültige Eingabe. Bitte überprüfe die rot markierten Eingabefelder"/>
+        </StackPanel>
+    </Grid>
+</ContentDialog>

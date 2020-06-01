@@ -19,7 +19,8 @@
             <ListBox.ItemTemplate>
                 <DataTemplate>
                     <StackPanel Orientation="Horizontal" Margin="4">
-                        <PersonPicture DisplayName="{Binding Fullname, Mode=OneWay}" Width="36" Height="36" Margin="6 0 12 0"/>
+                        <PersonPicture DisplayName="{Binding Fullname, Mode=OneWay}" Width="36" Height="36" Margin="6 0 12 0"
+                                       Foreground="{Binding Foreground, Mode=OneWay}"/>
                         <RelativePanel>
                             <TextBlock FontSize="16" x:Name="TextName" FontWeight="Medium">
                                 <Run Text="{Binding Lastname}"/>

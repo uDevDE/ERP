@@ -79,7 +79,7 @@ namespace ERP.Client.Startup.View
 
         private void LoadUserSettings()
         {
-            var employeeId = LocalClient.EmployeeViewModel?.Employee.EmployeeId;
+            var employeeId = LocalClient.Employee?.EmployeeId;
             if (employeeId.HasValue)
             {
                 _employeeId = employeeId.Value;

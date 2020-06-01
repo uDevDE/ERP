@@ -19,7 +19,7 @@
     <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
         <NavigationView x:Name="Navigator" IsSettingsVisible="True" IsBackButtonVisible="Auto"
                         IsBackEnabled="False" SelectionChanged="Navigator_SelectionChanged"
-                        AlwaysShowHeader="True" PaneTitle="Navigation"
+                        AlwaysShowHeader="False" PaneTitle="Navigation"
                         PaneDisplayMode="Left"  ExpandedModeThresholdWidth="500"
                         SelectionFollowsFocus="Disabled" IsTabStop="False" Loaded="Navigator_Loaded"
                         HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
@@ -82,7 +82,7 @@
 
             <Frame x:Name="ContentFrame" />
 
-            <NavigationView.Header>
+            <!--<NavigationView.Header>
                 <Grid>
                     <TextBlock Text="Header" x:Name="NavigationHeader"/>
 
@@ -177,7 +177,7 @@
                         </PersonPicture.Resources>
                     </PersonPicture>
                 </Grid>
-            </NavigationView.Header>
+            </NavigationView.Header>-->
 
         </NavigationView>
 

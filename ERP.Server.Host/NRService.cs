@@ -336,7 +336,7 @@ namespace ERP.Server.Host
             }
         }
 
-        public async Task<EmployeeDTO> SwitchEmployeeAsync(Guid deviceId, int employeeId, string password)
+        public async Task<EmployeeDTO> SwitchEmployeeAsync(Guid deviceId, int employeeId, string password, bool keepConnected)
         {
             try
             {
@@ -345,9 +345,13 @@ namespace ERP.Server.Host
                 if (device != null)
                 {
                     var employee = context.Employees.Single(x => x.EmployeeId == employeeId);
+
                     if (employee?.Password == password)
                     {
                         var employeeDTO = AutoMapperConfiguration.Mapper.Map<EmployeeDTO>(employee);
+                        employee.KeepConnected = keepConnected;
+                        employee.LastLogin = DateTime.Now;
+                        employee.IsLoggedIn = true;
                         device.Employee = employee;
                         var result = await context.SaveChangesAsync();
                         if (result > 0)
@@ -554,6 +558,27 @@ namespace ERP.Server.Host
             }
         }
 
+        public Task<List<ElementDTO>> GetElements()
+        {
+            try
+            {
+                var filename = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "positions.json");
+                if (!File.Exists(filename))
+                {
+                    return Task.FromResult<List<ElementDTO>>(null);
+                }
+
+                var json = File.ReadAllText(filename);
+                var result = JsonConvert.DeserializeObject<List<ElementDTO>>(json);
+                return Task.FromResult(result);
+            }
+            catch (Exception ex)
+            {
+                PrintException(ex);
+                throw new FaultException(ex.Message, new FaultCode("GetElements"), "GetElements");
+            }
+        }
+
         public Task<List<ProcessTemplateDTO>> GetProcessTemplates()
         {
             try
@@ -587,6 +612,80 @@ namespace ERP.Server.Host
                 throw new FaultException(ex.Message, new FaultCode("GetRemoteRootPath"), "GetRemoteRootPath");
             }
         }
+
+        public async Task<bool> Logout(Guid deviceId, int employeeId)
+        {
+            try
+            {
+                var context = new EmployeeContext();
+                var device = context.Devices.Find(deviceId);
+                if (device != null)
+                {
+                    var employee = context.Employees.Single(x => x.EmployeeId == employeeId);
+
+                    if (employee != null)
+                    {
+                        employee.IsLoggedIn = false;
+                        employee.KeepConnected = false;
+                        device.Employee = employee;
+                        var result = await context.SaveChangesAsync();
+                        if (result > 0)
+                        {
+                            return await Task.FromResult(true);
+                        }
+                    }
+                }
+                return await Task.FromResult(false);
+            }
+            catch (Exception ex)
+            {
+                PrintException(ex);
+                throw new FaultException(ex.Message, new FaultCode("Logout"), "Logout");
+            }
+        }
+
+        public async Task<int> CreateProfileAsync(ProfileDTO profile)
+        {
+            try
+            {
+                var context = new ProfileContext();
+                var entity = AutoMapperConfiguration.Mapper.Map<Profile>(profile);
+                if (entity  != null)
+                {
+                    context.Profiles.Add(entity);
+                    var result = await context.SaveChangesAsync();
+                    if (result > 0)
+                    {
+                        Console.WriteLine($"ProfileID: {entity.ProfileId}");
+                        return await Task.FromResult(entity.ProfileId);
+                    }
+                }
+
+                return await Task.FromResult(0);
+            }
+            catch (Exception ex)
+            {
+                PrintException(ex);
+                throw new FaultException(ex.Message, new FaultCode("CreateProfile"), "CreateProfile");
+            }
+        }
+
+        public Task<List<ProfileDTO>> GetProfilesAsync(int plantOrderId)
+        {
+            try
+            {
+                var context = new ProfileContext();
+                var profiles = context.Profiles.Where(x => x.PlantOrderId == plantOrderId)?.ToList();
+                var result = AutoMapperConfiguration.Mapper.Map<List<Profile>, List<ProfileDTO>>(profiles);
+                return Task.FromResult(result);
+            }
+            catch (Exception ex)
+            {
+                PrintException(ex);
+                throw new FaultException(ex.Message, new FaultCode("GetProfilesAsync"), "GetProfilesAsync");
+            }
+        }
+
 
     }
 }

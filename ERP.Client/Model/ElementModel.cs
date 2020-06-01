@@ -23,6 +23,8 @@ namespace ERP.Client.Model
         private string _colourInside;
         private string _colourOutside;
         private string _profileNumber;
+        private string _contraction;
+        private string _filename;
 
         public int Id
         {
@@ -203,6 +205,30 @@ namespace ERP.Client.Model
                 {
                     _profileNumber = value;
                     RaisePropertyChanged();
+                }
+            }
+        }
+        public string Contraction
+        {
+            get { return _contraction; }
+            set
+            {
+                if (_contraction != value)
+                {
+                    _contraction = value;
+                    RaisePropertyChanged("Contraction");
+                }
+            }
+        }
+        public string Filename
+        {
+            get { return _filename; }
+            set
+            {
+                if (_filename != value)
+                {
+                    _filename = value;
+                    RaisePropertyChanged("Filename");
                 }
             }
         }

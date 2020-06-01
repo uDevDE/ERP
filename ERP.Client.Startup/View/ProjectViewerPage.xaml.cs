@@ -32,6 +32,7 @@ namespace ERP.Client.Startup.View
         private Dictionary<string, FolderModel> _projects;
 
         public TabViewCollectionModel TabViewCollection { get; private set; }
+        public EmployeeViewModel EmployeeCollection { get; private set; }
 
         public ProjectViewerPage()
         {
@@ -39,15 +40,16 @@ namespace ERP.Client.Startup.View
             LoadingControl.IsLoading = true;
             _projects = new Dictionary<string, FolderModel>();
             TabViewCollection = new TabViewCollectionModel();
+            EmployeeCollection = new EmployeeViewModel();
 
             this.DataContext = this;
         }
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
-            if (e.Parameter is TabViewCollectionModel tabViewCollection)
+            if (e.Parameter is EmployeeModel employee)
             {
-                TabViewCollection = tabViewCollection;
+                //EmployeeCollection.Employees.Add(employee);
             }
 
             base.OnNavigatedTo(e);
@@ -65,6 +67,7 @@ namespace ERP.Client.Startup.View
         private TabViewItem CreateNewTab()
         {
             index++;
+
             TabViewItem newItem = new TabViewItem
             {
                 Header = "Neues Projekt",
@@ -120,8 +123,8 @@ namespace ERP.Client.Startup.View
                 var jobHeader = $"{projectIdentifier} - {jobName}";
 
                 var panel = new StackPanel();
-                var textBlock = new TextBlock() { Text = jobHeader };
-                var textBlock2 = new TextBlock() { Text = name };
+                var textBlock = new TextBlock() { Text = jobHeader, FontSize = 18 };
+                var textBlock2 = new TextBlock() { Text = name, FontSize = 16, FontStyle = Windows.UI.Text.FontStyle.Italic };
                 panel.Children.Add(textBlock);
                 panel.Children.Add(textBlock2);
 
@@ -186,11 +189,103 @@ namespace ERP.Client.Startup.View
 
         private async void Page_Loaded(object sender, RoutedEventArgs e)
         {
+            var employees = await Proxy.GetAllEmployeesByDevice();
+            foreach (var employee in employees)
+            {
+                if (employee.EmployeeId == Proxy.Device?.EmployeeId && employee.IsLoggedIn && employee.KeepConnected)
+                {
+                    employee.IsSelected = true;
+                }
+                EmployeeCollection.Employees.Add(employee);
+            }
+
             _projects = await Proxy.GetAllProjects();
             //TabViewControl.Items.Add(CreateNewTab());
             TabViewCollection.Tabs.Add(CreateNewTab());
 
             LoadingControl.IsLoading = false;
+        }
+
+        private async void ListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            var item = (sender as ListView).SelectedItem;
+            if (item is EmployeeModel employee)
+            {
+                foreach (var employeeItem in EmployeeCollection.Employees)
+                {
+                    employeeItem.IsSelected = false;
+                }
+
+                employee.IsSelected = true;
+                //var dialog = new MessageDialog(employee.Password);
+                //await dialog.ShowAsync();
+                if (employee.IsLoggedIn && employee.KeepConnected)
+                {
+                    var newEmployee = await Proxy.SwitchEmployee(employee.EmployeeId, employee.Password, employee.KeepConnected);
+                    if (newEmployee != null)
+                    {
+                        //SetCurrentEmployee(employee);
+                        LocalClient.Employee = newEmployee;
+                        employee.KeepConnected = newEmployee.KeepConnected;
+                        employee.IsLoggedIn = true;
+                        NotificationControl.Show($"Angemeldet als {employee.Fullname}", 2000);
+                    }
+                    else
+                    {
+                        var messageDialog = new InfoDialog("Das eingegebende Passwort war falsch oder der Benuzter ist ungültig");
+                        await messageDialog.ShowAsync();
+                    }
+                }
+            }
+        }
+
+        private async void ButtonAddEmployee_Click(object sender, RoutedEventArgs e)
+        {
+            var dialog = new ImportEmployeeDialog();
+            await dialog.ShowAsync();
+        }
+
+        private async void ButtonLogin_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is Button button && button.DataContext is EmployeeModel employee)
+            {
+                var dialog = new PasswordDialog(employee.Fullname, employee.KeepConnected);
+                var dialogResult = await dialog.ShowAsync();
+                if (dialogResult == ContentDialogResult.Primary)
+                {
+                    var newEmployee = await Proxy.SwitchEmployee(employee.EmployeeId, dialog.Password, dialog.KeepConnected);
+                    if (newEmployee != null)
+                    {
+                        //SetCurrentEmployee(employee);
+                        LocalClient.Employee = newEmployee;
+                        employee.KeepConnected = newEmployee.KeepConnected;
+                        employee.IsLoggedIn = true;
+                    }
+                    else
+                    {
+                        var messageDialog = new InfoDialog("Das eingegebende Passwort war falsch oder der Benuzter ist ungültig");
+                        await messageDialog.ShowAsync();
+                    }
+                }
+            }
+        }
+
+        private async void ButtonLogout_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is Button button && button.DataContext is EmployeeModel employee)
+            {
+                var result = await Proxy.Logout(employee.EmployeeId);
+                if (result)
+                {
+                    employee.IsLoggedIn = false;
+                    employee.KeepConnected = false;
+                }
+                else
+                {
+                    var dialog = new InfoDialog("Die Abmeldung konnte nicht abgeschlossen werden, da ein interner Fehler aufgetreten ist!");
+                    await dialog.ShowAsync();
+                }
+            }
         }
 
 

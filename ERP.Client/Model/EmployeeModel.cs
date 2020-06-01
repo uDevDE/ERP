@@ -19,6 +19,10 @@ namespace ERP.Client.Model
         private bool _isAdministrator;
         private DeviceModel _device;
         private string _color;
+        private bool _isSelected;
+        private bool _isLoggedIn;
+        private bool _keepConnected;
+        private System.DateTime _lastLogin;
 
         public EmployeeModel() => _device = new DeviceModel();
         public EmployeeModel(EmployeeModel employee)
@@ -34,6 +38,7 @@ namespace ERP.Client.Model
             _isAdministrator = employee.IsAdministrator;
             _device = employee.Device;
             _color = employee.Color;
+            _isLoggedIn = EmployeeId == _device?.EmployeeId;
         }
 
         public int EmployeeId
@@ -45,6 +50,7 @@ namespace ERP.Client.Model
                 {
                     _employeeId = value;
                     RaisePropertyChanged("EmployeeId");
+                    RaisePropertyChanged("IsLoggedIn");
                 }
             }
         }
@@ -69,6 +75,7 @@ namespace ERP.Client.Model
                 {
                     _firstname = value;
                     RaisePropertyChanged("Firstname");
+                    RaisePropertyChanged("Fullname");
                 }
             }
         }
@@ -81,6 +88,7 @@ namespace ERP.Client.Model
                 {
                     _lastname = value;
                     RaisePropertyChanged("Lastname");
+                    RaisePropertyChanged("Fullname");
                 }
             }
         }
@@ -150,6 +158,11 @@ namespace ERP.Client.Model
                 {
                     _device = value;
                     RaisePropertyChanged("Device");
+                    if (_employeeId == _device?.EmployeeId)
+                    {
+                        _isLoggedIn = true;
+                        RaisePropertyChanged("IsLoggedIn");
+                    }
                 }
             }
         }
@@ -191,6 +204,58 @@ namespace ERP.Client.Model
                 catch
                 {
                     return defaultColor;
+                }
+            }
+        }
+
+        public bool IsSelected
+        {
+            get { return _isSelected; }
+            set
+            {
+                if (_isSelected != value)
+                {
+                    _isSelected = value;
+                    RaisePropertyChanged("IsSelected");
+                }
+            }
+        }
+
+        public bool IsLoggedIn
+        {
+            get { return _isLoggedIn; }
+            set
+            {
+                if (_isLoggedIn != value)
+                {
+                    _isLoggedIn = value;
+                    RaisePropertyChanged("IsLoggedIn");
+                }
+            }
+        }
+
+        public bool KeepConnected
+        {
+            get { return _keepConnected; }
+            set
+            {
+                if (_keepConnected != value)
+                {
+                    _keepConnected = value;
+                    RaisePropertyChanged("KeepConnected");
+                }
+            }
+        }
+
+        public System.DateTime LastLogin
+        {
+            get { return _lastLogin; }
+            set
+            {
+                if (_lastLogin != value)
+                {
+                    _lastLogin = value;
+                    RaisePropertyChanged("LastLogin");
                 }
             }
         }

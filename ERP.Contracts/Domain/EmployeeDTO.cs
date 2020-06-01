@@ -42,6 +42,15 @@ namespace ERP.Contracts.Domain
         [DataMember]
         public string Color { get; set; }
 
+        [DataMember]
+        public bool IsLoggedIn { get; set; }
+
+        [DataMember]
+        public bool KeepConnected { get; set; }
+
+        [DataMember]
+        public System.DateTime LastLogin { get; set; }
+
 
         //[DataMember]
         //public IDivision Division { get; set; }

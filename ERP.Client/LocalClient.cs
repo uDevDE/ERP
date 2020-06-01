@@ -1,4 +1,4 @@
-﻿using ERP.Client.ViewModel;
+﻿using ERP.Client.Model;
 
 namespace ERP.Client
 {
@@ -6,15 +6,15 @@ namespace ERP.Client
     {
         private static bool _initialized = false;
 
-        public static EmployeeViewModel EmployeeViewModel { get; set; }
+        public static EmployeeModel Employee { get; set; }
 
-        public EmployeeViewModel Employees => EmployeeViewModel;
+        //public EmployeeModel Employees => EmployeeViewModel;
 
         public LocalClient()
         {
             if (!_initialized)
             {
-                EmployeeViewModel = new EmployeeViewModel();
+                Employee = new EmployeeModel();
                 _initialized = true;
             }
         }

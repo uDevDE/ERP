@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ERP.Server.Entities.Entity
 {
-    [Table("Employye")]
+    [Table("Employee")]
     public class Employee : IEmployee
     {
         [Key]
@@ -41,6 +41,11 @@ namespace ERP.Server.Entities.Entity
 
         public string Color { get; set; }
 
+        public bool IsLoggedIn { get; set; }
+
+        public bool KeepConnected { get; set; }
+
+        public System.DateTime LastLogin { get; set; }
 
 
         //[Required]

@@ -52,11 +52,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Context\EmployeeContext.cs" />
+    <Compile Include="Context\ProfileContext.cs" />
     <Compile Include="Entity\Device.cs" />
     <Compile Include="Entity\Division.cs" />
     <Compile Include="Entity\DivisionInfo.cs" />
     <Compile Include="Entity\Employee.cs" />
     <Compile Include="Entity\ProcessTemplate.cs" />
+    <Compile Include="Entity\Profile.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

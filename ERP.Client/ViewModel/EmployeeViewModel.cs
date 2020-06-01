@@ -1,32 +1,27 @@
 ﻿using ERP.Client.Model;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 
 namespace ERP.Client.ViewModel
 {
     public class EmployeeViewModel : INotifyPropertyChanged
     {
-        private EmployeeModel _employee;
-        public EmployeeModel Employee
+        private EmployeeModel _selectedEmployee;
+
+        public ObservableCollection<EmployeeModel> Employees { get; private set; }
+
+        public EmployeeViewModel() => Employees = new ObservableCollection<EmployeeModel>();
+
+        public EmployeeModel SelectedEmployee
         {
-            get { return _employee; }
+            get { return _selectedEmployee; }
             set
             {
-                if (_employee != value)
+                if (_selectedEmployee != value)
                 {
-                    _employee = value;
-                    RaisePropertyChanged("Employee");
-                    RaisePropertyChanged("Name");
+                    _selectedEmployee = value;
+                    RaisePropertyChanged("SelectedEmployee");
                 }
-            }
-        }
-        public string Name
-        {
-            get
-            {
-                if (_employee != null)
-                    return string.Format("{0:s}, {1:s}", _employee.Lastname, _employee.Firstname);
-
-                return string.Empty;
             }
         }
 

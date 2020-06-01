@@ -57,7 +57,7 @@
                       HorizontalAlignment="Left" VerticalAlignment="Stretch"
                       x:Name="PdfViewScrollViewer" ViewChanged="PdfViewScrollViewer_ViewChanged">
                 <ItemsControl ItemsSource="{x:Bind ViewerPageViewModel.Pages}" x:Name="PdfViewerItemsControl"
-                                HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                                HorizontalAlignment="Stretch" VerticalAlignment="Stretch" >
                 </ItemsControl>
             </ScrollViewer>
 

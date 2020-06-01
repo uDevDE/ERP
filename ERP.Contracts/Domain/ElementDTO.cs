@@ -53,6 +53,12 @@ namespace ERP.Contracts.Domain
         [DataMember]
         public string ProfileNumber { get; set; }
 
+        [DataMember]
+        public string Contraction { get; set; }
+
+        [DataMember]
+        public string Filename { get; set; }
+
         public ElementDTO() => Children = new List<ElementDTO>();
     }
 }

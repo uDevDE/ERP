@@ -30,9 +30,45 @@ namespace ERP.Client.Mapper
                 cfg.CreateMap<FileEntryModel, FileEntryDTO>().ReverseMap().ForMember(dest => dest.FileInfo, opt => opt.MapFrom(src => src.FileInfo));
                 cfg.CreateMap<FolderModel, FolderDTO>().ReverseMap().ForMember(dest => dest.Files, opt => opt.MapFrom(src => src.Files)).ForMember(dest => dest.SubFolders, opt => opt.MapFrom(src => src.SubFolders));
                 cfg.CreateMap<ElementModel, ElementDTO>().ReverseMap().ForMember(dest => dest.Children, opt => opt.MapFrom(src => src.Children));
+                cfg.CreateMap<PlantOrderPositionDTO, ElementDTO>();
             });
 
             Mapper = Config.CreateMapper();
         }
+
+        public static ProfileDTO Map(ElementModel element)
+        {
+            return new ProfileDTO()
+            {
+                ProfileId = element.Id,
+                Amount = element.Amount,
+                Count = element.Count,
+                Description = element.Description,
+                Length = element.Length,
+                ProfileNumber = element.Position,
+                Contraction = element.Contraction,
+                Surface = element.Surface,
+                PlantOrderId = element.PlantOrderId,
+                Filename = element.Filename
+            };
+        }
+
+        public static ElementModel Map(ProfileDTO profile)
+        {
+            return new ElementModel()
+            {
+                Id = profile.ProfileId,
+                Amount = profile.Amount,
+                Count = profile.Count,
+                Description = profile.Description,
+                Length = profile.Length,
+                Position = profile.ProfileNumber,
+                Contraction = profile.Contraction,
+                Surface = profile.Surface,
+                PlantOrderId = profile.PlantOrderId,
+                Filename = profile.Filename
+            };
+        }
+
     }
 }
