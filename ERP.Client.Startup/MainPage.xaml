@@ -183,7 +183,7 @@
 
         <controls:Loading x:Name="LoadingControl">
             <StackPanel Padding="12" Opacity="0.9" HorizontalAlignment="Center" VerticalAlignment="Center">
-                <ProgressRing IsActive="True" Width="120" Height="120"/>
+                <ProgressRing IsActive="True" Width="120" Height="120" Foreground="Crimson"/>
                 <TextBlock VerticalAlignment="Center" FontSize="18" FontWeight="Medium" Margin="0 30 0 0" x:Name="LoadingText"
                            TextWrapping="Wrap" MaxWidth="600"/>
             </StackPanel>

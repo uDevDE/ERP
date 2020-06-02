@@ -12,11 +12,14 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.ServiceModel.Channels;
+using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.Storage;
+using Windows.Storage.Streams;
 using Windows.UI;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
@@ -48,6 +51,7 @@ namespace ERP.Client.Startup.View
         public FolderModel Folder { get; private set; }
         public FileEntryModel FileEntry { get; private set; }
         public PlantOrderModel PlantOrder { get; private set; }
+        public StorageFile LocalFile { get; private set; }
 
         public MaterialRequirementsViewModel MaterialRequirementsViewModel { get; set; }
         public ElementViewModel ElementViewModel { get; set; }
@@ -60,6 +64,8 @@ namespace ERP.Client.Startup.View
         public ProjectContentPage()
         {
             this.InitializeComponent();
+
+            PdfViewerControl.Settings.IsJavaScriptEnabled = true;
 
             MaterialRequirementsViewModel = new MaterialRequirementsViewModel();
             ElementViewModel = new ElementViewModel();
@@ -131,12 +137,12 @@ namespace ERP.Client.Startup.View
                 });
             }
 
-            /*var materialRequirements = await Proxy.GetMaterialRequirements(new string[] { "1", "2" });
+            var materialRequirements = await Proxy.GetMaterialRequirements(new string[] { "1", "2" });
             if (materialRequirements != null)
             {
                 MaterialRequirementsViewModel.Load(materialRequirements);
                 DataGridMaterialRequirements.ItemsSource = MaterialRequirementsViewModel.GroupData().View;
-            }*/
+            }
 
             var elements = await Proxy.GetElements();
             if (elements != null)
@@ -148,8 +154,6 @@ namespace ERP.Client.Startup.View
             if (profiles != null)
             {
                 ElementViewModel.Load(profiles);
-                var d = new MessageDialog(profiles.Count.ToString());
-                await d.ShowAsync();
             }
 
             if (!PageLoaded)
@@ -159,16 +163,33 @@ namespace ERP.Client.Startup.View
                 var remoteFile = await StorageFile.GetFileFromPathAsync(fullFilePath);
                 if (remoteFile != null)
                 {
-                    var localFile = await CopyFileToDeviceAsync(remoteFile);
-                    StreamUriWinRTResolver myResolver = new StreamUriWinRTResolver();
-                    PdfViewerControl.NavigateToLocalStreamUri(new Uri(localFile.Path), myResolver);
+                    LocalFile = await CopyFileToDeviceAsync(remoteFile);
+
+                    /*var pdfFile = new PdfFileModel()
+                    {
+                        FullFilePath = localFile.Path,
+                        IsFavorite = false,
+                        LastTimeOpened = DateTime.Now
+                    };
+                    LoadPdfViewer(localFile, pdfFile);*/
+
+                    //Uri url = PdfViewerControl.BuildLocalStreamUri("MyTag", "/Assets/PdfViewer/web/viewer.html");
+                    //StreamUriWinRTResolver resolver = new StreamUriWinRTResolver();
+                    //PdfViewerControl.NavigateToLocalStreamUri(url, resolver);
+                    //
+                    //PdfViewerControl.NavigateToLocalStreamUri(new Uri(LocalFile.Path), resolver);
+
+                    /*var url = new Uri(
+                        string.Format("ms-appx-web:///Assets/PdfViewer/web/viewer.html?file={0}",
+                        string.Format("ms-appx-web:///Assets/{0}", WebUtility.UrlEncode("compressed.tracemonkey-pldi-09.pdf"))));
+
+                    var dialog = new MessageDialog(url.AbsoluteUri);
+                    await dialog.ShowAsync();
+                    PdfViewerControl.Source = url;*/
                 }
             }
 
             ElementView.ItemsSource = ElementViewModel.Elements;
-
-            LoadingControl.IsLoading = false;
-            PageLoaded = true;
         }
 
         private void DataGridMaterialRequirements_LoadingRowGroup(object sender, DataGridRowGroupHeaderEventArgs e)
@@ -347,9 +368,43 @@ namespace ERP.Client.Startup.View
 
         }
 
-        private void ButtonEdit_Click(object sender, RoutedEventArgs e)
+        private async void ButtonEdit_Click(object sender, RoutedEventArgs e)
         {
+            if (sender is Button button && button.DataContext is ElementModel element)
+            {
+                var dialog = new ProfileDialog(element);
+                await dialog.ShowAsync();
+            }
+        }
 
+        private void PdfViewerControl_LoadCompleted(object sender, NavigationEventArgs e)
+        {
+            LoadingControl.IsLoading = false;
+            PageLoaded = true;
+        }
+
+        private async Task<string> OpenAndConvert(StorageFile file)
+        {
+            var filebuffer = await file.OpenAsync(FileAccessMode.Read);
+            var reader = new DataReader(filebuffer.GetInputStreamAt(0));
+            var bytes = new byte[filebuffer.Size];
+            await reader.LoadAsync((uint)filebuffer.Size);
+            reader.ReadBytes(bytes);
+            return Convert.ToBase64String(bytes);
+        }
+
+        private async void TestButton_Click(object sender, RoutedEventArgs e)
+        {
+            var fullFilePath = Path.Combine(RemoteRootPath, FileEntry.FilePath).Replace("/", @"\");
+            var remoteFile = await StorageFile.GetFileFromPathAsync(fullFilePath);
+
+            var ret = await OpenAndConvert(remoteFile);
+            var jsfunction = $"window.openPdfAsBase64('{ret}')";
+
+            var obj = await PdfViewerControl.InvokeScriptAsync("eval", new[] { jsfunction });
+
+            var dialog = new MessageDialog(obj);
+            await dialog.ShowAsync();
         }
     }
 }

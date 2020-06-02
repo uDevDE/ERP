@@ -93,7 +93,8 @@
                         </PivotItem.Header>
                     </PivotItem>
                 </Pivot>-->
-                <WebView Source="https://google.de" x:Name="PdfViewerControl"/>
+                <WebView x:Name="PdfViewerControl" LoadCompleted="PdfViewerControl_LoadCompleted"
+                         Source="ms-appx-web:///Assets/PdfViewer/web/viewer.html"/>
             </PivotItem>
 
             <PivotItem Header="Materialanforderungen">
@@ -185,7 +186,9 @@
                         <TextBlock Text="Neues Profil anlegen" Margin="10 0 0 0" FontSize="16"/>
                     </StackPanel>
                 </Button>
-                
+                <Button Content="Test" RelativePanel.Below="AmountStackPanel" Margin="210 20 0 0"
+                        x:Name="TestButton" Click="TestButton_Click"/>
+
                 <ListView RelativePanel.Below="ButtonAddProfile" Margin="0 20 0 0" SelectedIndex="0"
                           MinWidth="350" x:Name="ElementView" SelectionChanged="ElementView_SelectionChanged">
                     <ListView.ItemContainerStyle>

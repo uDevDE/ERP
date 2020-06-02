@@ -28,7 +28,7 @@ namespace ERP.Client.Startup.Resolver
             // when supplying content from other locations
             try
             {
-                Uri localUri = new Uri("application/pdf" + path);
+                Uri localUri = new Uri("ms-appx-web:///html" + path);
                 StorageFile f = await StorageFile.GetFileFromApplicationUriAsync(localUri);
                 IRandomAccessStream stream = await f.OpenAsync(FileAccessMode.Read);
                 return stream;
