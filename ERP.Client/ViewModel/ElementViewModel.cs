@@ -1,7 +1,14 @@
-﻿using ERP.Client.Model;
+﻿using ERP.Client.Core.Enums;
+using ERP.Client.Model;
+using ERP.Client.utils;
+using ERP.Contracts.Domain;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Linq;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices.ComTypes;
+using Windows.UI.Xaml.Data;
 
 namespace ERP.Client.ViewModel
 {
@@ -10,6 +17,7 @@ namespace ERP.Client.ViewModel
         private ElementModel _selectedElement;
 
         public ObservableCollection<ElementModel> Elements { get; private set; }
+        public CollectionViewSource GroupedItems { get; private set; }
 
         public ElementViewModel() => Elements = new ObservableCollection<ElementModel>();
 
@@ -50,6 +58,53 @@ namespace ERP.Client.ViewModel
                 }
             }
         }
+
+        public ElementModel Find(string profileNumber, string length, string surface)
+        {
+            foreach (var element in Elements)
+            {
+                if (element.Position == profileNumber && element.Length == length && element.Surface == surface)
+                {
+                    return element;
+                }
+            }
+
+            return null;
+        }
+
+        public CollectionViewSource GroupData(string propertyName)
+        {
+            ObservableCollection<GroupInfoCollection<ElementModel>> groups = new ObservableCollection<GroupInfoCollection<ElementModel>>();
+            var query = from item in Elements
+                        orderby item
+                        group item by item.GetType().GetProperty(propertyName).GetValue(item, null) into g
+                        select new { GroupName = g.Key, Items = g };
+            foreach (var g in query)
+            {
+                GroupInfoCollection<ElementModel> info = new GroupInfoCollection<ElementModel>
+                {
+                    Key = g.GroupName
+                };
+
+                foreach (var item in g.Items)
+                {
+                    info.Add(item);
+                }
+
+                groups.Add(info);
+            }
+
+
+            GroupedItems = new CollectionViewSource
+            {
+                IsSourceGrouped = true,
+                Source = groups
+            };
+
+            return GroupedItems;
+        }
+
+        public void Remove(ElementModel element) => Elements.Remove(element);
 
         private void RaisePropertyChanged(string propertyName) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 

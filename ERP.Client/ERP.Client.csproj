@@ -191,6 +191,7 @@
     <Compile Include="Proxy.cs" />
     <Compile Include="utils\GroupInfoCollection.cs" />
     <Compile Include="ViewModel\AdministrationViewModel.cs" />
+    <Compile Include="ViewModel\DivisionViewModel.cs" />
     <Compile Include="ViewModel\ElementViewModel.cs" />
     <Compile Include="ViewModel\EmployeeViewModel.cs" />
     <Compile Include="ViewModel\LoadingViewModel.cs" />

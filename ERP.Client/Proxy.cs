@@ -417,5 +417,25 @@ namespace ERP.Client
             return await Task.FromResult<List<ElementModel>>(null);
         }
 
+        public async static Task<bool> UpdateProfileAsync(ProfileDTO profile)
+        {
+            if (IsConnected && IsDeviceIdValid)
+            {
+                return await _proxy.UpdateProfileAsync(profile);
+            }
+
+            return await Task.FromResult(false);
+        }
+
+        public static Task<bool> DeleteProfileAsync(int profileId)
+        {
+            if (IsConnected && IsDeviceIdValid)
+            {
+                return _proxy.DeleteProfileAsync(profileId);
+            }
+
+            return Task.FromResult(false);
+        }
+
     }
 }

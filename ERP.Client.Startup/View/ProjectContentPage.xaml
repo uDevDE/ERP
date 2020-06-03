@@ -11,6 +11,7 @@
     xmlns:muxc="using:Microsoft.UI.Xaml.Controls"
     xmlns:ctl="using:ERP.Client.Controls"
     xmlns:model="using:ERP.Client.Model"
+    xmlns:pdfViewer="using:ERP.Client.Startup.PdfViewer"
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
     Loaded="Page_Loaded">
@@ -168,15 +169,15 @@
         <Grid Grid.Column="1" Margin="2 20 2 0">
             <RelativePanel>
                 <StackPanel x:Name="AmountStackPanel">
-                    <TextBlock Text="{Binding ElementViewModel.SelectedElement.Position}" Margin="8 0 0 8"
+                    <TextBlock Text="{Binding ElementCollection.SelectedElement.Position}" Margin="8 0 0 8"
                            FontSize="22" MinWidth="250"/>
-                    <TextBlock Text="{Binding ElementViewModel.SelectedElement.Description}" Margin="8 0 0 8"
+                    <TextBlock Text="{Binding ElementCollection.SelectedElement.Description}" Margin="8 0 0 8"
                                FontSize="18" MinWidth="250"/>
                     <muxc:NumberBox MaxWidth="250" SmallChange="1" LargeChange="10"
-                                    IsHoldingEnabled="False" Minimum="0" Maximum="{Binding ElementViewModel.SelectedElement.Count}"
+                                    IsHoldingEnabled="False" Minimum="0" Maximum="{Binding ElementCollection.SelectedElement.Count}"
                                     SpinButtonPlacementMode="Inline" MinWidth="150"
                                     Margin="8 0 10 0" HorizontalAlignment="Left" ValueChanged="NumberBox_ValueChanged"
-                                    Value="{Binding ElementViewModel.SelectedElement.Amount, Mode=OneWay}"/>
+                                    Value="{Binding ElementCollection.SelectedElement.Amount, Mode=OneWay}"/>
                 </StackPanel>
                 
                 <Button RelativePanel.Below="AmountStackPanel" x:Name="ButtonAddProfile" Margin="8 20 0 0"
@@ -187,7 +188,7 @@
                     </StackPanel>
                 </Button>
                 <Button Content="Test" RelativePanel.Below="AmountStackPanel" Margin="210 20 0 0"
-                        x:Name="TestButton" Click="TestButton_Click"/>
+                        x:Name="TestButton" Click="TestButton_Click" Visibility="Collapsed"/>
 
                 <ListView RelativePanel.Below="ButtonAddProfile" Margin="0 20 0 0" SelectedIndex="0"
                           MinWidth="350" x:Name="ElementView" SelectionChanged="ElementView_SelectionChanged">
@@ -208,9 +209,9 @@
                                              Value="{Binding Amount, Mode=OneWay}"/>
 
                                 <Grid>
-                                    <StackPanel Margin="8" x:Name="ElementPanel">
+                                    <StackPanel Margin="8 8 8 12" x:Name="ElementPanel">
                                         <Grid>
-                                            <StackPanel Orientation="Horizontal" >
+                                            <StackPanel Orientation="Horizontal">
                                                 <TextBlock Text="{Binding Contraction}" FontSize="22" Margin="0 0 8 0"
                                                            Visibility="{Binding Contraction, Converter={StaticResource StringToVisibilityConverter}}"/>
                                                 <TextBlock Text="{Binding Position}" FontSize="22" />
@@ -222,19 +223,22 @@
                                                         Margin="0 0 6 0" Click="ButtonDelete_Click"/>
                                                 <Button x:Name="ButtonComment" Content="&#xE90A;" FontFamily="Segoe MDL2 Assets" 
                                                         Margin="0 0 6 0" Click="ButtonComment_Click"/>
-                                                <Button x:Name="ButtonMore" Content="&#xE712;" FontFamily="Segoe MDL2 Assets" 
-                                                        Margin="0 0 6 0" Click="ButtonMore_Click"/>
+                                                <!--<Button x:Name="ButtonMore" Content="&#xE712;" FontFamily="Segoe MDL2 Assets" 
+                                                        Margin="0 0 6 0" Click="ButtonMore_Click"/>-->
                                             </StackPanel>
                                         </Grid>
                                         <TextBlock Text="{Binding Description}" FontSize="18"/>
                                         <TextBlock Text="{Binding Surface}" FontStyle="Italic"/>
                                     </StackPanel>
 
-                                    <TextBlock HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0 0 8 5" FontSize="20">
-                                        <Run Text="{Binding Amount, Converter={StaticResource DoubleToStringConverter}}"/>
-                                        <Run Text=" / "/>
-                                        <Run Text="{Binding Count, Converter={StaticResource DoubleToStringConverter}}"/>
-                                    </TextBlock>
+                                    <StackPanel HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0 0 8 2">
+                                        <TextBlock Text="{Binding Length}" FontSize="20" TextAlignment="Right"/>
+                                        <TextBlock FontSize="20">
+                                            <Run Text="{Binding Amount, Converter={StaticResource DoubleToStringConverter}}"/>
+                                            <Run Text=" / "/>
+                                            <Run Text="{Binding Count, Converter={StaticResource DoubleToStringConverter}}"/>
+                                        </TextBlock>
+                                    </StackPanel>
                                 </Grid>
                             </Grid>
                         </DataTemplate>

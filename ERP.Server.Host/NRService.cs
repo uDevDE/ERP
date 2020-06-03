@@ -686,6 +686,87 @@ namespace ERP.Server.Host
             }
         }
 
+        /*
+                var context = new EmployeeContext();
+                var entity = AutoMapperConfiguration.Mapper.Map<Division>(division);
+                var result = context.Divisions.Find(division.DivisionId);
+                if (result != null)
+                {
+                    result.Description = entity.Description;
+                    result.DivisionInfoId = entity.DivisionInfoId;
+                    result.DivisionType = entity.DivisionType;
+                    result.Name = entity.Name;
+                    context.Entry(result).State = EntityState.Modified;
+                    context.Entry(result.DivisionType).State = EntityState.Modified;
+                    return await context.SaveChangesAsync();
+                }
+                else
+                {
+                    context.Divisions.Attach(entity);
+                    context.Divisions.Add(entity);
+
+                    var divisionId = await context.SaveChangesAsync();
+                    if (divisionId > 0)
+                    {
+                        return await Task.FromResult(entity.DivisionId);
+                    }
+                    else
+                    {
+                        return await Task.FromResult(0);
+                    }
+                }
+         */
+
+        public async Task<bool> UpdateProfileAsync(ProfileDTO profile)
+        {
+            try
+            {
+                var context = new ProfileContext();
+                var entity = AutoMapperConfiguration.Mapper.Map<Profile>(profile);
+                var result = context.Profiles.Find(profile.ProfileId);
+                if (result != null)
+                {
+                    result.Amount = entity.Amount;
+                    result.Contraction = entity.Contraction;
+                    result.Count = entity.Count;
+                    result.Description = entity.Description;
+                    result.Length = entity.Length;
+                    result.ProfileNumber = entity.ProfileNumber;
+                    result.Surface = entity.Surface;
+                    context.Entry(result).State = EntityState.Modified;
+                    if (await context.SaveChangesAsync() > 0)
+                    {
+                        return await Task.FromResult(true);
+                    }
+                }
+
+                return await Task.FromResult(false);
+            }
+            catch (Exception ex)
+            {
+                PrintException(ex);
+                throw new FaultException(ex.Message, new FaultCode("UpdateProfileAsync"), "UpdateProfileAsync");
+            }
+        }
+
+        public async Task<bool> DeleteProfileAsync(int profileId)
+        {
+            try
+            {
+                using (var context = new ProfileContext())
+                {
+                    var profile = context.Profiles.SingleOrDefault(x => x.ProfileId == profileId);
+                    Console.WriteLine($"Name: {profile.ProfileNumber}");
+                    context.Entry(profile).State = EntityState.Deleted;
+                    return await context.SaveChangesAsync() > 0;
+                }
+            }
+            catch (Exception ex)
+            {
+                PrintException(ex);
+                throw new FaultException(ex.Message, new FaultCode("DeleteProfileAsync"), "DeleteProfileAsync");
+            }
+        }
 
     }
 }

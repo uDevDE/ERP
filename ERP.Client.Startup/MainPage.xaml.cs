@@ -25,6 +25,7 @@ using ERP.Client.Core.Enums;
 using ERP.Client.ViewModel;
 using ERP.Client.Startup.View;
 using Newtonsoft.Json;
+using AutoMapper.Mappers;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
@@ -48,7 +49,8 @@ namespace ERP.Client.Startup
             { "Administration", typeof(AdministrationPage) },
             { "Configuration", typeof(ConfigurationPage) },
             { "ProjectViewer", typeof(ProjectViewerPage) },
-            { "Settings", typeof(SettingsPage) }
+            { "Settings", typeof(SettingsPage) },
+            { "ElementView", typeof(ElementViewerPage) }
         };
 
         public MainPage()
@@ -136,6 +138,10 @@ namespace ERP.Client.Startup
                     else if (tag == "Configuration")
                     {
                         ContentFrame.Navigate(type, null, navigationTransitionInfo);
+                    }
+                    else if (tag == "ElementView")
+                    {
+                        ContentFrame.Navigate(type, null, navigationTransitionInfo );
                     }
                 }
             }

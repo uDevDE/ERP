@@ -1,12 +1,12 @@
 ﻿using ERP.Contracts.Domain.Core;
 using ERP.Contracts.Domain.Core.Enums;
+using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Runtime.CompilerServices;
 
 namespace ERP.Client.Model
 {
-    public class ElementModel : INotifyPropertyChanged, IElement
+    public class ElementModel : INotifyPropertyChanged, IElement, IComparable
     {
         private int _id;
         private int _plantOrderId;
@@ -34,7 +34,7 @@ namespace ERP.Client.Model
                 if (_id != value)
                 {
                     _id = value;
-                    RaisePropertyChanged();
+                    RaisePropertyChanged("Id");
                 }
             }
         }
@@ -46,7 +46,7 @@ namespace ERP.Client.Model
                 if (_plantOrderId != value)
                 {
                     _plantOrderId = value;
-                    RaisePropertyChanged();
+                    RaisePropertyChanged("PlantOrderId");
                 }
             }
         }
@@ -58,7 +58,7 @@ namespace ERP.Client.Model
                 if (_position != value)
                 {
                     _position = value;
-                    RaisePropertyChanged();
+                    RaisePropertyChanged("Position");
                 }
             }
         }
@@ -70,7 +70,7 @@ namespace ERP.Client.Model
                 if (_description != value)
                 {
                     _description = value;
-                    RaisePropertyChanged();
+                    RaisePropertyChanged("Description");
                 }
             }
         }
@@ -82,7 +82,8 @@ namespace ERP.Client.Model
                 if (_count != value)
                 {
                     _count = value;
-                    RaisePropertyChanged();
+                    RaisePropertyChanged("Count");
+                    RaisePropertyChanged("Percent");
                 }
             }
         }
@@ -94,7 +95,7 @@ namespace ERP.Client.Model
                 if (_unit != value)
                 {
                     _unit = value;
-                    RaisePropertyChanged();
+                    RaisePropertyChanged("Unit");
                 }
             }
         }
@@ -106,7 +107,7 @@ namespace ERP.Client.Model
                 if (_surface != value)
                 {
                     _surface = value;
-                    RaisePropertyChanged();
+                    RaisePropertyChanged("Surface");
                 }
             }
         }
@@ -118,7 +119,7 @@ namespace ERP.Client.Model
                 if (_children != value)
                 {
                     _children = value;
-                    RaisePropertyChanged();
+                    RaisePropertyChanged("Children");
                 }
             }
         }
@@ -130,7 +131,7 @@ namespace ERP.Client.Model
                 if (_elementType != value)
                 {
                     _elementType = value;
-                    RaisePropertyChanged();
+                    RaisePropertyChanged("ElementType");
                 }
             }
         }
@@ -142,7 +143,8 @@ namespace ERP.Client.Model
                 if (_amount != value)
                 {
                     _amount = value;
-                    RaisePropertyChanged();
+                    RaisePropertyChanged("Amount");
+                    RaisePropertyChanged("Percent");
                 }
             }
         }
@@ -155,7 +157,7 @@ namespace ERP.Client.Model
                 if (_length != value)
                 {
                     _length = value;
-                    RaisePropertyChanged();
+                    RaisePropertyChanged("Length");
                 }
             }
         }
@@ -167,7 +169,7 @@ namespace ERP.Client.Model
                 if (_name != value)
                 {
                     _name = value;
-                    RaisePropertyChanged();
+                    RaisePropertyChanged("Name");
                 }
             }
         }
@@ -180,7 +182,7 @@ namespace ERP.Client.Model
                 if (_colourInside != value)
                 {
                     _colourInside = value;
-                    RaisePropertyChanged();
+                    RaisePropertyChanged("ColourInside");
                 }
             }
         }
@@ -192,7 +194,7 @@ namespace ERP.Client.Model
                 if (_colourOutside != value)
                 {
                     _colourOutside = value;
-                    RaisePropertyChanged();
+                    RaisePropertyChanged("ColourOutside");
                 }
             }
         }
@@ -204,7 +206,7 @@ namespace ERP.Client.Model
                 if (_profileNumber != value)
                 {
                     _profileNumber = value;
-                    RaisePropertyChanged();
+                    RaisePropertyChanged("ProfileNumber");
                 }
             }
         }
@@ -232,10 +234,37 @@ namespace ERP.Client.Model
                 }
             }
         }
+        public string Percent
+        {
+            get
+            {
+                int amount = Convert.ToInt32(_amount);
+                int count = Convert.ToInt32(_count);
+
+                return string.Format("( {0:d} %)", ((amount * 100) / count));
+            }
+        }
 
         public ElementModel() => _children = new ObservableCollection<ElementModel>();
 
         public event PropertyChangedEventHandler PropertyChanged;
-        private void RaisePropertyChanged([CallerMemberName] string propertyName = null) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        private void RaisePropertyChanged(string propertyName) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+
+        public int CompareTo(object obj)
+        {
+            var element = obj as ElementModel;
+            int result = _position.CompareTo(element.Position);
+
+            if (result == 0)
+                result = _description.CompareTo(element.Description);
+
+            if (result == 0)
+                result = _length.CompareTo(element.Length);
+
+            if (result == 0)
+                result = _contraction.CompareTo(element.Contraction);
+
+            return result;
+        }
     }
 }

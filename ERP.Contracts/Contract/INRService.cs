@@ -85,5 +85,11 @@ namespace ERP.Contracts.Contract
         [OperationContract(IsOneWay = false)]
         Task<List<ProfileDTO>> GetProfilesAsync(int plantOrderId);
 
+        [OperationContract(IsOneWay = false)]
+        Task<bool> UpdateProfileAsync(ProfileDTO profile);
+
+        [OperationContract(IsOneWay = false)]
+        Task<bool> DeleteProfileAsync(int profileId);
+
     }
 }

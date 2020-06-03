@@ -43,13 +43,19 @@ namespace ERP.Client.Dialogs
             _id = element.Id;
             Init();
 
-            TextBoxProfileNumber.Text = element.ProfileNumber;
+            TextBoxProfileNumber.IsEnabled = false;
+            TextBoxLength.IsEnabled = false;
+            TextBoxSurface.IsEnabled = false;
+
+            TextBoxProfileNumber.Text = element.Position;
             TextBoxCount.Text = element.Count.ToString();
             TextBoxAmount.Text = element.Amount.ToString();
             TextBoxLength.Text = element.Length;
             TextBoxDescription.Text = element.Description;
             TextBoxSurface.Text = element.Surface;
-            ConboBoxContraction.SelectedValue = element.Contraction;
+
+            List<string> items = ConboBoxContraction.Items.Cast<ComboBoxItem>().Select(item => item.Content.ToString()).ToList();
+            ConboBoxContraction.SelectedIndex = items.FindIndex(x => x.Equals(element.Contraction));
         }
 
         private void Init()

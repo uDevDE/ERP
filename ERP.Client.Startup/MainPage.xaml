@@ -35,7 +35,7 @@
                         <SymbolIcon Symbol="OpenFile" />
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
-                <NavigationViewItem Content="Live Ansicht" Tag="SamplePage3" x:Name="SamplePage3Item">
+                <NavigationViewItem Content="Live Ansicht" Tag="ElementView" x:Name="SamplePage3Item">
                     <NavigationViewItem.Icon>
                         <SymbolIcon Symbol="ViewAll" />
                     </NavigationViewItem.Icon>

@@ -1,0 +1,114 @@
+﻿<Page
+    x:Class="ERP.Client.Startup.View.ElementViewerPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:ERP.Client.Startup.View"
+    xmlns:controls="using:Microsoft.Toolkit.Uwp.UI.Controls"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
+    Loaded="Page_Loaded">
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <StackPanel Orientation="Horizontal" Margin="0 10 0 10">
+            <CommandBar DefaultLabelPosition="Bottom" VerticalAlignment="Bottom" IsOpen="True">
+                <AppBarButton Icon="Filter" Label="Filtern">
+                    <AppBarButton.Flyout>
+                        <Flyout>
+                            <Grid>
+                                <ComboBox Header="Filtern nach">
+                                    <ComboBoxItem Content="Id" Tag="Id"/>
+                                    <ComboBoxItem Content="Kürzel" Tag="Contraction"/>
+                                    <ComboBoxItem Content="Position" Tag="Position"/>
+                                    <ComboBoxItem Content="Beschreibung" Tag="Description"/>
+                                    <ComboBoxItem Content="Länge" Tag="Length"/>
+                                    <ComboBoxItem Content="Ist" Tag="Amount"/>
+                                    <ComboBoxItem Content="Soll" Tag="Count"/>
+                                    <ComboBoxItem Content="Einheit" Tag="Unit"/>
+                                    <ComboBoxItem Content="Oberfläche" Tag="Surface"/>
+                                    <ComboBoxItem Content="Farbe (innen)" Tag="ColourInside"/>
+                                    <ComboBoxItem Content="Farbe (außen)" Tag="ColourOutside"/>
+                                </ComboBox>
+
+                                <StackPanel Orientation="Horizontal" Margin="0 60 0 0">
+                                    <TextBox PlaceholderText="Text"/>
+                                    <Button Content="Filter anwenden" Margin="12 0 0 0"/>
+                                </StackPanel>
+                            </Grid>
+                        </Flyout>
+                    </AppBarButton.Flyout>
+                </AppBarButton>
+                <AppBarButton Icon="List" Label="Gruppieren nach">
+                    <AppBarButton.Flyout>
+                        <MenuFlyout>
+                            <MenuFlyoutItem Text="Position" Tag="Position" Click="MenuItemGroupData_Click"/>
+                            <MenuFlyoutItem Text="Beschreibung" Tag="Description" Click="MenuItemGroupData_Click"/>
+                            <MenuFlyoutItem Text="Länge" Tag="Length" Click="MenuItemGroupData_Click"/>
+                            <MenuFlyoutItem Text="Kürzel" Tag="Contraction" Click="MenuItemGroupData_Click"/>
+                        </MenuFlyout>
+                    </AppBarButton.Flyout>
+                </AppBarButton>
+
+                <AppBarSeparator/>
+
+                <AppBarButton Icon="OpenFile" Label="Projekt wechseln"/>
+                <AppBarButton Icon="Refresh" Label="Neu laden"/>
+            </CommandBar>
+
+            <AppBarSeparator VerticalAlignment="Center"/>
+            <ComboBox Header="Arbeitsplatz" Width="220" Margin="60 0 0 10" ItemsSource="{x:Bind DivisionCollection.Divisions}"
+                      DisplayMemberPath="Name"/>
+        </StackPanel>
+        
+        <controls:DataGrid x:Name="DataGridElementView" Margin="12" Grid.Row="1"
+                           HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalScrollBarVisibility="Auto"
+                           VerticalScrollBarVisibility="Auto" AlternatingRowBackground="Transparent" AlternatingRowForeground="Gray"
+                           AreRowDetailsFrozen="False" AreRowGroupHeadersFrozen="True" AutoGenerateColumns="False"
+                           CanUserSortColumns="True" CanUserResizeColumns="True" ColumnHeaderHeight="32" MaxColumnWidth="400"
+                           FrozenColumnCount="0" GridLinesVisibility="Horizontal" HeadersVisibility="Column"
+                           RowDetailsVisibilityMode="Collapsed" SelectionMode="Extended"
+                           IsRightTapEnabled="True" IsTapEnabled="True" SelectedIndex="0" LoadingRowGroup="DataGridElementView_LoadingRowGroup"
+                           Sorting="DataGridElementView_Sorting">
+            <controls:DataGrid.Columns>
+                <controls:DataGridTextColumn Header="Id" Tag="Id" IsReadOnly="True" Binding="{Binding Id}"/>
+                <controls:DataGridTextColumn Header="Kürzel" Tag="Contraction" IsReadOnly="True" Binding="{Binding Contraction}" FontSize="18"/>
+                <controls:DataGridTextColumn Header="Position" Tag="Position" IsReadOnly="True" Binding="{Binding Position}" FontSize="18"/>
+                <controls:DataGridTextColumn Header="Beschreibung" Tag="Description" IsReadOnly="True" Binding="{Binding Description}" MaxWidth="250"/>
+                <controls:DataGridTextColumn Header="Länge" Tag="Length" IsReadOnly="True" Binding="{Binding Length}"/>
+                <controls:DataGridTextColumn Header="Ist" Tag="Amount" IsReadOnly="True" Binding="{Binding Amount}" FontSize="18"/>
+                <controls:DataGridTextColumn Header="Soll" Tag="Count" IsReadOnly="True" Binding="{Binding Count}" FontSize="18"/>
+                <controls:DataGridTemplateColumn Header="Fortschritt (Ist / Soll)">
+                    <controls:DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <Grid>
+                                <ProgressBar Minimum="0" Maximum="{Binding Count, Mode=TwoWay}" 
+                                         Value="{Binding Amount, Mode=TwoWay}" ValueChanged="ProgressBar_ValueChanged" 
+                                         Width="200" Height="30" EffectiveViewportChanged="ProgressBar_EffectiveViewportChanged"/>
+
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                    <TextBlock FontSize="18">
+                                        <Run Text="{Binding Amount}"/>
+                                        <Run Text=" / "/>
+                                        <Run Text="{Binding Count}"/>
+                                    </TextBlock>
+
+                                    <TextBlock Margin="20 0 0 0" FontSize="18" Text="{Binding Percent}"/>
+                                </StackPanel>
+                            </Grid>
+                        </DataTemplate>
+                    </controls:DataGridTemplateColumn.CellTemplate>
+                </controls:DataGridTemplateColumn>
+                <controls:DataGridTextColumn Header="Einheit" Tag="Unit" IsReadOnly="True" Binding="{Binding Unit}"/>
+                <controls:DataGridTextColumn Header="Oberfläche" Tag="Surface" IsReadOnly="True" Binding="{Binding Surface}"/>
+                <controls:DataGridTextColumn Header="Farbe (innen)" Tag="ColourInside" IsReadOnly="True" Binding="{Binding ColourInside}"/>
+                <controls:DataGridTextColumn Header="Farbe (außen)" Tag="ColourOutside" IsReadOnly="True" Binding="{Binding ColourOutside}"/>
+            </controls:DataGrid.Columns>
+        </controls:DataGrid>
+    </Grid>
+</Page>

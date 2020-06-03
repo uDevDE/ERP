@@ -1,12 +1,16 @@
 ﻿using ERP.Client.Core.Enums;
 using ERP.Client.Dialogs;
+using ERP.Client.Dialogs.Core.Enums;
 using ERP.Client.Lib;
 using ERP.Client.Mapper;
 using ERP.Client.Model;
+using ERP.Client.Startup.PdfViewer;
 using ERP.Client.Startup.Resolver;
 using ERP.Client.ViewModel;
 using ERP.Client.ViewModel.PdfViewer;
+using ERP.Contracts.Domain;
 using Microsoft.Toolkit.Uwp.UI.Controls;
+using Microsoft.UI.Xaml.CustomAttributes;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -54,7 +58,7 @@ namespace ERP.Client.Startup.View
         public StorageFile LocalFile { get; private set; }
 
         public MaterialRequirementsViewModel MaterialRequirementsViewModel { get; set; }
-        public ElementViewModel ElementViewModel { get; set; }
+        public ElementViewModel ElementCollection { get; set; }
         public ObservableCollection<ProcessQRImageModel> ProcessQRImages { get; private set; }
         public PdfPageViewModel PageViewModel { get; set; }
 
@@ -68,7 +72,7 @@ namespace ERP.Client.Startup.View
             PdfViewerControl.Settings.IsJavaScriptEnabled = true;
 
             MaterialRequirementsViewModel = new MaterialRequirementsViewModel();
-            ElementViewModel = new ElementViewModel();
+            ElementCollection = new ElementViewModel();
             ProcessQRImages = new ObservableCollection<ProcessQRImageModel>();
             LoadingControl.IsLoading = true;
 
@@ -147,13 +151,13 @@ namespace ERP.Client.Startup.View
             var elements = await Proxy.GetElements();
             if (elements != null)
             {
-                ElementViewModel.Load(elements);
+                ElementCollection.Load(elements);
             }
 
             var profiles = await Proxy.GetProfiles(PlantOrder.Id);
             if (profiles != null)
             {
-                ElementViewModel.Load(profiles);
+                ElementCollection.Load(profiles);
             }
 
             if (!PageLoaded)
@@ -189,7 +193,9 @@ namespace ERP.Client.Startup.View
                 }
             }
 
-            ElementView.ItemsSource = ElementViewModel.Elements;
+            ElementView.ItemsSource = ElementCollection.Elements;
+
+            //PdfViewerFrame.Content = new PdfWebViewContentPage();
         }
 
         private void DataGridMaterialRequirements_LoadingRowGroup(object sender, DataGridRowGroupHeaderEventArgs e)
@@ -279,7 +285,7 @@ namespace ERP.Client.Startup.View
             var selectedElement = ElementView.SelectedItem;
             if (selectedElement is ElementModel element)
             {
-                ElementViewModel.SelectedElement = element;
+                ElementCollection.SelectedElement = element;
             }
         }
 
@@ -322,9 +328,9 @@ namespace ERP.Client.Startup.View
 
         private void NumberBox_ValueChanged(Microsoft.UI.Xaml.Controls.NumberBox sender, Microsoft.UI.Xaml.Controls.NumberBoxValueChangedEventArgs args)
         {
-            if (ElementViewModel.SelectedElement != null)
+            if (ElementCollection.SelectedElement != null)
             {
-                ElementViewModel.SelectedElement.Amount = sender.Value;
+                ElementCollection.SelectedElement.Amount = sender.Value;
             }
         }
 
@@ -337,6 +343,23 @@ namespace ERP.Client.Startup.View
                 var profile = dialog.Result;
                 if (profile != null)
                 {
+                    var existingElement = ProfileExists(profile);
+                    if (existingElement != null)
+                    {
+                        var yesNoDialog = new YesNoDialog("Profil bereits vorhanden",
+                            string.Format("Das Profil mit der Profilnummer '{0:s}', einer Länge von '{1:s}' und der Farbe '{2:s}' ist bereits vorhanden. " +
+                            "Soll das vorhandene Profil geändert werden?", profile.ProfileNumber, profile.Length, profile.Surface));
+                        await yesNoDialog.ShowAsync();
+                        if (yesNoDialog.Result == YesNoDialogType.Yes)
+                        {
+                            existingElement.Count += profile.Count;
+                            existingElement.Amount += profile.Amount;
+                            await UpdateProfile(existingElement);
+                        }
+
+                        return;
+                    }
+
                     if (PlantOrder != null)
                     {
                         profile.PlantOrderId = PlantOrder.Id;
@@ -352,7 +375,7 @@ namespace ERP.Client.Startup.View
                     {
                         profile.ProfileId = profileId;
                         var element = AutoMapperConfiguration.Map(profile);
-                        ElementViewModel.Add(element);
+                        ElementCollection.Add(element);
                     }
                     else
                     {
@@ -363,18 +386,70 @@ namespace ERP.Client.Startup.View
             }
         }
 
-        private void ButtonDelete_Click(object sender, RoutedEventArgs e)
-        {
+        private ElementModel ProfileExists(ProfileDTO profile) =>
+            ElementCollection.Find(profile.ProfileNumber, profile.Length, profile.Surface);
 
+        private async void ButtonDelete_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is Button button && button.DataContext is ElementModel element)
+            {
+                var yesNoDialog = new YesNoDialog("Profil löschen?", 
+                    string.Format("Bist Du sicher, dass das Profil mit der Profilnummer '{0:s}' gelöscht werden soll?", element.Position));
+                await yesNoDialog.ShowAsync();
+
+                if (yesNoDialog.Result == YesNoDialogType.Yes)
+                {
+                    var result = await Proxy.DeleteProfileAsync(element.Id);
+                    if (!result)
+                    {
+                        var dialog = new InfoDialog(string.Format("Das Profil mit der Profilnummer '{0:s}' konnte nicht gelöscht werden!", element.Position));
+                        await dialog.ShowAsync();
+                    }
+                    else
+                    {
+                        ElementCollection.Remove(element);
+                    }
+                }
+            }
         }
 
         private async void ButtonEdit_Click(object sender, RoutedEventArgs e)
         {
             if (sender is Button button && button.DataContext is ElementModel element)
             {
-                var dialog = new ProfileDialog(element);
-                await dialog.ShowAsync();
+                await UpdateProfile(element);
             }
+        }
+
+        private async Task UpdateProfile(ElementModel element)
+        {
+            var dialog = new ProfileDialog(element);
+            var dialogResult = await dialog.ShowAsync();
+            if (dialogResult == ContentDialogResult.Primary && dialog.Mode == ProfileDialogMode.Edit)
+            {
+                var profile = dialog.Result;
+                var result = await Proxy.UpdateProfileAsync(profile);
+                if (result)
+                {
+                    UpdateElement(element, profile);
+                }
+                else
+                {
+                    var infoDialog = new InfoDialog("Das Profil konnte nicht geändert werden!");
+                    await infoDialog.ShowAsync();
+                }
+            }
+        }
+
+        private void UpdateElement(ElementModel element, ProfileDTO profile)
+        {
+            element.Position = profile.ProfileNumber;
+            element.Amount = profile.Amount;
+            element.Contraction = profile.Contraction;
+            element.Count = profile.Count;
+            element.Description = profile.Description;
+            element.Length = profile.Length;
+            element.Surface = profile.Surface;
         }
 
         private void PdfViewerControl_LoadCompleted(object sender, NavigationEventArgs e)
@@ -399,7 +474,7 @@ namespace ERP.Client.Startup.View
             var remoteFile = await StorageFile.GetFileFromPathAsync(fullFilePath);
 
             var ret = await OpenAndConvert(remoteFile);
-            var jsfunction = $"window.openPdfAsBase64('{ret}')";
+            var jsfunction = $"openPdfAsBase64('{ret}')";
 
             var obj = await PdfViewerControl.InvokeScriptAsync("eval", new[] { jsfunction });
 
