@@ -600,6 +600,28 @@ namespace ERP.Server.Host
             }
         }
 
+        public Task<List<ProjectNumberDTO>> GetProjectNumbersAsync()
+        {
+            try
+            {
+                var filename = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "projectnumbers.json");
+                if (!File.Exists(filename))
+                {
+                    return Task.FromResult<List<ProjectNumberDTO>>(null);
+                }
+
+                var json = File.ReadAllText(filename);
+                var result = JsonConvert.DeserializeObject<List<ProjectNumberDTO>>(json);
+                var list = result.Where(x => int.TryParse(x.Number, out _)).ToList();
+                return Task.FromResult(list);
+            }
+            catch (Exception ex)
+            {
+                PrintException(ex);
+                throw new FaultException(ex.Message, new FaultCode("GetProjectNumbersAsync"), "GetProjectNumbersAsync");
+            }
+        }
+
         public Task<string> GetRemoteRootPath()
         {
             try
@@ -765,6 +787,63 @@ namespace ERP.Server.Host
             {
                 PrintException(ex);
                 throw new FaultException(ex.Message, new FaultCode("DeleteProfileAsync"), "DeleteProfileAsync");
+            }
+        }
+
+        public async Task<int> UpsertFilterAsync(ElementFilterDTO filter)
+        {
+            try
+            {
+                var context = new FilterContext();
+                var entity = AutoMapperConfiguration.Mapper.Map<ElementFilter>(filter);
+                var result = context.Filters.Find(filter.FilterId);
+                if (result != null)
+                {
+                    result.Action = entity.Action;
+                    result.EmployeeId = entity.EmployeeId;
+                    result.Filter = entity.Filter;
+                    result.PlantOrderId = entity.PlantOrderId;
+                    result.PropertyName = entity.PropertyName;
+                    result.UsedCounter = entity.UsedCounter;
+                    context.Entry(result).State = EntityState.Modified;
+                    return await context.SaveChangesAsync();
+                }
+                else
+                {
+                    context.Filters.Attach(entity);
+                    context.Filters.Add(entity);
+
+                    var divisionId = await context.SaveChangesAsync();
+                    if (divisionId > 0)
+                    {
+                        return await Task.FromResult(entity.FilterId);
+                    }
+                    else
+                    {
+                        return await Task.FromResult(0);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                PrintException(ex);
+                throw new FaultException(ex.Message, new FaultCode("CreateFilterAsync"), "CreateFilterAsync");
+            }
+        }
+
+        public Task<List<ElementFilterDTO>> GetFiltersAsync(int plantOrderId, int employeeId)
+        {
+            try
+            {
+                var context = new FilterContext();
+                var entities = context.Filters.Where(x => x.PlantOrderId == plantOrderId && x.EmployeeId == employeeId).ToList();
+                var result = AutoMapperConfiguration.Mapper.Map<List<ElementFilter>, List<ElementFilterDTO>>(entities);
+                return Task.FromResult(result);
+            }
+            catch (Exception ex)
+            {
+                PrintException(ex);
+                throw new FaultException(ex.Message, new FaultCode("GetFiltersAsync"), "GetFiltersAsync");
             }
         }
 

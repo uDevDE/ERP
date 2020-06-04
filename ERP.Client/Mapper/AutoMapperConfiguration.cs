@@ -31,6 +31,8 @@ namespace ERP.Client.Mapper
                 cfg.CreateMap<FolderModel, FolderDTO>().ReverseMap().ForMember(dest => dest.Files, opt => opt.MapFrom(src => src.Files)).ForMember(dest => dest.SubFolders, opt => opt.MapFrom(src => src.SubFolders));
                 cfg.CreateMap<ElementModel, ElementDTO>().ReverseMap().ForMember(dest => dest.Children, opt => opt.MapFrom(src => src.Children));
                 cfg.CreateMap<PlantOrderPositionDTO, ElementDTO>();
+                cfg.CreateMap<ElementFilterModel, ElementFilterDTO>().ReverseMap();
+                cfg.CreateMap<ProjectNumberDTO, ProjectNumberModel>().ReverseMap();
             });
 
             Mapper = Config.CreateMapper();

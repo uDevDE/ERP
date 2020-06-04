@@ -90,7 +90,7 @@ namespace ERP.Client.Startup
             AdministrationViewModel.IsAdministrator = employee.IsAdministrator;
         }
 
-        private void Navigator_SelectionChanged(NavigationView sender, NavigationViewSelectionChangedEventArgs args)
+        private async void Navigator_SelectionChanged(NavigationView sender, NavigationViewSelectionChangedEventArgs args)
         {
             FrameNavigationOptions navOptions = new FrameNavigationOptions
             {
@@ -140,8 +140,14 @@ namespace ERP.Client.Startup
                         ContentFrame.Navigate(type, null, navigationTransitionInfo);
                     }
                     else if (tag == "ElementView")
-                    {
-                        ContentFrame.Navigate(type, null, navigationTransitionInfo );
+                    {             
+                        if (LocalClient.Employee == null)
+                        {
+                            var infoDialog = new InfoDialog("Du musst Dich anmelden, um Einsicht in den aktuellen Fertigungsstatus zu bekommen!");
+                            await infoDialog.ShowAsync();
+                            return;
+                        }
+                        ContentFrame.Navigate(type, LocalClient.Employee, navigationTransitionInfo );
                     }
                 }
             }

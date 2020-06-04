@@ -74,6 +74,9 @@ namespace ERP.Contracts.Contract
         Task<List<ProcessTemplateDTO>> GetProcessTemplates();
 
         [OperationContract(IsOneWay = false)]
+        Task<List<ProjectNumberDTO>> GetProjectNumbersAsync();
+
+        [OperationContract(IsOneWay = false)]
         Task<string> GetRemoteRootPath();
 
         [OperationContract(IsOneWay = false)]
@@ -90,6 +93,12 @@ namespace ERP.Contracts.Contract
 
         [OperationContract(IsOneWay = false)]
         Task<bool> DeleteProfileAsync(int profileId);
+
+        [OperationContract(IsOneWay = false)]
+        Task<int> UpsertFilterAsync(ElementFilterDTO filter);
+
+        [OperationContract(IsOneWay = false)]
+        Task<List<ElementFilterDTO>> GetFiltersAsync(int plantOrderId, int employeeId);
 
     }
 }

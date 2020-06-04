@@ -22,6 +22,7 @@ namespace ERP.Server.Host.Mapper
                 cfg.CreateMap<DeviceDTO, Device>().ReverseMap().ForMember(dest => dest.Employee, opt => opt.MapFrom(src => src.Employee));
                 cfg.CreateMap<DeviceDTO, Device>().ReverseMap().ForMember(dest => dest.Division, opt => opt.MapFrom(src => src.Division));
                 cfg.CreateMap<ProfileDTO, Entities.Entity.Profile>().ReverseMap();
+                cfg.CreateMap<ElementFilterDTO, ElementFilter>().ReverseMap();
             });
 
             Mapper = Config.CreateMapper();

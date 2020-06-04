@@ -37,7 +37,7 @@ namespace ERP.Server.Entities.Entity
         [ForeignKey("Device")]
         public System.Guid? DeviceId { get; set; }
 
-        public Device Device { get; set; }
+        public virtual Device Device { get; set; }
 
         public string Color { get; set; }
 

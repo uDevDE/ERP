@@ -4,12 +4,18 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:ERP.Client.Startup.View"
     xmlns:controls="using:Microsoft.Toolkit.Uwp.UI.Controls"
+    xmlns:model="using:ERP.Client.Model"
+    xmlns:converters="using:ERP.Client.Converter"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
     Loaded="Page_Loaded">
 
+    <Page.Resources>
+        <converters:NullVisibilityConverter x:Key="NullToVisibilityConverter"/>
+    </Page.Resources>
+    
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -17,33 +23,95 @@
         </Grid.RowDefinitions>
 
         <StackPanel Orientation="Horizontal" Margin="0 10 0 10">
-            <CommandBar DefaultLabelPosition="Bottom" VerticalAlignment="Bottom" IsOpen="True">
-                <AppBarButton Icon="Filter" Label="Filtern">
+            <CommandBar DefaultLabelPosition="Bottom" VerticalAlignment="Bottom">
+                <AppBarButton Icon="Filter" Label="Filtern" AllowFocusOnInteraction="True">
                     <AppBarButton.Flyout>
-                        <Flyout>
-                            <Grid>
-                                <ComboBox Header="Filtern nach">
-                                    <ComboBoxItem Content="Id" Tag="Id"/>
-                                    <ComboBoxItem Content="Kürzel" Tag="Contraction"/>
-                                    <ComboBoxItem Content="Position" Tag="Position"/>
-                                    <ComboBoxItem Content="Beschreibung" Tag="Description"/>
-                                    <ComboBoxItem Content="Länge" Tag="Length"/>
-                                    <ComboBoxItem Content="Ist" Tag="Amount"/>
-                                    <ComboBoxItem Content="Soll" Tag="Count"/>
-                                    <ComboBoxItem Content="Einheit" Tag="Unit"/>
-                                    <ComboBoxItem Content="Oberfläche" Tag="Surface"/>
-                                    <ComboBoxItem Content="Farbe (innen)" Tag="ColourInside"/>
-                                    <ComboBoxItem Content="Farbe (außen)" Tag="ColourOutside"/>
-                                </ComboBox>
+                        <Flyout Placement="Bottom" x:Name="FilterFlyout">
+                            <Pivot>
+                                <PivotItem Header="Bekannte Filter">
+                                    <ListView ItemsSource="{x:Bind FilterCollection.Filters}" x:Name="FilterListView"
+                                              IsDoubleTapEnabled="True" IsItemClickEnabled="True" 
+                                              ItemClick="FilterListView_ItemClick" 
+                                              ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                                        <ListView.ItemTemplate>
+                                            <DataTemplate x:DataType="model:ElementFilterModel">
+                                                <Grid Margin="4">
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="320" MaxWidth="400"/>
+                                                        <ColumnDefinition Width="60"/>
+                                                    </Grid.ColumnDefinitions>
 
-                                <StackPanel Orientation="Horizontal" Margin="0 60 0 0">
-                                    <TextBox PlaceholderText="Text"/>
-                                    <Button Content="Filter anwenden" Margin="12 0 0 0"/>
-                                </StackPanel>
-                            </Grid>
+                                                    <StackPanel>
+                                                        <TextBlock>
+                                                            <Run Text="Aktion: " Foreground="DarkGray"/>
+                                                            <Run Text="{Binding ActionText}" FontWeight="Medium"/>
+                                                        </TextBlock>
+
+                                                        <TextBlock>
+                                                            <Run Text="Eigenschaft: " Foreground="DarkGray"/>
+                                                            <Run Text="{Binding PropertyText}" FontWeight="Medium"/>
+                                                        </TextBlock>
+
+                                                        <TextBlock>
+                                                            <Run Text="Wert: " Foreground="DarkGray"/>
+                                                            <Run Text="{Binding Filter}" FontWeight="Medium"/>
+                                                        </TextBlock>
+                                                    </StackPanel>
+
+                                                    <Button x:Name="ButtonDeleteFilter" Content="&#xE74D;" 
+                                                            FontFamily="Segoe MDL2 Assets" Margin="20 6 2 0"
+                                                            VerticalAlignment="Top" Grid.Column="1"
+                                                            Click="ButtonDeleteFilter_Click"/>
+                                                    <TextBlock Grid.Column="1" VerticalAlignment="Bottom"
+                                                            Text="{Binding UsedCounter}" Margin="20 0 2 6"/>
+                                                </Grid>
+                                            </DataTemplate>
+                                        </ListView.ItemTemplate>
+                                    </ListView>
+                                </PivotItem>
+                                
+                                <PivotItem Header="Neuer Filter">
+                                    <Grid>
+                                        <StackPanel Orientation="Horizontal">
+                                            <ComboBox Header="Filtern nach" Width="180" SelectedIndex="0"
+                                                      x:Name="ComboBoxFilterProperty">
+                                                <ComboBoxItem Content="Id" Tag="Id"/>
+                                                <ComboBoxItem Content="Kürzel" Tag="Contraction"/>
+                                                <ComboBoxItem Content="Position" Tag="Position"/>
+                                                <ComboBoxItem Content="Beschreibung" Tag="Description"/>
+                                                <ComboBoxItem Content="Länge" Tag="Length"/>
+                                                <ComboBoxItem Content="Ist" Tag="Amount"/>
+                                                <ComboBoxItem Content="Soll" Tag="Count"/>
+                                                <ComboBoxItem Content="Einheit" Tag="Unit"/>
+                                                <ComboBoxItem Content="Oberfläche" Tag="Surface"/>
+                                                <ComboBoxItem Content="Farbe (innen)" Tag="ColourInside"/>
+                                                <ComboBoxItem Content="Farbe (außen)" Tag="ColourOutside"/>
+                                            </ComboBox>
+
+                                            <ComboBox Header="Aktion" Margin="12 0 0 0" Width="180" SelectedIndex="0"
+                                                      x:Name="ComboBoxFilterAction">
+                                                <ComboBoxItem Content="Wert muss gleich sein" Tag="Equal"/>
+                                                <ComboBoxItem Content="Eigenschaft muss Wert beinhalten" Tag="Contain"/>
+                                                <ComboBoxItem Content="Wert muss ungleich sein" Tag="NotEqual"/>
+                                                <ComboBoxItem Content="Wert muss größer sein (Nur Zahlen)" Tag="GreaterThen"/>
+                                                <ComboBoxItem Content="Wert muss kleiner sein (Nur Zahlen)" Tag="LessThen"/>
+                                            </ComboBox>
+                                        </StackPanel>
+
+                                        <StackPanel Orientation="Horizontal" Margin="0 75 0 0">
+                                            <TextBox PlaceholderText="Gesuchter Wert" Width="180"
+                                                     x:Name="TextBoxFilter"/>
+                                            <Button Content="Filter anwenden" Margin="12 0 0 0"
+                                                    x:Name="ButtonCreateFilter" Click="ButtonCreateFilter_Click"/>
+                                        </StackPanel>
+                                    </Grid>
+                                </PivotItem>
+                            </Pivot>
                         </Flyout>
                     </AppBarButton.Flyout>
                 </AppBarButton>
+                <AppBarButton Icon="Delete" Label="Filter entfernen" x:Name="ButtonRemoveFilter" 
+                              Click="ButtonRemoveFilter_Click"/>
                 <AppBarButton Icon="List" Label="Gruppieren nach">
                     <AppBarButton.Flyout>
                         <MenuFlyout>
@@ -57,13 +125,30 @@
 
                 <AppBarSeparator/>
 
-                <AppBarButton Icon="OpenFile" Label="Projekt wechseln"/>
+                <AppBarButton Icon="OpenFile" Label="Projekt wechseln" x:Name="ButtonOpenProject"
+                              Click="ButtonOpenProject_Click"/>
                 <AppBarButton Icon="Refresh" Label="Neu laden"/>
             </CommandBar>
 
-            <AppBarSeparator VerticalAlignment="Center"/>
             <ComboBox Header="Arbeitsplatz" Width="220" Margin="60 0 0 10" ItemsSource="{x:Bind DivisionCollection.Divisions}"
                       DisplayMemberPath="Name"/>
+
+            <StackPanel Margin="40 0 0 0" Visibility="{x:Bind FilterCollection.SelectedFilter, Converter={StaticResource NullToVisibilityConverter}}"
+                        VerticalAlignment="Center">
+                <TextBlock Text="Aktiver Filter: " FontWeight="Bold"/>
+                <TextBlock>
+                    <Run Text="Eigenschaft: " Foreground="DarkGray"/>
+                    <Run Text="{x:Bind FilterCollection.SelectedFilter.PropertyText}" FontWeight="Medium"/>
+                </TextBlock>
+                <TextBlock>
+                    <Run Text="Aktion: " Foreground="DarkGray"/>
+                    <Run Text="{x:Bind FilterCollection.SelectedFilter.ActionText}" FontWeight="Medium"/>
+                </TextBlock>
+                <TextBlock>
+                    <Run Text="Filter: " Foreground="DarkGray"/>
+                    <Run Text="{x:Bind FilterCollection.SelectedFilter.Filter}" FontWeight="Medium"/>
+                </TextBlock>
+            </StackPanel>
         </StackPanel>
         
         <controls:DataGrid x:Name="DataGridElementView" Margin="12" Grid.Row="1"
@@ -110,5 +195,13 @@
                 <controls:DataGridTextColumn Header="Farbe (außen)" Tag="ColourOutside" IsReadOnly="True" Binding="{Binding ColourOutside}"/>
             </controls:DataGrid.Columns>
         </controls:DataGrid>
+
+        <controls:Loading x:Name="LoadingControl" Grid.Row="1">
+            <StackPanel Padding="12" Opacity="0.9" HorizontalAlignment="Center" VerticalAlignment="Center">
+                <ProgressRing IsActive="True" Width="120" Height="120" Foreground="Crimson"/>
+                <TextBlock VerticalAlignment="Center" FontSize="18" FontWeight="Medium" Margin="0 30 0 0" x:Name="LoadingText"
+                           TextWrapping="Wrap" MaxWidth="600"/>
+            </StackPanel>
+        </controls:Loading>
     </Grid>
 </Page>

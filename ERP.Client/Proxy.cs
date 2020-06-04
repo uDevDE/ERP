@@ -358,6 +358,18 @@ namespace ERP.Client
             return await Task.FromResult<List<ProcessTemplateModel>>(null);
         }
 
+        public async static Task<List<ProjectNumberModel>> GetProjectNumbersAsync()
+        {
+            if (IsConnected && IsDeviceIdValid)
+            {
+                var list = await _proxy.GetProjectNumbersAsync();
+                var result = AutoMapperConfiguration.Mapper.Map<List<ProjectNumberDTO>, List<ProjectNumberModel>>(list);
+                return await Task.FromResult(result);
+            }
+
+            return await Task.FromResult<List<ProjectNumberModel>>(null);
+        }
+
         public async static Task<List<ElementModel>> GetElements()
         {
             if (IsConnected && IsDeviceIdValid)
@@ -435,6 +447,29 @@ namespace ERP.Client
             }
 
             return Task.FromResult(false);
+        }
+
+        public async static Task<int> UpsertElementFilter(ElementFilterModel filter)
+        {
+            if (IsConnected && IsDeviceIdValid)
+            {
+                var filterDTO = AutoMapperConfiguration.Mapper.Map<ElementFilterDTO>(filter);
+                return await _proxy.UpsertFilterAsync(filterDTO);
+            }
+
+            return await Task.FromResult(0);
+        }
+
+        public async static Task<List<ElementFilterModel>> GetFiltersAsync(int plantOrderId, int employeeId)
+        {
+            if (IsConnected && IsDeviceIdValid)
+            {
+                var list = await _proxy.GetFiltersAsync(plantOrderId, employeeId);
+                var filters = AutoMapperConfiguration.Mapper.Map<List<ElementFilterDTO>, List<ElementFilterModel>>(list);
+                return await Task.FromResult(filters);
+            }
+
+            return await Task.FromResult<List<ElementFilterModel>>(null);
         }
 
     }
