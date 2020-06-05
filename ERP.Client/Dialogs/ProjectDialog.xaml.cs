@@ -17,6 +17,8 @@ using Microsoft.Toolkit.Uwp.Helpers;
 using ERP.Client.ViewModel;
 using ERP.Client.Model;
 using Microsoft.Toolkit.Uwp.UI.Controls;
+using System.ServiceModel.Channels;
+using System.Threading.Tasks;
 
 // The Content Dialog item template is documented at https://go.microsoft.com/fwlink/?LinkId=234238
 
@@ -25,12 +27,14 @@ namespace ERP.Client.Dialogs
     public sealed partial class ProjectDialog : ContentDialog
     {
         public ProjectNumberViewModel ProjectNumberCollection { get; private set; }
+        public PlantOrderViewModel PlantOrderCollection { get; private set; }
 
         public ProjectDialog()
         {
             this.InitializeComponent();
 
             ProjectNumberCollection = new ProjectNumberViewModel();
+            PlantOrderCollection = new PlantOrderViewModel();
         }
 
         private async void ContentDialog_Loaded(object sender, RoutedEventArgs e)
@@ -61,27 +65,62 @@ namespace ERP.Client.Dialogs
             }
         }
 
-        private void AutoSuggestBox_SuggestionChosen(AutoSuggestBox sender, AutoSuggestBoxSuggestionChosenEventArgs args)
+        private async void AutoSuggestBox_SuggestionChosen(AutoSuggestBox sender, AutoSuggestBoxSuggestionChosenEventArgs args)
         {
             if (args.SelectedItem is ProjectNumberModel projectNumber)
             {
                 sender.Text = projectNumber.DisplayText;
+                ProjectNumberCollection.SelectedProjectNumber = projectNumber;
+                await LoadPlantOrders(projectNumber);
             }
         }
 
-        private void AutoSuggestBox_QuerySubmitted(AutoSuggestBox sender, AutoSuggestBoxQuerySubmittedEventArgs args)
+        private async void AutoSuggestBox_QuerySubmitted(AutoSuggestBox sender, AutoSuggestBoxQuerySubmittedEventArgs args)
         {
             if (args.ChosenSuggestion != null)
             {
-                // User selected an item from the suggestion list, take an action on it here.
+                try
+                {
+                    var projectNumber = ProjectNumberCollection.ProjectNumbers.Single(x => x.DisplayText == args.QueryText);
+                    if (projectNumber != null)
+                    {
+                        ProjectNumberCollection.SelectedProjectNumber = projectNumber;
+                        await LoadPlantOrders(projectNumber);
+                    }
+
+                }
+                catch (Exception) { }
             }
             else
             {
-                // Use args.QueryText to determine what to do.
-                this.Title = args.QueryText;
+                try
+                {
+                    var projectNumber = ProjectNumberCollection.ProjectNumbers.FirstOrDefault(x => x.DisplayText.Contains(args.QueryText));
+                    if (projectNumber != null)
+                    {
+                        ProjectNumberCollection.SelectedProjectNumber = projectNumber;
+                        sender.Text = projectNumber.DisplayText;
+                        await LoadPlantOrders(projectNumber);
+                    }
+                }
+                catch (Exception) { }
             }
         }
 
+        private async Task LoadPlantOrders(ProjectNumberModel projectNumber)
+        {
+            if (projectNumber == null)
+                return;
+        
+            var plantOrders = await Proxy.GetPlantOrders(21903);
+            PlantOrderCollection.Load(plantOrders);
+            PlantOrderListView.ItemsSource = PlantOrderCollection.PlantOrders;
+            ProjectPivot.SelectedIndex = 1;
+        }
 
+        private void FilterTextBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+
+        }
     }
 }

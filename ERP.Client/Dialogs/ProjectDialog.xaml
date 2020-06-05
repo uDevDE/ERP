@@ -5,6 +5,7 @@
     xmlns:local="using:ERP.Client.Dialogs"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:model="using:ERP.Client.Model"
     mc:Ignorable="d"
     Title="Neues Projekt laden"
     PrimaryButtonText="Projekt laden"
@@ -14,12 +15,41 @@
     Loaded="ContentDialog_Loaded">
 
     <Grid>
-        <AutoSuggestBox QueryIcon="Find" PlaceholderText="Projektnummer"
+        <Pivot x:Name="ProjectPivot">
+            <PivotItem Header="Projektauswahl">
+                <AutoSuggestBox QueryIcon="Find" PlaceholderText="Projektnummer"
                         TextChanged="AutoSuggestBox_TextChanged"
                         SuggestionChosen="AutoSuggestBox_SuggestionChosen"
                         QuerySubmitted="AutoSuggestBox_QuerySubmitted"
                         ItemsSource="{x:Bind ProjectNumberCollection.ProjectNumbers}"
                         DisplayMemberPath="DisplayText"
                         TextMemberPath="DisplayText"/>
+            </PivotItem>
+            <PivotItem Header="Werkaufträge">
+                <RelativePanel>
+                    <TextBox x:Name="FilterTextBox" PlaceholderText="Suche..." MinWidth="450"
+                             TextChanged="FilterTextBox_TextChanged"/>
+
+                    <ListView x:Name="PlantOrderListView" SelectionMode="Single">
+                        <ListView.ItemTemplate>
+                            <DataTemplate x:DataType="model:PlantOrderModel">
+                                <Grid Margin="6">
+                                    <TextBlock FontSize="18" FontWeight="Medium" Text="{Binding Number}"
+                                               HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                                    <TextBlock FontSize="18" FontWeight="Medium" Text="{Binding Section}"
+                                               HorizontalAlignment="Right" VerticalAlignment="Top"/>
+
+                                    <StackPanel Margin="0 30 0 0">
+                                        <TextBlock Text="{Binding Name}" FontSize="18"/>
+                                        <TextBlock Text="{Binding Description}"/>
+                                        <TextBlock Text="{Binding ProcessTemplate}" FontStyle="Italic"/>
+                                    </StackPanel>
+                                </Grid>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
+                </RelativePanel>
+            </PivotItem>
+        </Pivot>
     </Grid>
 </ContentDialog>

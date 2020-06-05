@@ -18,5 +18,8 @@ namespace ERP.Client.ViewModel
                 ProjectNumbers.Add(projectNumber);
             }
         }
+
+        public ProjectNumberModel SelectedProjectNumber { get; set; }
+
     }
 }

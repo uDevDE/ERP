@@ -612,7 +612,7 @@ namespace ERP.Server.Host
 
                 var json = File.ReadAllText(filename);
                 var result = JsonConvert.DeserializeObject<List<ProjectNumberDTO>>(json);
-                var list = result.Where(x => int.TryParse(x.Number, out _)).ToList();
+                var list = result.Where(x => int.TryParse(x.Number, out int val) && val > 21065 && val < 50000).ToList();
                 return Task.FromResult(list);
             }
             catch (Exception ex)

@@ -19,6 +19,7 @@ namespace ERP.Client.Model
         private string _materialRequirement;
         private int _losId;
         private string _processId;
+        private string _displayText;
 
         public int Id
         {
@@ -40,7 +41,9 @@ namespace ERP.Client.Model
                 if (_number != value)
                 {
                     _number = value;
+                    _displayText = string.Format("{0:s} - {1:s} - {2:s}", _number, _name, _section);
                     RaisePropertyChanged();
+                    RaisePropertyChanged("DisplayText");
                 }
             }
         }
@@ -64,7 +67,9 @@ namespace ERP.Client.Model
                 if (_name != value)
                 {
                     _name = value;
+                    _displayText = string.Format("{0:s} - {1:s} - {2:s}", _number, _name, _section);
                     RaisePropertyChanged();
+                    RaisePropertyChanged("DisplayText");
                 }
             }
         }

@@ -66,5 +66,7 @@ namespace ERP.Client.ViewModel
             return string.Empty;
         }
 
+        public PlantOrderModel SelectedPlantOrder { get; set; }
+
     }
 }
