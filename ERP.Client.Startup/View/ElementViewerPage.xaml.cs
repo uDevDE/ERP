@@ -8,6 +8,7 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.UI;
@@ -61,18 +62,6 @@ namespace ERP.Client.Startup.View
 
         private async void Page_Loaded(object sender, RoutedEventArgs e)
         {
-            var elements = await Proxy.GetElements();
-
-            foreach (var element in elements)
-            {
-                element.Contraction = "Bl";
-
-                Random rnd = new Random();
-                element.Amount = Math.Round(rnd.NextDouble() * element.Count);
-            }
-
-            ElementCollection.Load(elements);
-
             var divisions = await Proxy.GetAllDivisions();
             DivisionCollection.Load(divisions);
 
@@ -81,7 +70,29 @@ namespace ERP.Client.Startup.View
 
             DataGridElementView.ItemsSource = ElementCollection.Elements;
 
+            var dialog = new ProjectDialog(DivisionCollection);
+            var dialogResult = await dialog.ShowAsync();
+            if (dialogResult == ContentDialogResult.Primary)
+            {
+                await GetElements();
+            }
+
             LoadingControl.IsLoading = false;
+        }
+
+        private async Task GetElements()
+        {
+            var elements = await Proxy.GetElements();
+
+            foreach (var element in elements)
+            {
+                element.Contraction = (element.Count % 2 == 0) ? "Bl" : "Fl";
+
+                Random rnd = new Random();
+                element.Amount = Math.Round(rnd.NextDouble() * element.Count);
+            }
+
+            ElementCollection.Load(elements);
         }
 
         public static SolidColorBrush PercentToColor(double percent)
@@ -322,8 +333,18 @@ namespace ERP.Client.Startup.View
 
         private async void ButtonOpenProject_Click(object sender, RoutedEventArgs e)
         {
-            var dialog = new ProjectDialog();
-            await dialog.ShowAsync();
+            var dialog = new ProjectDialog(DivisionCollection);
+            var dialogResult = await dialog.ShowAsync();
+            if (dialogResult == ContentDialogResult.Primary)
+            {
+                await GetElements();
+            }
         }
+
+        private void SaveProject(PlantOrderModel plantOrder, DivisionModel division)
+        {
+
+        }
+
     }
 }

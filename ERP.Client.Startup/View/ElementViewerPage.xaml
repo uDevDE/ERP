@@ -110,8 +110,8 @@
                         </Flyout>
                     </AppBarButton.Flyout>
                 </AppBarButton>
-                <AppBarButton Icon="Delete" Label="Filter entfernen" x:Name="ButtonRemoveFilter" 
-                              Click="ButtonRemoveFilter_Click"/>
+                <AppBarButton Icon="Clear" Label="Filter entfernen" x:Name="ButtonRemoveFilter" 
+                              Click="ButtonRemoveFilter_Click" ToolTipService.ToolTip="Entfernt den aktiven Filter sowie Gruppierung"/>
                 <AppBarButton Icon="List" Label="Gruppieren nach">
                     <AppBarButton.Flyout>
                         <MenuFlyout>
@@ -150,7 +150,19 @@
                 </TextBlock>
             </StackPanel>
         </StackPanel>
-        
+
+        <StackPanel HorizontalAlignment="Right" VerticalAlignment="Center" Orientation="Horizontal"
+                    Margin="0 0 30 0">
+            <PersonPicture DisplayName="{x:Bind CurrentEmployee.Fullname, Mode=OneWay}" 
+                        Margin="0 8 8 0" Width="48" Height="48" 
+                        x:Name="PersonEmployee"
+                        Foreground="{Binding Foreground, Mode=OneWay}"/>
+            <StackPanel VerticalAlignment="Center" Margin="8 1 0 0">
+                <TextBlock FontSize="18" Text="{x:Bind CurrentEmployee.Alias}"/>
+                <TextBlock Text="{x:Bind CurrentEmployee.Fullname}" FontStyle="Italic"/>
+            </StackPanel>
+        </StackPanel>
+
         <controls:DataGrid x:Name="DataGridElementView" Margin="12" Grid.Row="1"
                            HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalScrollBarVisibility="Auto"
                            VerticalScrollBarVisibility="Auto" AlternatingRowBackground="Transparent" AlternatingRowForeground="Gray"
