@@ -16,5 +16,6 @@ namespace ERP.Contracts.Domain.Core
         string ProfileNumber { get; set; }
         string Contraction { get; set; }
         string Filename { get; set; }
+        int DivisionId { get; set; }
     }
 }

@@ -59,6 +59,9 @@ namespace ERP.Contracts.Domain
         [DataMember]
         public string Filename { get; set; }
 
+        [DataMember]
+        public int DivisionId { get; set; }
+
         public ElementDTO() => Children = new List<ElementDTO>();
     }
 }

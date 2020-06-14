@@ -34,7 +34,13 @@ namespace ERP.Server.Entities.Entity
 
         public string Description { get; set; }
 
+        public int DivisionId { get; set; }
 
         public string Surface { get; set; }
+
+        [ForeignKey("ElementInfo")]
+        public virtual System.Collections.Generic.List<ElementInfo> ElementInfos { get; set; }
+
+        public Profile() => ElementInfos = new System.Collections.Generic.List<ElementInfo>();
     }
 }

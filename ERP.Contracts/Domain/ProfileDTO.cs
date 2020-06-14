@@ -35,5 +35,13 @@ namespace ERP.Contracts.Domain
 
         [DataMember]
         public string Filename { get; set; }
+
+        [DataMember]
+        public int DivisionId { get; set; }
+
+        [DataMember]
+        public System.Collections.Generic.List<ElementInfoDTO> ElementInfos { get; set; }
+
+        public ProfileDTO() => ElementInfos = new System.Collections.Generic.List<ElementInfoDTO>();
     }
 }

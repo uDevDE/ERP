@@ -83,7 +83,7 @@ namespace ERP.Contracts.Contract
         Task<bool> Logout(Guid deviceId, int employeeId);
 
         [OperationContract(IsOneWay = false)]
-        Task<int> CreateProfileAsync(ProfileDTO profile);
+        Task<int> CreateProfileAsync(ProfileDTO profile, int employeeId);
 
         [OperationContract(IsOneWay = false)]
         Task<List<ProfileDTO>> GetProfilesAsync(int plantOrderId);

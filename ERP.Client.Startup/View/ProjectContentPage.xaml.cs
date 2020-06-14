@@ -481,5 +481,10 @@ namespace ERP.Client.Startup.View
             var dialog = new MessageDialog(obj);
             await dialog.ShowAsync();
         }
+
+        private void ElementView_ItemClick(object sender, ItemClickEventArgs e)
+        {
+
+        }
     }
 }

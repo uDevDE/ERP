@@ -13,5 +13,6 @@ namespace ERP.Contracts.Domain.Core
         string Surface { get; set; }
         int PlantOrderId { get; set; }
         string Filename { get; set; }
+        int DivisionId { get; set; }
     }
 }

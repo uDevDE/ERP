@@ -90,6 +90,8 @@ namespace ERP.Client.Startup
             AdministrationViewModel.IsAdministrator = employee.IsAdministrator;
         }
 
+        private void SetCurrentDivision(DivisionModel division) => LocalClient.Division = division;
+
         private async void Navigator_SelectionChanged(NavigationView sender, NavigationViewSelectionChangedEventArgs args)
         {
             FrameNavigationOptions navOptions = new FrameNavigationOptions
@@ -283,9 +285,10 @@ namespace ERP.Client.Startup
                     SetCurrentEmployee(device.Employee);
                     Proxy.Device = device;
                 }
-                else
+
+                if (device.Division != null)
                 {
-                    //TeachingTipEmployee.IsOpen = true;
+                    SetCurrentDivision(device.Division);
                 }
             });
         }
@@ -304,7 +307,7 @@ namespace ERP.Client.Startup
             await dialog.ShowAsync();
         }
 
-        private async void ButtonLogin_Click(object sender, RoutedEventArgs e)
+        private void ButtonLogin_Click(object sender, RoutedEventArgs e)
         {
             /*if (ListBoxEmployee.SelectedItem is EmployeeModel model)
             {
@@ -328,7 +331,7 @@ namespace ERP.Client.Startup
             }*/
         }
 
-        private async void ButtonEmloyeeSettings_Click(object sender, RoutedEventArgs e)
+        private void ButtonEmloyeeSettings_Click(object sender, RoutedEventArgs e)
         {
             if (sender is Button button && button?.Tag is string tag)
             {

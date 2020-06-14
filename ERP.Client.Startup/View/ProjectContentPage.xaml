@@ -191,7 +191,8 @@
                         x:Name="TestButton" Click="TestButton_Click" Visibility="Collapsed"/>
 
                 <ListView RelativePanel.Below="ButtonAddProfile" Margin="0 20 0 0" SelectedIndex="0"
-                          MinWidth="350" x:Name="ElementView" SelectionChanged="ElementView_SelectionChanged">
+                          MinWidth="350" x:Name="ElementView" SelectionChanged="ElementView_SelectionChanged"
+                          IsItemClickEnabled="True" ItemClick="ElementView_ItemClick">
                     <ListView.ItemContainerStyle>
                         <Style TargetType="ListViewItem">
                             <Setter Property="Padding" Value="0"/>

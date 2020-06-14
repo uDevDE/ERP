@@ -404,9 +404,10 @@ namespace ERP.Client
 
         public static Task<int> CreateProfile(ProfileDTO profile)
         {
-            if (IsConnected && IsDeviceIdValid)
+            if (IsConnected && IsDeviceIdValid && LocalClient.Employee != null && LocalClient.Division != null)
             {
-                return _proxy.CreateProfileAsync(profile);
+                profile.DivisionId = LocalClient.Division.DivisionId;
+                return _proxy.CreateProfileAsync(profile, LocalClient.Employee.EmployeeId);
             }
 
             return Task.FromResult(0);

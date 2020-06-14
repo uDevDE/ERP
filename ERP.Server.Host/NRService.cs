@@ -80,7 +80,7 @@ namespace ERP.Server.Host
                 if (_callback != null)
                 {
                     var deviceCtx = new EmployeeContext();
-                    var device = deviceCtx.Devices.Where(x => x.DeviceId == deviceId).Include(e => e.Employee).FirstOrDefault();
+                    var device = deviceCtx.Devices.Where(x => x.DeviceId == deviceId).Include(d => d.Division).Include(e => e.Employee).FirstOrDefault();
                     if (device == null)
                     {
                         device = new Device()
@@ -666,14 +666,21 @@ namespace ERP.Server.Host
             }
         }
 
-        public async Task<int> CreateProfileAsync(ProfileDTO profile)
+        public async Task<int> CreateProfileAsync(ProfileDTO profile, int employeeId)
         {
             try
             {
-                var context = new ProfileContext();
+                var context = new ElementContext();
                 var entity = AutoMapperConfiguration.Mapper.Map<Profile>(profile);
                 if (entity  != null)
                 {
+                    if (entity.Amount > 0)
+                    {
+                        //var ei = new ElementInfo() { Amount = entity.Amount, EmployeeId = employeeId, Time = DateTime.Now };
+                        //var elementInfo = context.ElementInfos.Add(ei);
+                        entity.ElementInfos?.Add(new ElementInfo() { Amount = entity.Amount, EmployeeId = employeeId, Time = DateTime.Now });
+                    }
+
                     context.Profiles.Add(entity);
                     var result = await context.SaveChangesAsync();
                     if (result > 0)
@@ -696,8 +703,8 @@ namespace ERP.Server.Host
         {
             try
             {
-                var context = new ProfileContext();
-                var profiles = context.Profiles.Where(x => x.PlantOrderId == plantOrderId)?.ToList();
+                var context = new ElementContext();
+                var profiles = context.Profiles.Where(x => x.PlantOrderId == plantOrderId)?.Include(e => e.ElementInfos).ToList();
                 var result = AutoMapperConfiguration.Mapper.Map<List<Profile>, List<ProfileDTO>>(profiles);
                 return Task.FromResult(result);
             }
@@ -743,7 +750,7 @@ namespace ERP.Server.Host
         {
             try
             {
-                var context = new ProfileContext();
+                var context = new ElementContext();
                 var entity = AutoMapperConfiguration.Mapper.Map<Profile>(profile);
                 var result = context.Profiles.Find(profile.ProfileId);
                 if (result != null)
@@ -775,7 +782,7 @@ namespace ERP.Server.Host
         {
             try
             {
-                using (var context = new ProfileContext())
+                using (var context = new ElementContext())
                 {
                     var profile = context.Profiles.SingleOrDefault(x => x.ProfileId == profileId);
                     Console.WriteLine($"Name: {profile.ProfileNumber}");

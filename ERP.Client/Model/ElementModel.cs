@@ -25,6 +25,7 @@ namespace ERP.Client.Model
         private string _profileNumber;
         private string _contraction;
         private string _filename;
+        private ObservableCollection<ElementInfoModel> _elementInfos;
 
         public int Id
         {
@@ -234,6 +235,7 @@ namespace ERP.Client.Model
                 }
             }
         }
+        public int DivisionId { get; set; }
         public string Percent
         {
             get
@@ -244,8 +246,24 @@ namespace ERP.Client.Model
                 return string.Format("( {0:d} %)", ((amount * 100) / count));
             }
         }
+        public ObservableCollection<ElementInfoModel> ElementInfos
+        {
+            get { return _elementInfos; }
+            set
+            {
+                if (_elementInfos != value)
+                {
+                    _elementInfos = value;
+                    RaisePropertyChanged("ElementInfos");
+                }
+            }
+        }
 
-        public ElementModel() => _children = new ObservableCollection<ElementModel>();
+        public ElementModel()
+        {
+            _children = new ObservableCollection<ElementModel>();
+            _elementInfos = new ObservableCollection<ElementInfoModel>();
+        }
 
         public event PropertyChangedEventHandler PropertyChanged;
         private void RaisePropertyChanged(string propertyName) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));

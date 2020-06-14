@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
 using ERP.Client.Model;
 using ERP.Contracts.Domain;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace ERP.Client.Mapper
 {
@@ -51,8 +53,26 @@ namespace ERP.Client.Mapper
                 Contraction = element.Contraction,
                 Surface = element.Surface,
                 PlantOrderId = element.PlantOrderId,
-                Filename = element.Filename
+                Filename = element.Filename,
+                DivisionId = element.DivisionId
             };
+        }
+
+        public static ObservableCollection<ElementInfoModel> Map(List<ElementInfoDTO> elementInfos)
+        {
+            var list = new ObservableCollection<ElementInfoModel>();
+            foreach (var item in elementInfos)
+            {
+                list.Add(new ElementInfoModel()
+                {
+                    Amount = item.Amount,
+                    ElementInfoId = item.ElementInfoId,
+                    EmployeeId = item.EmployeeId,
+                    Time = item.Time
+                });
+            }
+
+            return list;
         }
 
         public static ElementModel Map(ProfileDTO profile)
@@ -68,7 +88,9 @@ namespace ERP.Client.Mapper
                 Contraction = profile.Contraction,
                 Surface = profile.Surface,
                 PlantOrderId = profile.PlantOrderId,
-                Filename = profile.Filename
+                Filename = profile.Filename,
+                DivisionId = profile.DivisionId,
+                ElementInfos = Map(profile.ElementInfos)
             };
         }
 

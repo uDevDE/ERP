@@ -179,6 +179,7 @@
     <Compile Include="Model\DivisionInfoModel.cs" />
     <Compile Include="Model\DivisionModel.cs" />
     <Compile Include="Model\ElementFilterModel.cs" />
+    <Compile Include="Model\ElementInfoModel.cs" />
     <Compile Include="Model\EmployeeModel.cs" />
     <Compile Include="Model\FileEntryInfoModel.cs" />
     <Compile Include="Model\FileEntryModel.cs" />

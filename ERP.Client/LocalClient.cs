@@ -7,6 +7,7 @@ namespace ERP.Client
         private static bool _initialized = false;
 
         public static EmployeeModel Employee { get; set; }
+        public static DivisionModel Division { get; set; }
 
         //public EmployeeModel Employees => EmployeeViewModel;
 

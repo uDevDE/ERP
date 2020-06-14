@@ -21,7 +21,8 @@ namespace ERP.Server.Host.Mapper
                 cfg.CreateMap<EmployeeDTO, Employee>().ReverseMap().ForMember(dest => dest.Device, opt => opt.Ignore());
                 cfg.CreateMap<DeviceDTO, Device>().ReverseMap().ForMember(dest => dest.Employee, opt => opt.MapFrom(src => src.Employee));
                 cfg.CreateMap<DeviceDTO, Device>().ReverseMap().ForMember(dest => dest.Division, opt => opt.MapFrom(src => src.Division));
-                cfg.CreateMap<ProfileDTO, Entities.Entity.Profile>().ReverseMap();
+                cfg.CreateMap<ElementInfoDTO, ElementInfo>().ReverseMap();
+                cfg.CreateMap<ProfileDTO, Entities.Entity.Profile>().ReverseMap().ForMember(dest => dest.ElementInfos, opt => opt.MapFrom(src => src.ElementInfos));
                 cfg.CreateMap<ElementFilterDTO, ElementFilter>().ReverseMap();
             });
 

@@ -174,7 +174,7 @@
                            Sorting="DataGridElementView_Sorting">
             <controls:DataGrid.Columns>
                 <controls:DataGridTextColumn Header="Id" Tag="Id" IsReadOnly="True" Binding="{Binding Id}"/>
-                <controls:DataGridTextColumn Header="Kürzel" Tag="Contraction" IsReadOnly="True" Binding="{Binding Contraction}" FontSize="18"/>
+                <controls:DataGridTextColumn Header="Typ" Tag="Contraction" IsReadOnly="True" Binding="{Binding Contraction}" FontSize="18"/>
                 <controls:DataGridTextColumn Header="Position" Tag="Position" IsReadOnly="True" Binding="{Binding Position}" FontSize="18"/>
                 <controls:DataGridTextColumn Header="Beschreibung" Tag="Description" IsReadOnly="True" Binding="{Binding Description}" MaxWidth="250"/>
                 <controls:DataGridTextColumn Header="Länge" Tag="Length" IsReadOnly="True" Binding="{Binding Length}"/>
