@@ -17,11 +17,11 @@ namespace ERP.Client.Mapper
                 cfg.AllowNullCollections = true;
                 cfg.CreateMap<DeviceDTO, DeviceModel>().ReverseMap();
                 cfg.CreateMap<EmployeeDTO, EmployeeModel>().ReverseMap();
-                cfg.CreateMap<DivisionDTO, DivisionModel>().ReverseMap();
+                cfg.CreateMap<DivisionInfoDTO, DivisionInfoModel>().ReverseMap();
+                cfg.CreateMap<DivisionDTO, DivisionModel>().ReverseMap().ForMember(dest => dest.DivisionType, opt => opt.MapFrom(src => src.DivisionType));
                 cfg.CreateMap<PlantOrderDTO, PlantOrderModel>().ReverseMap();
                 cfg.CreateMap<ElementDTO, ElementModel>().ReverseMap();
                 cfg.CreateMap<MaterialRequirementDTO, MaterialRequirementModel>().ReverseMap();
-                cfg.CreateMap<DivisionInfoDTO, DivisionInfoModel>().ReverseMap();
                 cfg.CreateMap<ProcessTemplateDTO, ProcessTemplateModel>().ReverseMap();
                 cfg.CreateMap<PlantOrderProcessDTO, PlantOrderProcessModel>().ReverseMap();
                 cfg.CreateMap<DivisionDTO, DivisionModel>().ReverseMap().ForMember(dest => dest.DivisionType, opt => opt.MapFrom(src => src.DivisionType)).ForMember(dest => dest.ProcessTemplates, opt => opt.MapFrom(src => src.ProcessTemplates));

@@ -1,14 +1,18 @@
-﻿using ERP.Client.Dialogs;
+﻿using ERP.Client.Collection;
+using ERP.Client.Dialogs;
 using ERP.Client.Model;
 using ERP.Client.ViewModel;
 using Microsoft.Toolkit.Uwp.UI.Controls;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
+using Windows.Devices.AllJoyn;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.UI;
@@ -34,6 +38,7 @@ namespace ERP.Client.Startup.View
         public DivisionViewModel DivisionCollection { get; private set; }
         public ElementFilterViewModel FilterCollection { get; private set; }
         public EmployeeModel CurrentEmployee { get; private set; }
+        public PlantOrderModel PlantOrder { get; private set; }
 
         public ElementViewerPage()
         {
@@ -74,23 +79,55 @@ namespace ERP.Client.Startup.View
             var dialogResult = await dialog.ShowAsync();
             if (dialogResult == ContentDialogResult.Primary)
             {
-                await GetElements();
+                if (dialog.Result == null || dialog.Division == null)
+                {
+                    var infoDialog = new InfoDialog("Einige Daten wurden nicht gefunden!", "Fehler", Core.Enums.InfoDialogType.Error);
+                    await infoDialog.ShowAsync();
+                }
+                //await GetElements();
+                await GetElements(dialog.Result, dialog.Division);
             }
 
             LoadingControl.IsLoading = false;
         }
 
-        private async Task GetElements()
+        private async Task GetElements(PlantOrderModel plantOrder, DivisionModel division)
         {
-            var elements = await Proxy.GetElements();
+            PlantOrder = plantOrder;
+            List<ElementModel> elements;
 
-            foreach (var element in elements)
+            if (division.DivisionType.DivisionType == Contracts.Domain.Core.Enums.DivisionType.Profile)
             {
-                element.Contraction = (element.Count % 2 == 0) ? "Bl" : "Fl";
-
-                Random rnd = new Random();
-                element.Amount = Math.Round(rnd.NextDouble() * element.Count);
+                elements = await Proxy.GetElementProfiles(plantOrder.Id, division.DivisionId);
+                DataGridElementView.Columns[2].Header = "Profil";
             }
+            else
+            {
+                elements = await Proxy.GetElements();
+                DataGridElementView.Columns[2].Header = "Position";
+                foreach (var element in elements)
+                {
+                    element.Contraction = (element.Count % 2 == 0) ? "Bl" : "Fl";
+
+                    Random rnd = new Random();
+                    element.Amount = Math.Round(rnd.NextDouble() * element.Count);
+                }
+            }
+
+            for (int i = 0; i < DivisionComboBox.Items.Count; i++)
+            {
+                if (DivisionComboBox.Items[i] is DivisionModel item)
+                {
+                    if (item.DivisionId == division.DivisionId)
+                    {
+                        DivisionComboBox.SelectedIndex = i;
+                        break;
+                    }
+                }
+            }
+
+            PlantOrderHeaderText.Text = string.Format("{0:s} - {1:s} - {2:s} - {3:s}", plantOrder.Number, plantOrder.Name, plantOrder.Section, plantOrder.Description);
+            LastRefreshText.Text = DateTime.Now.ToString("hh:mm:ss - ddd d MMM", CultureInfo.CreateSpecificCulture("de-DE"));
 
             ElementCollection.Load(elements);
         }
@@ -121,10 +158,10 @@ namespace ERP.Client.Startup.View
 
         private void ProgressBar_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
         {
-            /*if (sender is ProgressBar progressBar && progressBar.DataContext is ElementModel element)
+            if (sender is ProgressBar progressBar && progressBar.DataContext is ElementModel element)
             {
                 SetProgressBarColor(progressBar, element);
-            }*/
+            }
         }
 
         private void ProgressBar_EffectiveViewportChanged(FrameworkElement sender, EffectiveViewportChangedEventArgs args)
@@ -337,7 +374,7 @@ namespace ERP.Client.Startup.View
             var dialogResult = await dialog.ShowAsync();
             if (dialogResult == ContentDialogResult.Primary)
             {
-                await GetElements();
+                //await GetElements();
             }
         }
 
@@ -346,5 +383,28 @@ namespace ERP.Client.Startup.View
 
         }
 
+        private async void DivisionComboBox_DropDownClosed(object sender, object e)
+        {
+            var selectedItem = DivisionComboBox.SelectedItem;
+            if (selectedItem is DivisionModel division)
+            {
+                var session = new ProductionViewCollection();
+                if (await session.Load())
+                {
+                    await session.Update(PlantOrder, division);
+                }
+
+                await GetElements(PlantOrder, division);
+            }
+        }
+
+        private async void ButtonReload_Click(object sender, RoutedEventArgs e)
+        {
+            if (PlantOrder != null && DivisionComboBox.SelectedItem is DivisionModel division)
+            {
+                await GetElements(PlantOrder, division);
+                NotificationControl.Show($"{PlantOrder.Number} - {PlantOrder.Name} - {PlantOrder.Section} wurde aktualisiert", 3500);
+            }
+        }
     }
 }

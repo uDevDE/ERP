@@ -21,6 +21,7 @@ using Microsoft.Toolkit.Uwp.UI.Controls;
 using System.ServiceModel.Channels;
 using System.Threading.Tasks;
 using ERP.Client.Collection;
+using ERP.Client.Session;
 
 // The Content Dialog item template is documented at https://go.microsoft.com/fwlink/?LinkId=234238
 
@@ -29,6 +30,7 @@ namespace ERP.Client.Dialogs
     public sealed partial class ProjectDialog : ContentDialog
     {
         public PlantOrderModel Result { get; private set; }
+        public DivisionModel Division { get; private set; }
         public ProjectNumberViewModel ProjectNumberCollection { get; private set; }
         public PlantOrderViewModel PlantOrderCollection { get; private set; }
         public ObservableCollection<PlantOrderModel> FilteredPlantOrders { get; private set; }
@@ -56,8 +58,13 @@ namespace ERP.Client.Dialogs
 
             if (await ProductionCollection.Load())
             {
-                FilteredProductionOrders = new ObservableCollection<PlantOrderModel>(ProductionCollection.PlantOrderCollection.OrderBy(x => x.Number).ToList());
+                FilteredProductionOrders = new ObservableCollection<PlantOrderModel>(ProductionCollection.PlantOrderSession.OrderBy(x => x.PlantOrder.Number).Select(x => x.PlantOrder).ToList());
                 ListView.ItemsSource = FilteredProductionOrders;
+            }
+
+            if (ProductionCollection.PlantOrderSession?.Count == 0)
+            {
+                MainPivot.SelectedIndex = 1;
             }
         }
 
@@ -67,12 +74,22 @@ namespace ERP.Client.Dialogs
             var selectedItem = index == 0 ? ListView.SelectedItem : PlantOrderListView.SelectedItem;
             if (selectedItem is PlantOrderModel plantOrder)
             {
-                if (index == 1)
+                if (index == 1 && DivisionComboBox.SelectedItem is DivisionModel division)
                 {
-                    await ProductionCollection.Add(plantOrder);
+                    var session = new ProjectPlantOrderSession() { PlantOrder = plantOrder, Division = division };
+                    await ProductionCollection.Add(session);
+                    Division = division;
+                    Result = plantOrder;
                 }
-
-                Result = plantOrder;
+                else if (index == 0)
+                {
+                    var session = ProductionCollection.Find(plantOrder);
+                    if (session != null)
+                    {
+                        Division = session.Division;
+                        Result = session.PlantOrder;
+                    }
+                }
             }
             else
             {
@@ -194,9 +211,12 @@ namespace ERP.Client.Dialogs
 
         private void FilterTextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
-            var filtered = ProductionCollection.PlantOrderCollection.Where(x => Filter(x, FilterTextBox.Text));
-            Remove_NonMatching(filtered);
-            AddBack_Contacts(filtered);
+            if (ProductionCollection.PlantOrderSession?.Count > 0)
+            {
+                var filtered = ProductionCollection.PlantOrderSession.Where(x => Filter(x.PlantOrder, FilterTextBox.Text)).Select(x => x.PlantOrder).ToList();
+                Remove_NonMatching(filtered);
+                AddBack_Contacts(filtered);
+            }
         }
 
         private async void ButtonDeletePlantOrder_Click(object sender, RoutedEventArgs e)

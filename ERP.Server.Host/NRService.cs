@@ -181,7 +181,11 @@ namespace ERP.Server.Host
             try
             {
                 var context = new EmployeeContext();
-                var divisions = context.Divisions.ToList();
+                var divisions = context.Divisions.Include(x => x.DivisionType).ToList();
+                foreach (var item in divisions)
+                {
+                    Console.WriteLine($"DivisionId: {item.DivisionId} - DivisionInfoId: {item.DivisionType.DivisionInfoId}");
+                }
                 var result = AutoMapperConfiguration.Mapper.Map<List<Division>, List<DivisionDTO>>(divisions);
                 return Task.FromResult(result);
             }
@@ -579,6 +583,22 @@ namespace ERP.Server.Host
             }
         }
 
+        public Task<List<ProfileDTO>> GetElementProfilesAsync(int plantOrderId, int divisionId)
+        {
+            try
+            {
+                var context = new ElementContext();
+                var list = context.Profiles.Where(x => x.PlantOrderId == plantOrderId && x.DivisionId == divisionId).ToList();
+                var profiles = AutoMapperConfiguration.Mapper.Map<List<Profile>, List<ProfileDTO>>(list);
+                return Task.FromResult(profiles);
+            }
+            catch (Exception ex)
+            {
+                PrintException(ex);
+                throw new FaultException(ex.Message, new FaultCode("GetProfiles"), "GetProfiles");
+            }
+        }
+
         public Task<List<ProcessTemplateDTO>> GetProcessTemplates()
         {
             try
@@ -746,7 +766,7 @@ namespace ERP.Server.Host
                 }
          */
 
-        public async Task<bool> UpdateProfileAsync(ProfileDTO profile)
+        public async Task<bool> UpdateProfileAsync(int employeeId, ProfileDTO profile)
         {
             try
             {
@@ -755,6 +775,11 @@ namespace ERP.Server.Host
                 var result = context.Profiles.Find(profile.ProfileId);
                 if (result != null)
                 {
+                    if (result.Amount != entity.Amount)
+                    {
+                        result.ElementInfos.Add(new ElementInfo { Amount = entity.Amount, Time = DateTime.Now, EmployeeId = employeeId });
+                    }
+
                     result.Amount = entity.Amount;
                     result.Contraction = entity.Contraction;
                     result.Count = entity.Count;

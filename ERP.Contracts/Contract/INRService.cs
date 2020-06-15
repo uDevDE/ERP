@@ -71,6 +71,9 @@ namespace ERP.Contracts.Contract
         Task<List<ElementDTO>> GetElements();
 
         [OperationContract(IsOneWay = false)]
+        Task<List<ProfileDTO>> GetElementProfilesAsync(int plantOrderId, int divisionId);
+
+        [OperationContract(IsOneWay = false)]
         Task<List<ProcessTemplateDTO>> GetProcessTemplates();
 
         [OperationContract(IsOneWay = false)]
@@ -89,7 +92,7 @@ namespace ERP.Contracts.Contract
         Task<List<ProfileDTO>> GetProfilesAsync(int plantOrderId);
 
         [OperationContract(IsOneWay = false)]
-        Task<bool> UpdateProfileAsync(ProfileDTO profile);
+        Task<bool> UpdateProfileAsync(int employeeId, ProfileDTO profile);
 
         [OperationContract(IsOneWay = false)]
         Task<bool> DeleteProfileAsync(int profileId);

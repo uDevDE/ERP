@@ -94,8 +94,10 @@
                         </PivotItem.Header>
                     </PivotItem>
                 </Pivot>-->
-                <WebView x:Name="PdfViewerControl" LoadCompleted="PdfViewerControl_LoadCompleted"
+                <Grid>
+                    <WebView x:Name="PdfViewerControl" LoadCompleted="PdfViewerControl_LoadCompleted"
                          Source="ms-appx-web:///Assets/PdfViewer/web/viewer.html"/>
+                </Grid>
             </PivotItem>
 
             <PivotItem Header="Materialanforderungen">
@@ -164,6 +166,9 @@
                     </GridView>
                 </Grid>
             </PivotItem>
+            <PivotItem Header="Notizen">
+                
+            </PivotItem>
         </Pivot>
 
         <Grid Grid.Column="1" Margin="2 20 2 0">
@@ -173,13 +178,26 @@
                            FontSize="22" MinWidth="250"/>
                     <TextBlock Text="{Binding ElementCollection.SelectedElement.Description}" Margin="8 0 0 8"
                                FontSize="18" MinWidth="250"/>
-                    <muxc:NumberBox MaxWidth="250" SmallChange="1" LargeChange="10"
-                                    IsHoldingEnabled="False" Minimum="0" Maximum="{Binding ElementCollection.SelectedElement.Count}"
+                    <!--<muxc:NumberBox MaxWidth="250" SmallChange="1" LargeChange="0" x:Name="AmountNumberBox"
+                                    Minimum="0" Maximum="{Binding ElementCollection.SelectedElement.Count, Mode=OneWay}"
                                     SpinButtonPlacementMode="Inline" MinWidth="150"
-                                    Margin="8 0 10 0" HorizontalAlignment="Left" ValueChanged="NumberBox_ValueChanged"
-                                    Value="{Binding ElementCollection.SelectedElement.Amount, Mode=OneWay}"/>
+                                    Margin="8 0 10 0" HorizontalAlignment="Left" ValueChanged="NumberBox_ValueChanged"/>-->
+                    <StackPanel Orientation="Horizontal">
+                        <TextBox MaxWidth="150" x:Name="AmountTextBox" MinWidth="120" Margin="8 0 10 0" 
+                                 HorizontalAlignment="Left" BeforeTextChanging="AmountTextBox_BeforeTextChanging" 
+                                 TextChanged="AmountTextBox_TextChanged" VerticalAlignment="Center" FontSize="24"
+                                 Text="{x:Bind ElementCollection.SelectedElement.Amount, Mode=OneWay, Converter={StaticResource DoubleToStringConverter}}"
+                                 Tag="{x:Bind ElementCollection.SelectedElement.Count, Mode=OneWay, Converter={StaticResource DoubleToStringConverter}}"
+                                 KeyUp="AmountTextBox_KeyUp"/>
+
+                        <Button x:Name="ButtonIncrease" Content="&#xECC8;" FontFamily="Segoe MDL2 Assets" 
+                                FontSize="36" Foreground="ForestGreen" Click="ButtonIncrease_Click"/>
+
+                        <Button x:Name="ButtonDecrease" Content="&#xECC9;" FontFamily="Segoe MDL2 Assets" 
+                                FontSize="36" Margin="12 0 0 0" Foreground="Crimson" Click="ButtonDecrease_Click"/>
+                    </StackPanel>
                 </StackPanel>
-                
+
                 <Button RelativePanel.Below="AmountStackPanel" x:Name="ButtonAddProfile" Margin="8 20 0 0"
                         Click="ButtonAddProfile_Click">
                     <StackPanel Orientation="Horizontal">

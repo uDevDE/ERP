@@ -43,6 +43,8 @@ namespace ERP.Client.Startup.View
     /// </summary>
     public sealed partial class ProjectContentPage : Page
     {
+        private bool _valueChanged;
+
         public delegate void PdfViewerButtonToggledClickedHandler(PdfViewerPage pdfViewer, PdfFileModel pdfFile);
         public event PdfViewerButtonToggledClickedHandler PdfViewerButtonToggledClicked;
 
@@ -160,6 +162,10 @@ namespace ERP.Client.Startup.View
                 ElementCollection.Load(profiles);
             }
 
+            ElementView.ItemsSource = ElementCollection.Elements;
+
+            //PdfViewerFrame.Content = new PdfWebViewContentPage();
+
             if (!PageLoaded)
             {
                 var fullFilePath = Path.Combine(RemoteRootPath, FileEntry.FilePath).Replace("/", @"\");
@@ -192,10 +198,6 @@ namespace ERP.Client.Startup.View
                     PdfViewerControl.Source = url;*/
                 }
             }
-
-            ElementView.ItemsSource = ElementCollection.Elements;
-
-            //PdfViewerFrame.Content = new PdfWebViewContentPage();
         }
 
         private void DataGridMaterialRequirements_LoadingRowGroup(object sender, DataGridRowGroupHeaderEventArgs e)
@@ -326,13 +328,21 @@ namespace ERP.Client.Startup.View
             }
         }
 
-        private void NumberBox_ValueChanged(Microsoft.UI.Xaml.Controls.NumberBox sender, Microsoft.UI.Xaml.Controls.NumberBoxValueChangedEventArgs args)
+        /*private void NumberBox_ValueChanged(Microsoft.UI.Xaml.Controls.NumberBox sender, Microsoft.UI.Xaml.Controls.NumberBoxValueChangedEventArgs args)
         {
+            if (_valueChanged)
+            {
+                _valueChanged = false;
+                return;
+            }
+
             if (ElementCollection.SelectedElement != null)
             {
-                ElementCollection.SelectedElement.Amount = sender.Value;
+                ElementCollection.SelectedElement.Amount = args.NewValue;
             }
-        }
+
+            sender.Focus(FocusState.Programmatic);
+        }*/
 
         private async void ButtonAddProfile_Click(object sender, RoutedEventArgs e)
         {
@@ -484,7 +494,84 @@ namespace ERP.Client.Startup.View
 
         private void ElementView_ItemClick(object sender, ItemClickEventArgs e)
         {
+            if (e.ClickedItem is ElementModel element)
+            {
+                _valueChanged = true;
+                //AmountTextBox.Text = element.Amount.ToString();
+                //AmountTextBox.Tag = element.Count;
+            }
+        }
+
+        private void AmountTextBox_BeforeTextChanging(TextBox sender, TextBoxBeforeTextChangingEventArgs args)
+        {
+            if (double.TryParse(args.NewText, out double amount) && double.TryParse(sender.Tag?.ToString(), out double count))
+            {
+                if (amount > count)
+                {
+                    args.Cancel = true;
+                    return;
+                }
+            }
+
+            args.Cancel = args.NewText.Any(c => !char.IsDigit(c));
+        }
+
+        private void AmountTextBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (sender is TextBox textBox)
+            {
+                textBox.Text = new string(textBox.Text.Where(char.IsDigit).ToArray());
+            }
+        }
+
+        private async void ButtonIncrease_Click(object sender, RoutedEventArgs e)
+        {
+            if (double.TryParse(AmountTextBox.Text, out double amount) && double.TryParse(AmountTextBox.Tag.ToString(), out double count))
+            {
+                if (count > amount)
+                {
+                    ElementCollection.SelectedElement.Amount++;
+                    await Task.Delay(500);
+                }
+            }
+        }
+
+        private async void ButtonDecrease_Click(object sender, RoutedEventArgs e)
+        {
+            if (double.TryParse(AmountTextBox.Text, out double amount) && double.TryParse(AmountTextBox.Tag.ToString(), out double _))
+            {
+                if (amount > 0)
+                {
+                    ElementCollection.SelectedElement.Amount--;
+                    await Task.Delay(500);
+                }
+            }
+        }
+
+        private void AmountTextBox_KeyUp(object sender, KeyRoutedEventArgs e)
+        {
+            if (e.Key == Windows.System.VirtualKey.Enter)
+            {
+                if (double.TryParse(AmountTextBox.Text, out double amount) && double.TryParse(AmountTextBox.Tag.ToString(), out double count))
+                {
+                    if (amount > count)
+                    {
+                        return;
+                    }
+
+                    if (amount != ElementCollection.SelectedElement.Amount)
+                    {
+                        ElementCollection.SelectedElement.Amount = amount;
+                        ElementAmountChanged(ElementCollection.SelectedElement);
+                    }
+                }
+            }
+        }
+
+        private void ElementAmountChanged(ElementModel element)
+        {
 
         }
+
     }
 }

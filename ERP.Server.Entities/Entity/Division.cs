@@ -8,8 +8,6 @@ namespace ERP.Server.Entities.Entity
     [Table("Division")]
     public class Division : IDivision
     {
-        public Division() => DivisionType = new DivisionInfo();
-
         [Key]
         [Required]
         public int DivisionId { get; set; }

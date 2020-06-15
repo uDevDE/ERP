@@ -127,11 +127,11 @@
 
                 <AppBarButton Icon="OpenFile" Label="Projekt wechseln" x:Name="ButtonOpenProject"
                               Click="ButtonOpenProject_Click"/>
-                <AppBarButton Icon="Refresh" Label="Neu laden"/>
+                <AppBarButton Icon="Refresh" Label="Neu laden" x:Name="ButtonReload" Click="ButtonReload_Click"/>
             </CommandBar>
 
             <ComboBox Header="Arbeitsplatz" Width="220" Margin="60 0 0 10" ItemsSource="{x:Bind DivisionCollection.Divisions}"
-                      DisplayMemberPath="Name"/>
+                      DisplayMemberPath="Name" x:Name="DivisionComboBox" DropDownClosed="DivisionComboBox_DropDownClosed"/>
 
             <StackPanel Margin="40 0 0 0" Visibility="{x:Bind FilterCollection.SelectedFilter, Converter={StaticResource NullToVisibilityConverter}}"
                         VerticalAlignment="Center">
@@ -163,7 +163,14 @@
             </StackPanel>
         </StackPanel>
 
-        <controls:DataGrid x:Name="DataGridElementView" Margin="12" Grid.Row="1"
+        <TextBlock FontSize="18" FontWeight="Medium" x:Name="PlantOrderHeaderText" Grid.Row="1"
+                   Margin="12 2 2 0" HorizontalAlignment="Left" VerticalAlignment="Top"
+                   MaxWidth="1200"/>
+
+        <TextBlock FontSize="18" x:Name="LastRefreshText" Grid.Row="1" Margin="0 2 20 2"
+                   HorizontalAlignment="Right" VerticalAlignment="Top" ToolTipService.ToolTip="Letzte Aktualisierung"/>
+
+        <controls:DataGrid x:Name="DataGridElementView" Margin="12 30 12 12" Grid.Row="1"
                            HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalScrollBarVisibility="Auto"
                            VerticalScrollBarVisibility="Auto" AlternatingRowBackground="Transparent" AlternatingRowForeground="Gray"
                            AreRowDetailsFrozen="False" AreRowGroupHeadersFrozen="True" AutoGenerateColumns="False"
@@ -215,5 +222,9 @@
                            TextWrapping="Wrap" MaxWidth="600"/>
             </StackPanel>
         </controls:Loading>
+
+
+        <controls:InAppNotification x:Name="NotificationControl" ShowDismissButton="True" AnimationDuration="00:00:00.1000000"
+                                    VerticalOffset="100" HorizontalOffset="0" StackMode="Replace" Grid.Row="1"/>
     </Grid>
 </Page>

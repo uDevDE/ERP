@@ -430,11 +430,31 @@ namespace ERP.Client
             return await Task.FromResult<List<ElementModel>>(null);
         }
 
-        public async static Task<bool> UpdateProfileAsync(ProfileDTO profile)
+        public async static Task<List<ElementModel>> GetElementProfiles(int plantOrderId, int divisionId)
         {
             if (IsConnected && IsDeviceIdValid)
             {
-                return await _proxy.UpdateProfileAsync(profile);
+                var profiles = await _proxy.GetElementProfilesAsync(plantOrderId, divisionId);
+                if (profiles != null)
+                {
+                    var elements = new List<ElementModel>();
+                    foreach (var profile in profiles)
+                    {
+                        elements.Add(AutoMapperConfiguration.Map(profile));
+                    }
+
+                    return await Task.FromResult(elements);
+                }
+            }
+
+            return await Task.FromResult<List<ElementModel>>(null);
+        }
+
+        public async static Task<bool> UpdateProfileAsync(ProfileDTO profile)
+        {
+            if (IsConnected && IsDeviceIdValid && LocalClient.Employee != null)
+            {
+                return await _proxy.UpdateProfileAsync(LocalClient.Employee.EmployeeId, profile);
             }
 
             return await Task.FromResult(false);

@@ -39,6 +39,7 @@ namespace ERP.Client.Dialogs
         public ProfileDialog(ElementModel element)
         {
             this.InitializeComponent();
+            PrimaryButtonText = "Aktualisieren";
             Mode = ProfileDialogMode.Edit;
             _id = element.Id;
             Init();
@@ -56,6 +57,7 @@ namespace ERP.Client.Dialogs
 
             List<string> items = ConboBoxContraction.Items.Cast<ComboBoxItem>().Select(item => item.Content.ToString()).ToList();
             ConboBoxContraction.SelectedIndex = items.FindIndex(x => x.Equals(element.Contraction));
+
         }
 
         private void Init()
@@ -66,6 +68,8 @@ namespace ERP.Client.Dialogs
 
         private bool CheckDataInput()
         {
+            double count;
+            double amount;
             bool result = true;
             ErrorText.Visibility = Visibility.Collapsed;
             TextBoxProfileNumber.BorderBrush = _colorSuccess;
@@ -80,14 +84,14 @@ namespace ERP.Client.Dialogs
                 result =  false;
             }
 
-            if (!double.TryParse(TextBoxCount.Text, out double count))
+            if (!double.TryParse(TextBoxCount.Text, out count))
             {
                 ErrorText.Visibility = Visibility.Visible;
                 TextBoxCount.BorderBrush = _colorFailed;
                 result = false;
             }
 
-            if (!double.TryParse(TextBoxAmount.Text, out double amount))
+            if (!double.TryParse(TextBoxAmount.Text, out amount))
             {
                 ErrorText.Visibility = Visibility.Visible;
                 TextBoxAmount.BorderBrush = _colorFailed;
@@ -98,6 +102,14 @@ namespace ERP.Client.Dialogs
             {
                 ErrorText.Visibility = Visibility.Visible;
                 TextBoxLength.BorderBrush = _colorFailed;
+                result = false;
+            }
+
+            if (amount > count)
+            {
+                ErrorText.Visibility = Visibility.Visible;
+                TextBoxCount.BorderBrush = _colorFailed;
+                TextBoxAmount.BorderBrush = _colorFailed;
                 result = false;
             }
 

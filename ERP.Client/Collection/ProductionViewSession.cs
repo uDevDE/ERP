@@ -1,4 +1,5 @@
 ﻿using ERP.Client.Model;
+using ERP.Client.Session;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -11,11 +12,11 @@ namespace ERP.Client.Collection
     public class ProductionViewCollection
     {
         private static readonly string JsonFile = "ProductionViewCollection.dat";
-        public List<PlantOrderModel> PlantOrderCollection { get; private set; }
+        public List<ProjectPlantOrderSession> PlantOrderSession { get; private set; }
 
         public ProductionViewCollection()
         {
-            PlantOrderCollection = new List<PlantOrderModel>();
+            PlantOrderSession = new List<ProjectPlantOrderSession>();
         }
 
         public async Task<bool> Load()
@@ -23,7 +24,7 @@ namespace ERP.Client.Collection
             var json = await DeserializeFileAsync(JsonFile);
             if (json != null)
             {
-                PlantOrderCollection = JsonConvert.DeserializeObject<List<PlantOrderModel>>(json);
+                PlantOrderSession = JsonConvert.DeserializeObject<List<ProjectPlantOrderSession>>(json);
                 return await Task.FromResult(true);
             }
 
@@ -34,7 +35,7 @@ namespace ERP.Client.Collection
         {
             try
             {
-                var json = JsonConvert.SerializeObject(PlantOrderCollection);
+                var json = JsonConvert.SerializeObject(PlantOrderSession);
                 var file = await ApplicationData.Current.LocalFolder.CreateFileAsync(JsonFile, CreationCollisionOption.ReplaceExisting);
                 await FileIO.WriteTextAsync(file, json);
                 return await Task.FromResult(true);
@@ -45,11 +46,21 @@ namespace ERP.Client.Collection
             }
         }
 
-        public Task<bool> Add(PlantOrderModel plantOrder)
+        public Task<bool> Add(ProjectPlantOrderSession session)
         {
-            if (!PlantOrderCollection.Exists(x => x.Number == plantOrder.Number))
+            if (!PlantOrderSession.Exists(x => x.PlantOrder.Number == session.PlantOrder.Number))
             {
-                PlantOrderCollection.Add(plantOrder);
+                PlantOrderSession.Add(session);
+                return Save();
+            }
+
+            return Task.FromResult(false);
+        }
+
+        public Task<bool> Remove(ProjectPlantOrderSession session)
+        {
+            if (PlantOrderSession.Remove(session))
+            {
                 return Save();
             }
 
@@ -58,8 +69,51 @@ namespace ERP.Client.Collection
 
         public Task<bool> Remove(PlantOrderModel plantOrder)
         {
-            if (PlantOrderCollection.Remove(plantOrder))
+            bool result = false;
+            for (int i = PlantOrderSession.Count - 1; i >= 0; i--)
             {
+                if (PlantOrderSession[i].PlantOrder == plantOrder)
+                {
+                    PlantOrderSession.RemoveAt(i);
+                    result = true;
+                    break;
+                }
+            }
+
+            if (result)
+            {
+                return Save();
+            }
+            else
+            {
+                return Task.FromResult(false);
+            }
+        }
+
+        public ProjectPlantOrderSession Find(PlantOrderModel plantOrder)
+        {
+            foreach (var item in PlantOrderSession)
+            {
+                if (item.PlantOrder == plantOrder)
+                {
+                    return item;
+                }
+            }
+
+            return null;
+        }
+
+        public Task<bool> Update(PlantOrderModel plantOrder, DivisionModel division)
+        {
+            if (PlantOrderSession != null)
+            {
+                foreach (var item in PlantOrderSession)
+                {
+                    if (item.PlantOrder.Id == plantOrder.Id)
+                    {
+                        item.Division = division;
+                    }
+                }
                 return Save();
             }
 
