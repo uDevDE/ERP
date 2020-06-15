@@ -188,7 +188,7 @@
                                  TextChanged="AmountTextBox_TextChanged" VerticalAlignment="Center" FontSize="24"
                                  Text="{x:Bind ElementCollection.SelectedElement.Amount, Mode=OneWay, Converter={StaticResource DoubleToStringConverter}}"
                                  Tag="{x:Bind ElementCollection.SelectedElement.Count, Mode=OneWay, Converter={StaticResource DoubleToStringConverter}}"
-                                 KeyUp="AmountTextBox_KeyUp"/>
+                                 KeyUp="AmountTextBox_KeyUp" LosingFocus="AmountTextBox_LosingFocus"/>
 
                         <Button x:Name="ButtonIncrease" Content="&#xECC8;" FontFamily="Segoe MDL2 Assets" 
                                 FontSize="36" Foreground="ForestGreen" Click="ButtonIncrease_Click"/>
@@ -209,7 +209,7 @@
                         x:Name="TestButton" Click="TestButton_Click" Visibility="Collapsed"/>
 
                 <ListView RelativePanel.Below="ButtonAddProfile" Margin="0 20 0 0" SelectedIndex="0"
-                          MinWidth="350" x:Name="ElementView" SelectionChanged="ElementView_SelectionChanged"
+                          MinWidth="350" x:Name="ElementView"
                           IsItemClickEnabled="True" ItemClick="ElementView_ItemClick">
                     <ListView.ItemContainerStyle>
                         <Style TargetType="ListViewItem">

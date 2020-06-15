@@ -43,8 +43,6 @@ namespace ERP.Client.Startup.View
     /// </summary>
     public sealed partial class ProjectContentPage : Page
     {
-        private bool _valueChanged;
-
         public delegate void PdfViewerButtonToggledClickedHandler(PdfViewerPage pdfViewer, PdfFileModel pdfFile);
         public event PdfViewerButtonToggledClickedHandler PdfViewerButtonToggledClicked;
 
@@ -282,16 +280,6 @@ namespace ERP.Client.Startup.View
             }
         }
 
-        private void ElementView_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            var selectedElement = ElementView.SelectedItem;
-            if (selectedElement is ElementModel element)
-            {
-                ElementCollection.SelectedElement = element;
-            }
-        }
-
-
         public static SolidColorBrush PercentToColor(double percent)
         {
             if (percent < 0 || percent > 1) { return new SolidColorBrush(Colors.Transparent); }
@@ -496,9 +484,7 @@ namespace ERP.Client.Startup.View
         {
             if (e.ClickedItem is ElementModel element)
             {
-                _valueChanged = true;
-                //AmountTextBox.Text = element.Amount.ToString();
-                //AmountTextBox.Tag = element.Count;
+                ElementCollection.SelectedElement = element;
             }
         }
 
@@ -564,6 +550,23 @@ namespace ERP.Client.Startup.View
                         ElementCollection.SelectedElement.Amount = amount;
                         ElementAmountChanged(ElementCollection.SelectedElement);
                     }
+                }
+            }
+        }
+
+        private void AmountTextBox_LosingFocus(UIElement sender, LosingFocusEventArgs args)
+        {
+            if (double.TryParse(AmountTextBox.Text, out double amount) && double.TryParse(AmountTextBox.Tag.ToString(), out double count))
+            {
+                if (amount > count)
+                {
+                    return;
+                }
+
+                if (amount != ElementCollection.SelectedElement.Amount)
+                {
+                    ElementCollection.SelectedElement.Amount = amount;
+                    ElementAmountChanged(ElementCollection.SelectedElement);
                 }
             }
         }
