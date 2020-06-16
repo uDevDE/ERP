@@ -1,13 +1,11 @@
-﻿using ERP.Client.Core.Enums;
-using ERP.Client.Model;
+﻿using ERP.Client.Model;
 using ERP.Client.utils;
-using ERP.Contracts.Domain;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices.ComTypes;
 using Windows.UI.Xaml.Data;
 
 namespace ERP.Client.ViewModel
@@ -51,10 +49,10 @@ namespace ERP.Client.ViewModel
             get { return _selectedElement; }
             set
             {
-                if (_selectedElement != value)
+                if (_selectedElement != value && value != null)
                 {
                     _selectedElement = value;
-                    RaisePropertyChanged("SelectedElement");
+                    RaisePropertyChanged();
                 }
             }
         }
@@ -106,7 +104,7 @@ namespace ERP.Client.ViewModel
 
         public void Remove(ElementModel element) => Elements.Remove(element);
 
-        private void RaisePropertyChanged(string propertyName) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        private void RaisePropertyChanged([CallerMemberName] string propertyName = null) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 
     }
 }

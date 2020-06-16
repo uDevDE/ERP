@@ -109,7 +109,8 @@
         <controls:Loading x:Name="LoadingControl">
             <StackPanel Padding="12" Opacity="0.9" HorizontalAlignment="Center" VerticalAlignment="Center">
                 <ProgressRing IsActive="True" Width="200" Height="200" Foreground="Crimson"/>
-                <TextBlock Text="Lade Daten..." VerticalAlignment="Center" FontSize="32" FontWeight="Medium" Margin="0 30 0 0"/>
+                <TextBlock Text="Lade Daten..." VerticalAlignment="Center" FontSize="32" FontWeight="Medium" Margin="0 30 0 0"
+                           x:Name="LoadingText"/>
             </StackPanel>
         </controls:Loading>
 

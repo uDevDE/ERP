@@ -1,6 +1,7 @@
 ﻿using ERP.Client.Collection;
 using ERP.Client.Dialogs;
 using ERP.Client.Model;
+using ERP.Client.Session;
 using ERP.Client.ViewModel;
 using Microsoft.Toolkit.Uwp.UI.Controls;
 using System;
@@ -70,11 +71,33 @@ namespace ERP.Client.Startup.View
             var divisions = await Proxy.GetAllDivisions();
             DivisionCollection.Load(divisions);
 
-            var filters = await Proxy.GetFiltersAsync(21903, CurrentEmployee.EmployeeId);
-            FilterCollection.Load(filters);
-
             DataGridElementView.ItemsSource = ElementCollection.Elements;
 
+            var sessionExists = await ElementViewSession.FileExistsAsync();
+
+            if (!sessionExists)
+            {
+                await ShowProjectDialog();
+            }
+            else
+            {
+                LoadingText.Text = "Die letzte Sitzung wird wieder hergestellt";
+                var session = await ElementViewSession.LoadAsync();
+                if (session == null || session.Divison == null || session.PlantOder == null)
+                {
+                    await ShowProjectDialog();
+                }
+                else
+                {
+                    await GetElements(session.PlantOder, session.Divison);
+                }
+            }
+
+            LoadingControl.IsLoading = false;
+        }
+
+        public async Task ShowProjectDialog()
+        {
             var dialog = new ProjectDialog(DivisionCollection);
             var dialogResult = await dialog.ShowAsync();
             if (dialogResult == ContentDialogResult.Primary)
@@ -87,14 +110,15 @@ namespace ERP.Client.Startup.View
                 //await GetElements();
                 await GetElements(dialog.Result, dialog.Division);
             }
-
-            LoadingControl.IsLoading = false;
         }
 
         private async Task GetElements(PlantOrderModel plantOrder, DivisionModel division)
         {
             PlantOrder = plantOrder;
             List<ElementModel> elements;
+
+            var filters = await Proxy.GetFiltersAsync(plantOrder.Id, CurrentEmployee.EmployeeId);
+            FilterCollection.Load(filters);
 
             if (division.DivisionType.DivisionType == Contracts.Domain.Core.Enums.DivisionType.Profile)
             {
@@ -128,6 +152,12 @@ namespace ERP.Client.Startup.View
 
             PlantOrderHeaderText.Text = string.Format("{0:s} - {1:s} - {2:s} - {3:s}", plantOrder.Number, plantOrder.Name, plantOrder.Section, plantOrder.Description);
             LastRefreshText.Text = DateTime.Now.ToString("hh:mm:ss - ddd d MMM", CultureInfo.CreateSpecificCulture("de-DE"));
+
+            var session = new ElementViewSession() { Divison = division, PlantOder = plantOrder };
+            if (await ElementViewSession.SaveAsync(session) == false)
+            {
+                NotificationControl.Show("Die aktuelle Sitzung konnte nicht gespeichert werden", 4000);
+            }
 
             ElementCollection.Load(elements);
         }
@@ -228,7 +258,7 @@ namespace ERP.Client.Startup.View
                 "[Abbrechen] Der Filter wird nicht erstellt");
             await yesNoDialog.ShowAsync();
 
-            if (yesNoDialog.Result != Dialogs.Core.Enums.YesNoDialogType.Abort)
+            if (yesNoDialog.Result != Dialogs.Core.Enums.YesNoDialogType.Abort && PlantOrder != null)
             {
                 var selectedProperty = (ComboBoxFilterProperty.SelectedItem as ComboBoxItem).Tag.ToString();
                 var selectedAction = (ComboBoxFilterAction.SelectedItem as ComboBoxItem).Tag.ToString();
@@ -239,7 +269,7 @@ namespace ERP.Client.Startup.View
                     PropertyName = selectedProperty,
                     Filter = filter,
                     EmployeeId = CurrentEmployee.EmployeeId,
-                    PlantOrderId = 21903
+                    PlantOrderId = PlantOrder.Id
                 };
 
                 FilterCollection.Add(elementFilter);
@@ -406,5 +436,7 @@ namespace ERP.Client.Startup.View
                 NotificationControl.Show($"{PlantOrder.Number} - {PlantOrder.Name} - {PlantOrder.Section} wurde aktualisiert", 3500);
             }
         }
+
+
     }
 }

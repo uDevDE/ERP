@@ -879,5 +879,36 @@ namespace ERP.Server.Host
             }
         }
 
+        public async Task<double> UpdateProfileAmountAsync(int employeeId, int profileId, double amount)
+        {
+            try
+            {
+                var context = new ElementContext();
+                var profile = context.Profiles.Find(profileId);
+                if (profile != null)
+                {
+                    if (profile.Count > amount && amount > 0)
+                    {
+                        profile.Amount = amount;
+                        profile.ElementInfos.Add(new ElementInfo() { Amount = amount, EmployeeId = employeeId, Time = DateTime.Now });
+
+                        context.Entry(profile).State = EntityState.Modified;
+                        var result = await context.SaveChangesAsync();
+                        if (result > 0)
+                        {
+                            return await Task.FromResult(profile.Amount);
+                        }
+                    }
+                }
+
+                return await Task.FromResult<double>(-1);
+            }
+            catch (Exception ex)
+            {
+                PrintException(ex);
+                throw new FaultException(ex.Message, new FaultCode("UpdateProfileAmountAsync"), "UpdateProfileAmountAsync");
+            }
+        }
+
     }
 }

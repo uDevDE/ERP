@@ -25,6 +25,7 @@ using Windows.Foundation.Collections;
 using Windows.Storage;
 using Windows.Storage.Streams;
 using Windows.UI;
+using Windows.UI.Core;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -50,6 +51,7 @@ namespace ERP.Client.Startup.View
 
         public bool PageLoaded { get; private set; }
         public string RemoteRootPath { get; private set; }
+        public bool LoadedFromSession { get; private set; }
 
         public ProjectPreviewType ProjectPreviewType { get; private set; }
         public FolderModel Folder { get; private set; }
@@ -83,7 +85,7 @@ namespace ERP.Client.Startup.View
         {
             object[] args = e.Parameter as object[];
 
-            if (args.Length == 4)
+            if (args.Length == 5)
             {
                 if (args[0] is ProjectPreviewType type && args[1] is FolderModel folder)
                 {
@@ -98,6 +100,12 @@ namespace ERP.Client.Startup.View
                     {
                         PlantOrder = plantOrder;
                     }
+
+                    if (args[4] is bool loadFromSession)
+                    {
+                        LoadedFromSession = loadFromSession;
+                        LoadingText.Text = "Stelle letzte Sitzung wieder her...";
+                    }
                 }
             }
 
@@ -107,8 +115,8 @@ namespace ERP.Client.Startup.View
 
         private async void Page_Loaded(object sender, RoutedEventArgs e)
         {
-            if (PageLoaded)
-                return;
+            //if (PageLoaded)
+                //return;
 
             if (FileEntry == null && PlantOrder == null)
             {
@@ -148,11 +156,11 @@ namespace ERP.Client.Startup.View
                 DataGridMaterialRequirements.ItemsSource = MaterialRequirementsViewModel.GroupData().View;
             }
 
-            var elements = await Proxy.GetElements();
+            /*var elements = await Proxy.GetElements();
             if (elements != null)
             {
                 ElementCollection.Load(elements);
-            }
+            }*/
 
             var profiles = await Proxy.GetProfiles(PlantOrder.Id);
             if (profiles != null)
@@ -316,22 +324,6 @@ namespace ERP.Client.Startup.View
             }
         }
 
-        /*private void NumberBox_ValueChanged(Microsoft.UI.Xaml.Controls.NumberBox sender, Microsoft.UI.Xaml.Controls.NumberBoxValueChangedEventArgs args)
-        {
-            if (_valueChanged)
-            {
-                _valueChanged = false;
-                return;
-            }
-
-            if (ElementCollection.SelectedElement != null)
-            {
-                ElementCollection.SelectedElement.Amount = args.NewValue;
-            }
-
-            sender.Focus(FocusState.Programmatic);
-        }*/
-
         private async void ButtonAddProfile_Click(object sender, RoutedEventArgs e)
         {
             var dialog = new ProfileDialog();
@@ -484,6 +476,7 @@ namespace ERP.Client.Startup.View
         {
             if (e.ClickedItem is ElementModel element)
             {
+                if (element != null)
                 ElementCollection.SelectedElement = element;
             }
         }
@@ -512,29 +505,37 @@ namespace ERP.Client.Startup.View
 
         private async void ButtonIncrease_Click(object sender, RoutedEventArgs e)
         {
-            if (double.TryParse(AmountTextBox.Text, out double amount) && double.TryParse(AmountTextBox.Tag.ToString(), out double count))
+            if (sender is Button button)
             {
-                if (count > amount)
+                var element = ElementCollection.SelectedElement;
+
+                if (element.Count > element.Amount)
                 {
-                    ElementCollection.SelectedElement.Amount++;
-                    await Task.Delay(500);
+                    button.IsEnabled = false;
+                    var newAmount = element.Amount + 1;
+                    await ElementAmountChanged(element, newAmount);
+                    await Task.Delay(250).ContinueWith(_ => this.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => { button.IsEnabled = true; }));
                 }
             }
         }
 
         private async void ButtonDecrease_Click(object sender, RoutedEventArgs e)
         {
-            if (double.TryParse(AmountTextBox.Text, out double amount) && double.TryParse(AmountTextBox.Tag.ToString(), out double _))
+            if (sender is Button button)
             {
-                if (amount > 0)
+                var element = ElementCollection.SelectedElement;
+
+                if (element.Amount > 0)
                 {
-                    ElementCollection.SelectedElement.Amount--;
-                    await Task.Delay(500);
+                    button.IsEnabled = false;
+                    var newAmount = element.Amount - 1;
+                    await ElementAmountChanged(element, newAmount);
+                    await Task.Delay(250).ContinueWith(_ => this.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => { button.IsEnabled = true; }));
                 }
             }
         }
 
-        private void AmountTextBox_KeyUp(object sender, KeyRoutedEventArgs e)
+        private async void AmountTextBox_KeyUp(object sender, KeyRoutedEventArgs e)
         {
             if (e.Key == Windows.System.VirtualKey.Enter)
             {
@@ -547,14 +548,13 @@ namespace ERP.Client.Startup.View
 
                     if (amount != ElementCollection.SelectedElement.Amount)
                     {
-                        ElementCollection.SelectedElement.Amount = amount;
-                        ElementAmountChanged(ElementCollection.SelectedElement);
+                        await ElementAmountChanged(ElementCollection.SelectedElement, amount);
                     }
                 }
             }
         }
 
-        private void AmountTextBox_LosingFocus(UIElement sender, LosingFocusEventArgs args)
+        private async void AmountTextBox_LosingFocus(UIElement sender, LosingFocusEventArgs args)
         {
             if (double.TryParse(AmountTextBox.Text, out double amount) && double.TryParse(AmountTextBox.Tag.ToString(), out double count))
             {
@@ -565,15 +565,24 @@ namespace ERP.Client.Startup.View
 
                 if (amount != ElementCollection.SelectedElement.Amount)
                 {
-                    ElementCollection.SelectedElement.Amount = amount;
-                    ElementAmountChanged(ElementCollection.SelectedElement);
+                    await ElementAmountChanged(ElementCollection.SelectedElement, amount);
                 }
             }
         }
 
-        private void ElementAmountChanged(ElementModel element)
+        private async Task ElementAmountChanged(ElementModel element, double newAmount)
         {
-
+            var result = await Proxy.UpdateProfileAmount(element.Id, newAmount);
+            if (result > 0)
+            {
+                element.Amount = result;
+                NotificationControl.Show($"Von '{element.Position}' sind nun '{result}' fertiggemeldet", 6000);
+            }
+            else
+            {
+                var dialog = new InfoDialog($"Der Vorgang konnte nicht ausgeführt werden.", "Information", InfoDialogType.Error);
+                await dialog.ShowAsync();
+            }
         }
 
     }

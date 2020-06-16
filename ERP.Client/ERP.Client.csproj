@@ -120,6 +120,7 @@
     <RestoreProjectStyle>PackageReference</RestoreProjectStyle>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Summaries\ProjectSummary.cs" />
     <Compile Include="Controls\PdfPageControl.xaml.cs">
       <DependentUpon>PdfPageControl.xaml</DependentUpon>
     </Compile>
@@ -196,7 +197,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Proxy.cs" />
     <Compile Include="Collection\ProductionViewSession.cs" />
+    <Compile Include="Session\ElementViewSession.cs" />
     <Compile Include="Session\ProjectPlantOrderSession.cs" />
+    <Compile Include="Session\ProjectViewSession.cs" />
     <Compile Include="utils\GroupInfoCollection.cs" />
     <Compile Include="ViewModel\AdministrationViewModel.cs" />
     <Compile Include="ViewModel\DivisionViewModel.cs" />

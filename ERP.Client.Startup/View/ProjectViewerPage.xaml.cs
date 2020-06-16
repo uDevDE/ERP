@@ -18,6 +18,9 @@ using ERP.Client.Core.Enums;
 using ERP.Client.Dialogs;
 using ERP.Client.ViewModel;
 using Windows.UI.Popups;
+using ERP.Client.Summaries;
+using ERP.Client.Session;
+using System.Threading.Tasks;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=234238
 
@@ -31,13 +34,15 @@ namespace ERP.Client.Startup.View
         private static int index = 0;
         private Dictionary<string, FolderModel> _projects;
 
+        public static bool SessionLoaded { get; private set; }
+
         public TabViewCollectionModel TabViewCollection { get; private set; }
         public EmployeeViewModel EmployeeCollection { get; private set; }
 
         public ProjectViewerPage()
         {
             this.InitializeComponent();
-            LoadingControl.IsLoading = true;
+            //LoadingControl.IsLoading = true;
             _projects = new Dictionary<string, FolderModel>();
             TabViewCollection = new TabViewCollectionModel();
             EmployeeCollection = new EmployeeViewModel();
@@ -132,11 +137,8 @@ namespace ERP.Client.Startup.View
             }
         }
 
-        private string GetProjectIdentifier(ProjectPreviewPage projectPreviewPage)
+        private string GetProjectIdentifier(PlantOrderModel plantOrder, FileEntryModel fileEntry)
         {
-            var fileEntry = projectPreviewPage.SelectedFileEntry;
-            var plantOrder = projectPreviewPage.SelectedPlantOrder;
-
             if (fileEntry != null)
             {
                 if (fileEntry.FileInfo != null)
@@ -161,7 +163,7 @@ namespace ERP.Client.Startup.View
             var tabItem = FindTab(projectPreviewPage.Index);
             if (tabItem != null)
             {
-                var name = GetProjectIdentifier(projectPreviewPage);
+                var name = GetProjectIdentifier(projectPreviewPage.SelectedPlantOrder, projectPreviewPage.SelectedFileEntry);
                 if (name != null)
                 {
                     UpdateTabViewItemHeader(tabItem, project, name);
@@ -175,14 +177,63 @@ namespace ERP.Client.Startup.View
                     }
 
                     if (tabItem.Content is Frame frame && fileEntry != null)
-                    {      
-                        frame.Navigate(typeof(ProjectContentPage), new object[] { projectPreviewType, project, fileEntry, plantOrder });
+                    {
+                        ProjectViewSession session;
+                        session = await ProjectViewSession.LoadAsync();
+                        var summary = new ProjectSummary()
+                        {
+                            FileEntry = fileEntry,
+                            Folder = project,
+                            PlantOrder = plantOrder,
+                            ProjectPreviewType = projectPreviewType
+                        };
+                        if (session == null)
+                        {
+                            session = new ProjectViewSession();
+                        }
+                        await session.Add(summary);
+
+                        frame.Navigate(typeof(ProjectContentPage), new object[] { projectPreviewType, project, fileEntry, plantOrder, false });
                     }
                     else
                     {
                         var dialog = new InfoDialog("Es wurde leider keine Datei gefunden", "Information", InfoDialogType.Error);
                         await dialog.ShowAsync();
                     }
+                }
+            }
+        }
+
+        private void LoadFromSession(List<ProjectSummary> summaries)
+        {
+            foreach (var item in summaries)
+            {
+                if (item.FileEntry == null || item.PlantOrder == null || item.Folder == null)
+                {
+                    continue;
+                }
+
+                var name = GetProjectIdentifier(item.PlantOrder, item.FileEntry);
+                if (name != null)
+                {
+                    index++;
+
+                    TabViewItem newItem = new TabViewItem
+                    {
+                        Icon = new SymbolIcon(Symbol.Document),
+                        Tag = index
+                    };
+
+                    UpdateTabViewItemHeader(newItem, item.Folder, name);
+
+                    Frame frame = new Frame();
+                    frame.Navigated += Frame_Navigated;
+                    frame.Navigate(typeof(ProjectContentPage), new object[] { item.ProjectPreviewType, item.Folder, item.FileEntry, item.PlantOrder, true });
+
+                    newItem.Content = frame;
+
+                    TabViewCollection.Tabs.Add(newItem);
+                    newItem.IsSelected = true;
                 }
             }
         }
@@ -198,12 +249,40 @@ namespace ERP.Client.Startup.View
                 }
                 EmployeeCollection.Employees.Add(employee);
             }
-
             _projects = await Proxy.GetAllProjects();
-            //TabViewControl.Items.Add(CreateNewTab());
-            TabViewCollection.Tabs.Add(CreateNewTab());
+            var sessionExists = await ProjectViewSession.FileExistsAsync();
 
-            LoadingControl.IsLoading = false;
+            if (!sessionExists)
+            {
+                OpenPreviewPage();
+            }
+            else if (SessionLoaded)
+            {
+                OpenPreviewPage();
+            }
+            else if (sessionExists && !SessionLoaded)
+            {
+                var session = await ProjectViewSession.LoadAsync();
+                SessionLoaded = true;
+                if (session?.Summaries != null)
+                {
+                    await this.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () => 
+                    {
+                        LoadFromSession(session.Summaries);
+                    });
+                }
+                else
+                {
+                    OpenPreviewPage();
+                }
+            }
+
+            //LoadingControl.IsLoading = false;
+        }
+
+        private void OpenPreviewPage()
+        {   
+            TabViewCollection.Tabs.Add(CreateNewTab());
         }
 
         private async void ListView_SelectionChanged(object sender, SelectionChangedEventArgs e)

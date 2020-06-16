@@ -493,5 +493,15 @@ namespace ERP.Client
             return await Task.FromResult<List<ElementFilterModel>>(null);
         }
 
+        public static Task<double> UpdateProfileAmount(int profileId, double amount)
+        {
+            if (IsConnected && IsDeviceIdValid && LocalClient.Employee != null && profileId > 0)
+            {
+                return _proxy.UpdateProfileAmountAsync(LocalClient.Employee.EmployeeId, profileId, amount);
+            }
+
+            return Task.FromResult<double>(-1);
+        }
+
     }
 }

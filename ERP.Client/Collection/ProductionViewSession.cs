@@ -35,7 +35,7 @@ namespace ERP.Client.Collection
         {
             try
             {
-                var json = JsonConvert.SerializeObject(PlantOrderSession);
+                var json = JsonConvert.SerializeObject(PlantOrderSession, Formatting.Indented);
                 var file = await ApplicationData.Current.LocalFolder.CreateFileAsync(JsonFile, CreationCollisionOption.ReplaceExisting);
                 await FileIO.WriteTextAsync(file, json);
                 return await Task.FromResult(true);

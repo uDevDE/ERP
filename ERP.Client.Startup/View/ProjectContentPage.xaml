@@ -186,9 +186,9 @@
                         <TextBox MaxWidth="150" x:Name="AmountTextBox" MinWidth="120" Margin="8 0 10 0" 
                                  HorizontalAlignment="Left" BeforeTextChanging="AmountTextBox_BeforeTextChanging" 
                                  TextChanged="AmountTextBox_TextChanged" VerticalAlignment="Center" FontSize="24"
-                                 Text="{x:Bind ElementCollection.SelectedElement.Amount, Mode=OneWay, Converter={StaticResource DoubleToStringConverter}}"
-                                 Tag="{x:Bind ElementCollection.SelectedElement.Count, Mode=OneWay, Converter={StaticResource DoubleToStringConverter}}"
-                                 KeyUp="AmountTextBox_KeyUp" LosingFocus="AmountTextBox_LosingFocus"/>
+                                 Text="{x:Bind ElementCollection.SelectedElement.Amount, Mode=TwoWay, Converter={StaticResource DoubleToStringConverter}}"
+                                 Tag="{x:Bind ElementCollection.SelectedElement.Count, Mode=TwoWay, Converter={StaticResource DoubleToStringConverter}}"
+                                 KeyUp="AmountTextBox_KeyUp" LosingFocus="AmountTextBox_LosingFocus" IsReadOnly="True"/>
 
                         <Button x:Name="ButtonIncrease" Content="&#xECC8;" FontFamily="Segoe MDL2 Assets" 
                                 FontSize="36" Foreground="ForestGreen" Click="ButtonIncrease_Click"/>
@@ -267,10 +267,14 @@
         </Grid>
 
         <controls:Loading x:Name="LoadingControl">
-            <controls:Loading.Background>
-                <SolidColorBrush Color="Black" Opacity="0.7" />
-            </controls:Loading.Background>
-            <ProgressRing IsActive="True" Width="60" Height="60" Margin="0 30 0 0" Foreground="Red"/>
+            <StackPanel Padding="12" Opacity="0.9" HorizontalAlignment="Center" VerticalAlignment="Center">
+                <ProgressRing IsActive="True" Width="120" Height="120" Foreground="Crimson"/>
+                <TextBlock VerticalAlignment="Center" FontSize="18" FontWeight="Medium" Margin="0 30 0 0" x:Name="LoadingText"
+                           TextWrapping="Wrap" MaxWidth="600"/>
+            </StackPanel>
         </controls:Loading>
+
+        <controls:InAppNotification x:Name="NotificationControl" ShowDismissButton="True" AnimationDuration="00:00:00.1000000"
+                                    VerticalOffset="100" HorizontalOffset="0" StackMode="Replace" Grid.Row="1"/>
     </Grid>
 </Page>

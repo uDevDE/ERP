@@ -103,5 +103,8 @@ namespace ERP.Contracts.Contract
         [OperationContract(IsOneWay = false)]
         Task<List<ElementFilterDTO>> GetFiltersAsync(int plantOrderId, int employeeId);
 
+        [OperationContract(IsOneWay = false)]
+        Task<double> UpdateProfileAmountAsync(int employeeId, int profileId, double amount);
+
     }
 }
