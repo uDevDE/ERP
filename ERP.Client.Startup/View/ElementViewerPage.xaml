@@ -180,26 +180,26 @@
                            IsRightTapEnabled="True" IsTapEnabled="True" SelectedIndex="0" LoadingRowGroup="DataGridElementView_LoadingRowGroup"
                            Sorting="DataGridElementView_Sorting">
             <controls:DataGrid.Columns>
-                <controls:DataGridTextColumn Header="Id" Tag="Id" IsReadOnly="True" Binding="{Binding Id}"/>
-                <controls:DataGridTextColumn Header="Typ" Tag="Contraction" IsReadOnly="True" Binding="{Binding Contraction}" FontSize="18"/>
-                <controls:DataGridTextColumn Header="Position" Tag="Position" IsReadOnly="True" Binding="{Binding Position}" FontSize="18"/>
-                <controls:DataGridTextColumn Header="Beschreibung" Tag="Description" IsReadOnly="True" Binding="{Binding Description}" MaxWidth="250"/>
-                <controls:DataGridTextColumn Header="Länge" Tag="Length" IsReadOnly="True" Binding="{Binding Length}"/>
-                <controls:DataGridTextColumn Header="Ist" Tag="Amount" IsReadOnly="True" Binding="{Binding Amount}" FontSize="18"/>
-                <controls:DataGridTextColumn Header="Soll" Tag="Count" IsReadOnly="True" Binding="{Binding Count}" FontSize="18"/>
+                <controls:DataGridTextColumn Header="Id" Tag="Id" IsReadOnly="True" Binding="{Binding Id, Mode=OneWay}"/>
+                <controls:DataGridTextColumn Header="Typ" Tag="Contraction" IsReadOnly="True" Binding="{Binding Contraction, Mode=OneWay}" FontSize="18"/>
+                <controls:DataGridTextColumn Header="Position" Tag="Position" IsReadOnly="True" Binding="{Binding Position, Mode=OneWay}" FontSize="18"/>
+                <controls:DataGridTextColumn Header="Beschreibung" Tag="Description" IsReadOnly="True" Binding="{Binding Description, Mode=OneWay}" MaxWidth="250"/>
+                <controls:DataGridTextColumn Header="Länge" Tag="Length" IsReadOnly="True" Binding="{Binding Length, Mode=OneWay}"/>
+                <controls:DataGridTextColumn Header="Ist" Tag="Amount" IsReadOnly="True" Binding="{Binding Amount, Mode=OneWay}" FontSize="18"/>
+                <controls:DataGridTextColumn Header="Soll" Tag="Count" IsReadOnly="True" Binding="{Binding Count, Mode=OneWay}" FontSize="18"/>
                 <controls:DataGridTemplateColumn Header="Fortschritt (Ist / Soll)">
                     <controls:DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <Grid>
-                                <ProgressBar Minimum="0" Maximum="{Binding Count, Mode=TwoWay}" 
-                                         Value="{Binding Amount, Mode=TwoWay}" ValueChanged="ProgressBar_ValueChanged" 
+                                <ProgressBar Minimum="0" Maximum="{Binding Count, Mode=OneWay}" 
+                                         Value="{Binding Amount, Mode=OneWay}" ValueChanged="ProgressBar_ValueChanged" 
                                          Width="200" Height="30" EffectiveViewportChanged="ProgressBar_EffectiveViewportChanged"/>
 
                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
                                     <TextBlock FontSize="18">
-                                        <Run Text="{Binding Amount}"/>
+                                        <Run Text="{Binding Amount, Mode=OneWay}"/>
                                         <Run Text=" / "/>
-                                        <Run Text="{Binding Count}"/>
+                                        <Run Text="{Binding Count, Mode=OneWay}"/>
                                     </TextBlock>
 
                                     <TextBlock Margin="20 0 0 0" FontSize="18" Text="{Binding Percent}"/>
