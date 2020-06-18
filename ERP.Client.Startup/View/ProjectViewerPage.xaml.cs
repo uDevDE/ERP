@@ -42,6 +42,7 @@ namespace ERP.Client.Startup.View
         public ProjectViewerPage()
         {
             this.InitializeComponent();
+            this.NavigationCacheMode = NavigationCacheMode.Enabled;
             //LoadingControl.IsLoading = true;
             _projects = new Dictionary<string, FolderModel>();
             TabViewCollection = new TabViewCollectionModel();

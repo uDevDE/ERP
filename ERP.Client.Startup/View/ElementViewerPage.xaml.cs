@@ -44,6 +44,7 @@ namespace ERP.Client.Startup.View
         public ElementViewerPage()
         {
             this.InitializeComponent();
+            this.NavigationCacheMode = NavigationCacheMode.Enabled;
 
             ElementCollection = new ElementViewModel();
             DivisionCollection = new DivisionViewModel();

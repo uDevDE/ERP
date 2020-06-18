@@ -57,6 +57,7 @@ namespace ERP.Client.Startup.View
         public ProjectPreviewPage()
         {
             this.InitializeComponent();
+            this.NavigationCacheMode = NavigationCacheMode.Enabled;
 
             Projects = new ObservableCollection<FolderModel>();
             PlantOrders = new ObservableCollection<PlantOrderModel>();

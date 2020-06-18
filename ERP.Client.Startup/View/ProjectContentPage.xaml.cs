@@ -70,7 +70,7 @@ namespace ERP.Client.Startup.View
         public ProjectContentPage()
         {
             this.InitializeComponent();
-
+            this.NavigationCacheMode = NavigationCacheMode.Enabled;
             //PdfViewerControl.Settings.IsJavaScriptEnabled = true;
 
             MaterialRequirementsViewModel = new MaterialRequirementsViewModel();

@@ -56,6 +56,7 @@ namespace ERP.Client.Startup
         public MainPage()
         {
             this.InitializeComponent();
+
             AutoMapperConfiguration.Configure();
 
             Employees = new ObservableCollection<EmployeeModel>();

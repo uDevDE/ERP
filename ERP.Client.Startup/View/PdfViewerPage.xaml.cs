@@ -37,7 +37,7 @@ namespace ERP.Client.Startup.View
         public PdfViewerPage()
         {
             this.InitializeComponent();
-
+            this.NavigationCacheMode = NavigationCacheMode.Enabled;
             ViewerPageViewModel = new PdfViewerViewModel();
             PdfViewerViewType = PdfViewerViewType.Normal;
         }
