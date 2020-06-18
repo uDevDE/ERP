@@ -71,7 +71,7 @@ namespace ERP.Client.Startup.View
         {
             this.InitializeComponent();
 
-            PdfViewerControl.Settings.IsJavaScriptEnabled = true;
+            //PdfViewerControl.Settings.IsJavaScriptEnabled = true;
 
             MaterialRequirementsViewModel = new MaterialRequirementsViewModel();
             ElementCollection = new ElementViewModel();
@@ -168,7 +168,7 @@ namespace ERP.Client.Startup.View
                 ElementCollection.Load(profiles);
             }
 
-            ElementView.ItemsSource = ElementCollection.Elements;
+            //ElementView.ItemsSource = ElementCollection.Elements;
 
             //PdfViewerFrame.Content = new PdfWebViewContentPage();
 
@@ -181,13 +181,13 @@ namespace ERP.Client.Startup.View
                 {
                     LocalFile = await CopyFileToDeviceAsync(remoteFile);
 
-                    /*var pdfFile = new PdfFileModel()
+                    var pdfFile = new PdfFileModel()
                     {
-                        FullFilePath = localFile.Path,
+                        FullFilePath = LocalFile.Path,
                         IsFavorite = false,
                         LastTimeOpened = DateTime.Now
                     };
-                    LoadPdfViewer(localFile, pdfFile);*/
+                    LoadPdfViewer(LocalFile, pdfFile);
 
                     //Uri url = PdfViewerControl.BuildLocalStreamUri("MyTag", "/Assets/PdfViewer/web/viewer.html");
                     //StreamUriWinRTResolver resolver = new StreamUriWinRTResolver();
@@ -197,12 +197,15 @@ namespace ERP.Client.Startup.View
 
                     /*var url = new Uri(
                         string.Format("ms-appx-web:///Assets/PdfViewer/web/viewer.html?file={0}",
-                        string.Format("ms-appx-web:///Assets/{0}", WebUtility.UrlEncode("compressed.tracemonkey-pldi-09.pdf"))));
+                        string.Format("ms-appx-web:///Assets/Content/{0}", WebUtility.UrlEncode("compressed.tracemonkey-pldi-09.pdf"))));
 
-                    var dialog = new MessageDialog(url.AbsoluteUri);
-                    await dialog.ShowAsync();
+                    //var dialog = new MessageDialog(url.AbsoluteUri);
+                    //await dialog.ShowAsync();
                     PdfViewerControl.Source = url;*/
                 }
+
+                LoadingControl.IsLoading = false;
+                PageLoaded = true;
             }
         }
 
@@ -255,8 +258,8 @@ namespace ERP.Client.Startup.View
             frame.Navigate(typeof(PdfViewerPage), new object[] { file, pdfFile, true });
             newItem.Content = frame;
 
-            //PivotControl.Items.Insert(PivotControl.Items.Count - 1, newItem);
-            //PivotControl.SelectedItem = newItem;
+            PivotControl.Items.Insert(PivotControl.Items.Count - 1, newItem);
+            PivotControl.SelectedItem = newItem;
         }
 
         private void Frame_Navigated(object sender, NavigationEventArgs e)
@@ -458,9 +461,9 @@ namespace ERP.Client.Startup.View
             return Convert.ToBase64String(bytes);
         }
 
-        private async void TestButton_Click(object sender, RoutedEventArgs e)
+        private void TestButton_Click(object sender, RoutedEventArgs e)
         {
-            var fullFilePath = Path.Combine(RemoteRootPath, FileEntry.FilePath).Replace("/", @"\");
+            /*var fullFilePath = Path.Combine(RemoteRootPath, FileEntry.FilePath).Replace("/", @"\");
             var remoteFile = await StorageFile.GetFileFromPathAsync(fullFilePath);
 
             var ret = await OpenAndConvert(remoteFile);
@@ -469,7 +472,7 @@ namespace ERP.Client.Startup.View
             var obj = await PdfViewerControl.InvokeScriptAsync("eval", new[] { jsfunction });
 
             var dialog = new MessageDialog(obj);
-            await dialog.ShowAsync();
+            await dialog.ShowAsync();*/
         }
 
         private void ElementView_ItemClick(object sender, ItemClickEventArgs e)
@@ -483,15 +486,6 @@ namespace ERP.Client.Startup.View
 
         private void AmountTextBox_BeforeTextChanging(TextBox sender, TextBoxBeforeTextChangingEventArgs args)
         {
-            if (double.TryParse(args.NewText, out double amount) && double.TryParse(sender.Tag?.ToString(), out double count))
-            {
-                if (amount > count)
-                {
-                    args.Cancel = true;
-                    return;
-                }
-            }
-
             args.Cancel = args.NewText.Any(c => !char.IsDigit(c));
         }
 
@@ -500,6 +494,14 @@ namespace ERP.Client.Startup.View
             if (sender is TextBox textBox)
             {
                 textBox.Text = new string(textBox.Text.Where(char.IsDigit).ToArray());
+
+                if (double.TryParse(textBox.Text, out double amount) && double.TryParse(textBox.Tag.ToString(), out double count))
+                {
+                    if (amount > count)
+                    {
+                        textBox.Text = count.ToString();
+                    }
+                }
             }
         }
 

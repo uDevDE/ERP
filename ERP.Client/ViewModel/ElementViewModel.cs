@@ -3,9 +3,7 @@ using ERP.Client.utils;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using Windows.UI.Xaml.Data;
 
 namespace ERP.Client.ViewModel
@@ -14,12 +12,13 @@ namespace ERP.Client.ViewModel
     {
         private ElementModel _selectedElement;
 
+        public event PropertyChangedEventHandler PropertyChanged;
+
         public ObservableCollection<ElementModel> Elements { get; private set; }
         public CollectionViewSource GroupedItems { get; private set; }
 
         public ElementViewModel() => Elements = new ObservableCollection<ElementModel>();
 
-        public event PropertyChangedEventHandler PropertyChanged;
 
         public void Load(List<ElementModel> elements)
         {
@@ -49,10 +48,10 @@ namespace ERP.Client.ViewModel
             get { return _selectedElement; }
             set
             {
-                if (_selectedElement != value && value != null)
+                if (_selectedElement != value)
                 {
                     _selectedElement = value;
-                    RaisePropertyChanged();
+                    RaisePropertyChanged("SelectedElement");
                 }
             }
         }
@@ -104,7 +103,7 @@ namespace ERP.Client.ViewModel
 
         public void Remove(ElementModel element) => Elements.Remove(element);
 
-        private void RaisePropertyChanged([CallerMemberName] string propertyName = null) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        private void RaisePropertyChanged(string propertyName) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 
     }
 }

@@ -85,7 +85,7 @@
                         </ScrollViewer>
                     </RelativePanel>
                 </Grid>-->
-                <!--<Pivot x:Name="PivotControl">
+                <Pivot x:Name="PivotControl">
                     <PivotItem>
                         <PivotItem.Header>
                             <Button RelativePanel.RightOf="MainPivot" Content="&#xE710;" FontFamily="Segoe MDL2 Assets"
@@ -93,11 +93,11 @@
                             Click="ButtonNewPivotItem_Click"/>
                         </PivotItem.Header>
                     </PivotItem>
-                </Pivot>-->
-                <Grid>
+                </Pivot>
+                <!--<Grid>
                     <WebView x:Name="PdfViewerControl" LoadCompleted="PdfViewerControl_LoadCompleted"
-                         Source="ms-appx-web:///Assets/PdfViewer/web/viewer.html"/>
-                </Grid>
+                             Source="https://mozilla.github.io/pdf.js/es5/web/viewer.html"/>
+                </Grid>-->
             </PivotItem>
 
             <PivotItem Header="Materialanforderungen">
@@ -174,9 +174,9 @@
         <Grid Grid.Column="1" Margin="2 20 2 0">
             <RelativePanel>
                 <StackPanel x:Name="AmountStackPanel">
-                    <TextBlock Text="{Binding ElementCollection.SelectedElement.Position}" Margin="8 0 0 8"
+                    <TextBlock Text="{Binding ElementCollection.SelectedElement.Position, Mode=OneWay}" Margin="8 0 0 8"
                            FontSize="22" MinWidth="250"/>
-                    <TextBlock Text="{Binding ElementCollection.SelectedElement.Description}" Margin="8 0 0 8"
+                    <TextBlock Text="{Binding ElementCollection.SelectedElement.Description, Mode=OneWay}" Margin="8 0 0 8"
                                FontSize="18" MinWidth="250"/>
                     <!--<muxc:NumberBox MaxWidth="250" SmallChange="1" LargeChange="0" x:Name="AmountNumberBox"
                                     Minimum="0" Maximum="{Binding ElementCollection.SelectedElement.Count, Mode=OneWay}"
@@ -186,9 +186,10 @@
                         <TextBox MaxWidth="150" x:Name="AmountTextBox" MinWidth="120" Margin="8 0 10 0" 
                                  HorizontalAlignment="Left" BeforeTextChanging="AmountTextBox_BeforeTextChanging" 
                                  TextChanged="AmountTextBox_TextChanged" VerticalAlignment="Center" FontSize="24"
-                                 Text="{x:Bind ElementCollection.SelectedElement.Amount, Mode=TwoWay, Converter={StaticResource DoubleToStringConverter}}"
-                                 Tag="{x:Bind ElementCollection.SelectedElement.Count, Mode=TwoWay, Converter={StaticResource DoubleToStringConverter}}"
-                                 KeyUp="AmountTextBox_KeyUp" LosingFocus="AmountTextBox_LosingFocus" IsReadOnly="True"/>
+                                 Text="{x:Bind ElementCollection.SelectedElement.Amount, Mode=OneWay}"
+                                 Tag="{x:Bind ElementCollection.SelectedElement.Count, Mode=OneWay}"
+                                 KeyUp="AmountTextBox_KeyUp" LosingFocus="AmountTextBox_LosingFocus"
+                                 MaxLength="12"/>
 
                         <Button x:Name="ButtonIncrease" Content="&#xECC8;" FontFamily="Segoe MDL2 Assets" 
                                 FontSize="36" Foreground="ForestGreen" Click="ButtonIncrease_Click"/>
@@ -209,7 +210,7 @@
                         x:Name="TestButton" Click="TestButton_Click" Visibility="Collapsed"/>
 
                 <ListView RelativePanel.Below="ButtonAddProfile" Margin="0 20 0 0" SelectedIndex="0"
-                          MinWidth="350" x:Name="ElementView"
+                          MinWidth="350" x:Name="ElementView" ItemsSource="{x:Bind ElementCollection.Elements}"
                           IsItemClickEnabled="True" ItemClick="ElementView_ItemClick">
                     <ListView.ItemContainerStyle>
                         <Style TargetType="ListViewItem">
@@ -231,9 +232,9 @@
                                     <StackPanel Margin="8 8 8 12" x:Name="ElementPanel">
                                         <Grid>
                                             <StackPanel Orientation="Horizontal">
-                                                <TextBlock Text="{Binding Contraction}" FontSize="22" Margin="0 0 8 0"
-                                                           Visibility="{Binding Contraction, Converter={StaticResource StringToVisibilityConverter}}"/>
-                                                <TextBlock Text="{Binding Position}" FontSize="22" />
+                                                <TextBlock Text="{Binding Contraction, Mode=OneWay}" FontSize="22" Margin="0 0 8 0"
+                                                           Visibility="{Binding Contraction, Mode=OneWay, Converter={StaticResource StringToVisibilityConverter}}"/>
+                                                <TextBlock Text="{Binding Position, Mode=OneWay}" FontSize="22" />
                                             </StackPanel>
                                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                                                 <Button x:Name="ButtonEdit" Content="&#xE70F;" FontFamily="Segoe MDL2 Assets" 
@@ -246,16 +247,16 @@
                                                         Margin="0 0 6 0" Click="ButtonMore_Click"/>-->
                                             </StackPanel>
                                         </Grid>
-                                        <TextBlock Text="{Binding Description}" FontSize="18"/>
-                                        <TextBlock Text="{Binding Surface}" FontStyle="Italic"/>
+                                        <TextBlock Text="{Binding Description, Mode=OneWay}" FontSize="18"/>
+                                        <TextBlock Text="{Binding Surface, Mode=OneWay}" FontStyle="Italic"/>
                                     </StackPanel>
 
                                     <StackPanel HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0 0 8 2">
-                                        <TextBlock Text="{Binding Length}" FontSize="20" TextAlignment="Right"/>
+                                        <TextBlock Text="{Binding Length, Mode=OneWay}" FontSize="20" TextAlignment="Right"/>
                                         <TextBlock FontSize="20">
-                                            <Run Text="{Binding Amount, Converter={StaticResource DoubleToStringConverter}}"/>
+                                            <Run Text="{Binding Amount, Mode=OneWay, Converter={StaticResource DoubleToStringConverter}}"/>
                                             <Run Text=" / "/>
-                                            <Run Text="{Binding Count, Converter={StaticResource DoubleToStringConverter}}"/>
+                                            <Run Text="{Binding Count, Mode=OneWay, Converter={StaticResource DoubleToStringConverter}}"/>
                                         </TextBlock>
                                     </StackPanel>
                                 </Grid>

@@ -339,6 +339,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="Assets\Content\compressed.tracemonkey-pldi-09.pdf" />
     <None Include="Assets\PdfViewer\build\pdf.js.map" />
     <None Include="Assets\PdfViewer\build\pdf.worker.js.map" />
     <None Include="Assets\PdfViewer\LICENSE" />
@@ -615,9 +616,7 @@
     <None Include="Assets\PdfViewer\web\locale\zh-TW\viewer.properties" />
     <None Include="Assets\PdfViewer\web\viewer.js.map" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Assets\Content\" />
-  </ItemGroup>
+  <ItemGroup />
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
   </PropertyGroup>
