@@ -4,6 +4,7 @@ using ERP.Client.Dialogs.Core.Enums;
 using ERP.Client.Lib;
 using ERP.Client.Mapper;
 using ERP.Client.Model;
+using ERP.Client.Startup.Controls;
 using ERP.Client.Startup.PdfViewer;
 using ERP.Client.Startup.Resolver;
 using ERP.Client.ViewModel;
@@ -252,11 +253,13 @@ namespace ERP.Client.Startup.View
                 //IconSource = new Microsoft.UI.Xaml.Controls.SymbolIconSource() { Symbol = Symbol.Document }
             };
 
-            Frame frame = new Frame();
+            /*Frame frame = new Frame();
 
             frame.Navigated += Frame_Navigated;
             frame.Navigate(typeof(PdfViewerPage), new object[] { file, pdfFile, true });
-            newItem.Content = frame;
+            newItem.Content = frame;*/
+
+            newItem.Content = new PdfViewerControl(file, pdfFile, true);
 
             PivotControl.Items.Insert(PivotControl.Items.Count - 1, newItem);
             PivotControl.SelectedItem = newItem;

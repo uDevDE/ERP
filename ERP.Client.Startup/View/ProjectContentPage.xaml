@@ -28,7 +28,7 @@
             <ColumnDefinition Width="Auto" MaxWidth="350"/>
         </Grid.ColumnDefinitions>
 
-        <Pivot Title="{x:Bind Folder.Name}" x:Name="MainPivot">
+        <Pivot Title="{x:Bind Folder.Name}" x:Name="MainPivot" CacheMode="BitmapCache">
             <PivotItem Header="Mappe">
                 <!--<Grid>
                     <Grid.RowDefinitions>
@@ -85,7 +85,7 @@
                         </ScrollViewer>
                     </RelativePanel>
                 </Grid>-->
-                <Pivot x:Name="PivotControl">
+                <Pivot x:Name="PivotControl" CacheMode="BitmapCache">
                     <PivotItem>
                         <PivotItem.Header>
                             <Button RelativePanel.RightOf="MainPivot" Content="&#xE710;" FontFamily="Segoe MDL2 Assets"
