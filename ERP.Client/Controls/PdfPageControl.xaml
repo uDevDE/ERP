@@ -14,7 +14,7 @@
     <Grid>
         <Viewbox Margin="2" x:Name="PdfViewBox">
             <Image x:Name="PdfImage" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
-               Stretch="None" Tapped="PdfImage_Tapped"/>
+               Stretch="None" Tapped="PdfImage_Tapped" CacheMode="BitmapCache"/>
         </Viewbox>
     </Grid>
 </UserControl>

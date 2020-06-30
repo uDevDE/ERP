@@ -51,15 +51,16 @@
                 </StackPanel>
 
                 <Button Content="&#xEF2C;" FontFamily="Segoe MDL2 Assets" HorizontalAlignment="Right" Margin="0 0 20 0"
-                    Width="42" Height="42" Background="Red" x:Name="ButtonClose" Click="ButtonClose_Click"/>
+                    Width="42" Height="42" Background="Red" x:Name="ButtonClose" Click="ButtonClose_Click"
+                        Visibility="Collapsed"/>
             </Grid>
 
             <ScrollViewer Grid.Row="1" ZoomMode="Enabled" MaxZoomFactor="4" MinZoomFactor="0.1"
                       HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto"
                       HorizontalAlignment="Left" VerticalAlignment="Stretch"
                       x:Name="PdfViewScrollViewer" ViewChanged="PdfViewScrollViewer_ViewChanged">
-                <ItemsControl ItemsSource="{x:Bind ViewerPageViewModel.Pages}" x:Name="PdfViewerItemsControl"
-                                HorizontalAlignment="Stretch" VerticalAlignment="Stretch" >
+                <ItemsControl x:Name="PdfViewerItemsControl" ItemsSource="{x:Bind ViewerPageViewModel.Pages, Mode=OneWay}"
+                                HorizontalAlignment="Stretch" VerticalAlignment="Stretch" CacheMode="BitmapCache">
                 </ItemsControl>
             </ScrollViewer>
 

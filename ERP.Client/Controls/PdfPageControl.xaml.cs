@@ -51,10 +51,10 @@ namespace ERP.Client.Controls
             set { PdfImage.Stretch = value; }
         }
 
-        public UIElement RootUIElement
+        /*public UIElement RootUIElement
         {
             get { return PdfViewBox; }
-        }
+        }*/
 
         public void SetPreviewMode(bool mode)
         {
@@ -76,19 +76,30 @@ namespace ERP.Client.Controls
 
         public async Task Load(PdfPage page)
         {
+            if (PageLoaded)
+            {
+                return;
+            }
+
             using (var stream = new InMemoryRandomAccessStream())
             {
                 Page = page;
                 var bitmap = new BitmapImage();
+                PdfImage.Source = bitmap;
+
+                bitmap.DecodePixelHeight = Convert.ToInt32(page.Size.Height);
+                bitmap.DecodePixelWidth = Convert.ToInt32(page.Size.Width);
                 await page.RenderToStreamAsync(stream);
                 await bitmap.SetSourceAsync(stream);
-                PdfImage.Source = bitmap;
+                PageLoaded = true;
+                stream.Dispose();
+                //bitmap = null;
             }
         }
 
         private void UserControl_Loaded(object sender, RoutedEventArgs e)
         {
-            PageLoaded = true;
+            //PageLoaded = true;
         }
 
         private void UserControl_EffectiveViewportChanged(FrameworkElement sender, EffectiveViewportChangedEventArgs args)

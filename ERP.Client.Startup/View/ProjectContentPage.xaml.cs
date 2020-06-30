@@ -247,11 +247,11 @@ namespace ERP.Client.Startup.View
 
         private void LoadPdfViewer(StorageFile file, PdfFileModel pdfFile)
         {
-            PivotItem newItem = new PivotItem
-            {
-                Header = file.DisplayName,
-                //IconSource = new Microsoft.UI.Xaml.Controls.SymbolIconSource() { Symbol = Symbol.Document }
-            };
+            //PivotItem newItem = new PivotItem
+            //{
+            //    Header = file.DisplayName,
+            //IconSource = new Microsoft.UI.Xaml.Controls.SymbolIconSource() { Symbol = Symbol.Document }
+            //};
 
             /*Frame frame = new Frame();
 
@@ -259,10 +259,13 @@ namespace ERP.Client.Startup.View
             frame.Navigate(typeof(PdfViewerPage), new object[] { file, pdfFile, true });
             newItem.Content = frame;*/
 
-            newItem.Content = new PdfViewerControl(file, pdfFile, true);
+            //newItem.Content = new PdfViewerControl(file, pdfFile, true);
 
-            PivotControl.Items.Insert(PivotControl.Items.Count - 1, newItem);
-            PivotControl.SelectedItem = newItem;
+            //PivotControl.Items.Insert(PivotControl.Items.Count - 1, newItem);
+            //PivotControl.SelectedItem = newItem;
+
+            PdfContentViewGrid.Children.Clear();
+            PdfContentViewGrid.Children.Add(new PdfViewerControl(file, pdfFile, true));
         }
 
         private void Frame_Navigated(object sender, NavigationEventArgs e)
@@ -590,5 +593,9 @@ namespace ERP.Client.Startup.View
             }
         }
 
+        private void ButtonCreateProfiles_Click(object sender, RoutedEventArgs e)
+        {
+          
+        }
     }
 }

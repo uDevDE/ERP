@@ -85,7 +85,7 @@
                         </ScrollViewer>
                     </RelativePanel>
                 </Grid>-->
-                <Pivot x:Name="PivotControl" CacheMode="BitmapCache">
+                <!--<Pivot x:Name="PivotControl">
                     <PivotItem>
                         <PivotItem.Header>
                             <Button RelativePanel.RightOf="MainPivot" Content="&#xE710;" FontFamily="Segoe MDL2 Assets"
@@ -93,11 +93,12 @@
                             Click="ButtonNewPivotItem_Click"/>
                         </PivotItem.Header>
                     </PivotItem>
-                </Pivot>
+                </Pivot>-->
                 <!--<Grid>
                     <WebView x:Name="PdfViewerControl" LoadCompleted="PdfViewerControl_LoadCompleted"
                              Source="https://mozilla.github.io/pdf.js/es5/web/viewer.html"/>
                 </Grid>-->
+                <Grid x:Name="PdfContentViewGrid"/>
             </PivotItem>
 
             <PivotItem Header="Materialanforderungen">
@@ -199,17 +200,22 @@
                     </StackPanel>
                 </StackPanel>
 
-                <Button RelativePanel.Below="AmountStackPanel" x:Name="ButtonAddProfile" Margin="8 20 0 0"
+                <StackPanel RelativePanel.Below="AmountStackPanel" Margin="8 20 8 2" x:Name="ButtonCollectionGrid"
+                            Orientation="Horizontal">
+                    <Button RelativePanel.Below="AmountStackPanel" x:Name="ButtonAddProfile" Margin="8 0 0 0"
                         Click="ButtonAddProfile_Click">
-                    <StackPanel Orientation="Horizontal">
                         <SymbolIcon Symbol="Add"/>
-                        <TextBlock Text="Neues Profil anlegen" Margin="10 0 0 0" FontSize="16"/>
-                    </StackPanel>
-                </Button>
-                <Button Content="Test" RelativePanel.Below="AmountStackPanel" Margin="210 20 0 0"
+                    </Button>
+                    <Button Content="Test" RelativePanel.Below="AmountStackPanel" Margin="210 0 0 0"
                         x:Name="TestButton" Click="TestButton_Click" Visibility="Collapsed"/>
 
-                <ListView RelativePanel.Below="ButtonAddProfile" Margin="0 20 0 0" SelectedIndex="0"
+                    <Button RelativePanel.Below="AmountStackPanel" x:Name="ButtonCreateProfiles" Margin="20 0 0 0"
+                            Click="ButtonCreateProfiles_Click">
+                        <SymbolIcon Symbol="SwitchApps"/>
+                    </Button>
+                </StackPanel>
+
+                <ListView RelativePanel.Below="ButtonCollectionGrid" Margin="0 20 0 0" SelectedIndex="0"
                           MinWidth="350" x:Name="ElementView" ItemsSource="{x:Bind ElementCollection.Elements}"
                           IsItemClickEnabled="True" ItemClick="ElementView_ItemClick">
                     <ListView.ItemContainerStyle>

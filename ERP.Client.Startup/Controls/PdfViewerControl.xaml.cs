@@ -2,6 +2,7 @@
 using ERP.Client.Core.Enums;
 using ERP.Client.Model;
 using ERP.Client.ViewModel.PdfViewer;
+using Microsoft.Toolkit.Uwp.UI.Controls.TextToolbarSymbols;
 using System;
 using Windows.Data.Pdf;
 using Windows.Storage;
@@ -30,6 +31,8 @@ namespace ERP.Client.Startup.Controls
         public bool? IsMainPdfFile { get; private set; }
         public bool PageLoaded { get; private set; }
 
+        private static System.Collections.Generic.List<string> _loadedFiles = new System.Collections.Generic.List<string>();
+
         public PdfViewerControl(StorageFile file, PdfFileModel pdfFile, bool isMain)
         {
             this.InitializeComponent();
@@ -49,8 +52,9 @@ namespace ERP.Client.Startup.Controls
                 ButtonClose.IsEnabled = false;
             }
 
-            if (File != null && !PageLoaded)
+            if (File != null && !PageLoaded && !_loadedFiles.Contains(File.Path))
             {
+                _loadedFiles.Add(File.Path);
                 var pdfDocument = await PdfDocument.LoadFromFileAsync(File);
                 var pageCount = pdfDocument.PageCount;
                 NumberBoxPageNumber.Maximum = pageCount;

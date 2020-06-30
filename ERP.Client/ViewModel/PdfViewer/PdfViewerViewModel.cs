@@ -1,6 +1,8 @@
 ﻿using ERP.Client.Controls;
 using System.Collections.ObjectModel;
 using System.Linq;
+using Windows.Data.Pdf;
+using Windows.UI.Xaml.Controls;
 
 namespace ERP.Client.ViewModel.PdfViewer
 {
@@ -37,6 +39,15 @@ namespace ERP.Client.ViewModel.PdfViewer
 
             CurrentPage = result;
             return result;
+        }
+
+        public void Add(PdfPageControl pdfPageControl)
+        {
+            if (Pages.Contains(pdfPageControl))
+            {
+                return;
+            }
+            Pages.Add(pdfPageControl);
         }
 
         public ObservableCollection<PdfPageControl> Pages { get; set; }

@@ -368,6 +368,20 @@ namespace ERP.Client.Startup.View
             }
         }
 
-
+        private void TabViewControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            /*var items = e.RemovedItems;
+            foreach (var item in items)
+            {
+                if (item is TabViewItem tabViewItem)
+                {
+                    if (tabViewItem.Content is Frame frame)
+                    {
+                        var dialog = new MessageDialog(frame.Content.GetType().FullName);
+                        await dialog.ShowAsync();
+                    }
+                }
+            }*/
+        }
     }
 }
