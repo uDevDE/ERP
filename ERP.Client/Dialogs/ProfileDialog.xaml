@@ -33,7 +33,7 @@
                          BeforeTextChanging="TextBoxAmount_BeforeTextChanging" Width="122"/>
             </StackPanel>
             <TextBox Header="Beschreibung" PlaceholderText="Optionale Beschreibung" Margin="0 12 0 0"
-                     x:Name="TextBoxDescription"/>
+                     x:Name="TextBoxDescription" TextWrapping="Wrap" Height="120"/>
             <TextBox Header="Oberfläche" PlaceholderText="z.B. RAL 9010 (Reinweiß)" Margin="0 12 0 0"
                      x:Name="TextBoxSurface"/>
 

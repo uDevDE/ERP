@@ -253,7 +253,7 @@
                                                         Margin="0 0 6 0" Click="ButtonMore_Click"/>-->
                                             </StackPanel>
                                         </Grid>
-                                        <TextBlock Text="{Binding Description, Mode=OneWay}" FontSize="18"/>
+                                        <TextBlock Text="{Binding Description, Mode=OneWay}" FontSize="18" TextWrapping="Wrap"/>
                                         <TextBlock Text="{Binding Surface, Mode=OneWay}" FontStyle="Italic"/>
                                     </StackPanel>
 

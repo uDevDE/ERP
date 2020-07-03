@@ -20,9 +20,11 @@ using System.Linq;
 using System.Net;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.ServiceModel.Channels;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.Networking.Sockets;
 using Windows.Storage;
 using Windows.Storage.Streams;
 using Windows.UI;
@@ -60,7 +62,7 @@ namespace ERP.Client.Startup.View
         public PlantOrderModel PlantOrder { get; private set; }
         public StorageFile LocalFile { get; private set; }
 
-        public MaterialRequirementsViewModel MaterialRequirementsViewModel { get; set; }
+        public MaterialRequirementsViewModel MaterialRequirementsCollection { get; set; }
         public ElementViewModel ElementCollection { get; set; }
         public ObservableCollection<ProcessQRImageModel> ProcessQRImages { get; private set; }
         public PdfPageViewModel PageViewModel { get; set; }
@@ -74,7 +76,7 @@ namespace ERP.Client.Startup.View
             this.NavigationCacheMode = NavigationCacheMode.Enabled;
             //PdfViewerControl.Settings.IsJavaScriptEnabled = true;
 
-            MaterialRequirementsViewModel = new MaterialRequirementsViewModel();
+            MaterialRequirementsCollection = new MaterialRequirementsViewModel();
             ElementCollection = new ElementViewModel();
             ProcessQRImages = new ObservableCollection<ProcessQRImageModel>();
             LoadingControl.IsLoading = true;
@@ -153,8 +155,8 @@ namespace ERP.Client.Startup.View
             var materialRequirements = await Proxy.GetMaterialRequirements(new string[] { "1", "2" });
             if (materialRequirements != null)
             {
-                MaterialRequirementsViewModel.Load(materialRequirements);
-                DataGridMaterialRequirements.ItemsSource = MaterialRequirementsViewModel.GroupData().View;
+                MaterialRequirementsCollection.Load(materialRequirements);
+                DataGridMaterialRequirements.ItemsSource = MaterialRequirementsCollection.GroupData().View;
             }
 
             /*var elements = await Proxy.GetElements();
@@ -163,11 +165,11 @@ namespace ERP.Client.Startup.View
                 ElementCollection.Load(elements);
             }*/
 
-            var profiles = await Proxy.GetProfiles(PlantOrder.Id);
+            /*var profiles = await Proxy.GetProfiles(PlantOrder.Id);
             if (profiles != null)
             {
                 ElementCollection.Load(profiles);
-            }
+            }*/
 
             //ElementView.ItemsSource = ElementCollection.Elements;
 
@@ -180,7 +182,7 @@ namespace ERP.Client.Startup.View
                 var remoteFile = await StorageFile.GetFileFromPathAsync(fullFilePath);
                 if (remoteFile != null)
                 {
-                    LocalFile = await CopyFileToDeviceAsync(remoteFile);
+                    /*LocalFile = await CopyFileToDeviceAsync(remoteFile);
 
                     var pdfFile = new PdfFileModel()
                     {
@@ -188,7 +190,7 @@ namespace ERP.Client.Startup.View
                         IsFavorite = false,
                         LastTimeOpened = DateTime.Now
                     };
-                    LoadPdfViewer(LocalFile, pdfFile);
+                    LoadPdfViewer(LocalFile, pdfFile);*/
 
                     //Uri url = PdfViewerControl.BuildLocalStreamUri("MyTag", "/Assets/PdfViewer/web/viewer.html");
                     //StreamUriWinRTResolver resolver = new StreamUriWinRTResolver();
@@ -593,9 +595,65 @@ namespace ERP.Client.Startup.View
             }
         }
 
-        private void ButtonCreateProfiles_Click(object sender, RoutedEventArgs e)
+        private async void ButtonCreateProfiles_Click(object sender, RoutedEventArgs e)
         {
-          
+            if (MaterialRequirementsCollection == null || MaterialRequirementsCollection.MaterialRequirements.Count == 0 ||
+                LocalClient.Division == null)
+            {
+                var infoDialog = new InfoDialog("Es konnten keine Profile in Materialanforderungen gefunden werden!");
+                await infoDialog.ShowAsync();
+                return;
+            }
+
+            var result = new List<MaterialRequirementModel>();
+            var list = new List<ElementModel>();
+
+            foreach (var materialRequirement in MaterialRequirementsCollection.MaterialRequirements)
+            {
+                if (materialRequirement.ArticleDescription.Contains("I-Schale"))
+                {
+                    if (!result.Exists(x => x.Id == materialRequirement.Id))
+                    {
+                        result.Add(materialRequirement);
+                        var item = MaterialRequirementsCollection.MaterialRequirements.FirstOrDefault(x => x.ArticleDescription.Contains("A-Schale") &&
+                                                                                            x.Position == materialRequirement.Position && x.Length == materialRequirement.Length &&
+                                                                                            x.Count == materialRequirement.Count);
+                        if (item != null)
+                        {
+                            var element = new ElementModel()
+                            {
+                                Length = Convert.ToDouble(materialRequirement.Length).ToString(),
+                                Position = GetPositionNumber(materialRequirement.Position),
+                                Filename = FileEntry.Name,
+                                ColourInside = materialRequirement.SurfaceInside,
+                                ColourOutside = materialRequirement.SurfaceOutside,
+                                Amount = new Random().Next(0, Convert.ToInt32(materialRequirement.Count)),
+                                Count = Convert.ToDouble(materialRequirement.Count),
+                                Description = string.Format("I-Schale: {0:s}", materialRequirement.ArticleNumber) + Environment.NewLine + 
+                                              string.Format("A-Schale: {0:s}", item.ArticleNumber) + Environment.NewLine + 
+                                              string.Format("Mat. Nummer: {0:d}", materialRequirement.MaterialNumber),
+                                ElementType = Contracts.Domain.Core.Enums.ElementType.Profile,
+                                PlantOrderId = PlantOrder.Id,
+                                Surface = string.Format("I: {0:s} - A: {1:s}", materialRequirement.SurfaceInside, materialRequirement.SurfaceOutside),
+                                Contraction = GetPositionContraction(materialRequirement.Position),
+                                DivisionId = LocalClient.Division.DivisionId
+                            };
+
+                            list.Add(element);
+                        }
+                    }
+                }
+            }
+
+            if (list.Count > 0)
+            {
+                ElementCollection.Load(list);
+                ElementView.SelectedIndex = 0;
+            }
         }
+
+        private string GetPositionNumber(string position) => Regex.Match(position, @"\d+").Value.Trim();
+        private string GetPositionContraction(string position) => Regex.Match(position, @"[A-Z]+", RegexOptions.IgnoreCase).Value.Trim();
+
     }
 }
