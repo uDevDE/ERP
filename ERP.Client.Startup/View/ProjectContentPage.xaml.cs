@@ -56,6 +56,8 @@ namespace ERP.Client.Startup.View
         public string RemoteRootPath { get; private set; }
         public bool LoadedFromSession { get; private set; }
 
+        private bool _pdfFileLoaded;
+
         public ProjectPreviewType ProjectPreviewType { get; private set; }
         public FolderModel Folder { get; private set; }
         public FileEntryModel FileEntry { get; private set; }
@@ -119,7 +121,7 @@ namespace ERP.Client.Startup.View
         private async void Page_Loaded(object sender, RoutedEventArgs e)
         {
             //if (PageLoaded)
-                //return;
+            //return;
 
             if (FileEntry == null && PlantOrder == null)
             {
@@ -182,9 +184,9 @@ namespace ERP.Client.Startup.View
                 var remoteFile = await StorageFile.GetFileFromPathAsync(fullFilePath);
                 if (remoteFile != null)
                 {
-                    /*LocalFile = await CopyFileToDeviceAsync(remoteFile);
+                    LocalFile = await CopyFileToDeviceAsync(remoteFile);
 
-                    var pdfFile = new PdfFileModel()
+                    /*var pdfFile = new PdfFileModel()
                     {
                         FullFilePath = LocalFile.Path,
                         IsFavorite = false,
@@ -198,17 +200,41 @@ namespace ERP.Client.Startup.View
                     //
                     //PdfViewerControl.NavigateToLocalStreamUri(new Uri(LocalFile.Path), resolver);
 
-                    /*var url = new Uri(
-                        string.Format("ms-appx-web:///Assets/PdfViewer/web/viewer.html?file={0}",
-                        string.Format("ms-appx-web:///Assets/Content/{0}", WebUtility.UrlEncode("compressed.tracemonkey-pldi-09.pdf"))));
-
+                    //var url = new Uri(
+                    //    string.Format("ms-appx-web:///Assets/PdfViewer/web/viewer.html?file={0}",
+                    //    string.Format("ms-appx-web:///Assets/Content/{0}", WebUtility.UrlEncode("compressed.tracemonkey-pldi-09.pdf"))));
+                    //
+                    //PdfViewerControl.Source = url;
                     //var dialog = new MessageDialog(url.AbsoluteUri);
                     //await dialog.ShowAsync();
-                    PdfViewerControl.Source = url;*/
+                    //PdfViewerControl.Source = new Uri("ms-appx-web:///Assets/PdfViewer/web/viewer.html");
+                    //PdfViewerControl.NavigationCompleted += PdfViewerControl_NavigationCompleted;
+                    PdfViewerControl.ScriptNotify += PdfViewerControl_ScriptNotify;
                 }
 
                 LoadingControl.IsLoading = false;
                 PageLoaded = true;
+            }
+        }
+
+        private async void PdfViewerControl_ScriptNotify(object sender, NotifyEventArgs e)
+        {
+            var dialog = new MessageDialog($"{e.CallingUri.AbsoluteUri} - {e.Value}");
+            await dialog.ShowAsync();
+        }
+
+        private async void PdfViewerControl_NavigationCompleted(WebView sender, WebViewNavigationCompletedEventArgs args)
+        {
+            if (!_pdfFileLoaded)
+            {
+                var Base64Data = await OpenAndConvert("9755___21107-8-1-MP10MP20-FEN.pdf");
+                //var Base64Data = await OpenAndConvert2("compressed.tracemonkey-pldi-09.pdf");
+
+                //var jsfunction = $"openPdfAsBase64('{Base64Data}')";
+                //await sender.InvokeScriptAsync("eval", new[] { jsfunction });     
+                await sender.InvokeScriptAsync("openPdfAsBase64", new[] { Base64Data });
+                //await sender.InvokeScriptAsync("eval", new[] { jsfunction });
+                _pdfFileLoaded = true;
             }
         }
 
@@ -247,6 +273,26 @@ namespace ERP.Client.Startup.View
             return file.CopyAsync(tempFolder, file.Name, options);
         }
 
+        private async Task<string> OpenAndConvert2(string filename)
+        {
+            var folder = ApplicationData.Current.TemporaryFolder;
+            var file = await folder.GetFileAsync(filename);
+            var buffer = await File.ReadAllBytesAsync(file.Path);
+            return Convert.ToBase64String(buffer);
+        }
+
+        private async Task<string> OpenAndConvert(string FileName)
+        {
+            var folder = ApplicationData.Current.TemporaryFolder;
+            var file = await folder.GetFileAsync(FileName);
+            var filebuffer = await file.OpenAsync(FileAccessMode.Read);
+            var reader = new DataReader(filebuffer.GetInputStreamAt(0));
+            var bytes = new byte[filebuffer.Size];
+            await reader.LoadAsync((uint)filebuffer.Size);
+            reader.ReadBytes(bytes);
+            return Convert.ToBase64String(bytes);
+        }
+
         private void LoadPdfViewer(StorageFile file, PdfFileModel pdfFile)
         {
             //PivotItem newItem = new PivotItem
@@ -266,8 +312,8 @@ namespace ERP.Client.Startup.View
             //PivotControl.Items.Insert(PivotControl.Items.Count - 1, newItem);
             //PivotControl.SelectedItem = newItem;
 
-            PdfContentViewGrid.Children.Clear();
-            PdfContentViewGrid.Children.Add(new PdfViewerControl(file, pdfFile, true));
+            //PdfContentViewGrid.Children.Clear();
+            //PdfContentViewGrid.Children.Add(new PdfViewerControl(file, pdfFile, true));
         }
 
         private void Frame_Navigated(object sender, NavigationEventArgs e)
@@ -655,5 +701,17 @@ namespace ERP.Client.Startup.View
         private string GetPositionNumber(string position) => Regex.Match(position, @"\d+").Value.Trim();
         private string GetPositionContraction(string position) => Regex.Match(position, @"[A-Z]+", RegexOptions.IgnoreCase).Value.Trim();
 
+        private async void ButtonLoadPdf_Click(object sender, RoutedEventArgs e)
+        {
+            var Base64Data = await OpenAndConvert("9755___21107-8-1-MP10MP20-FEN.pdf");
+            //var Base64Data = await OpenAndConvert2("compressed.tracemonkey-pldi-09.pdf");
+
+            //var jsfunction = $"openPdfAsBase64('{Base64Data}')";
+            //await sender.InvokeScriptAsync("eval", new[] { jsfunction });     
+            await PdfViewerControl.InvokeScriptAsync("openPdfAsBase64", new[] { Base64Data });
+            //await PdfViewerControl.InvokeScriptAsync("eval", new[] { jsfunction });
+
+            _pdfFileLoaded = true;
+        }
     }
 }

@@ -58,7 +58,7 @@ namespace ERP.Client.Dialogs
 
             if (await ProductionCollection.Load())
             {
-                FilteredProductionOrders = new ObservableCollection<PlantOrderModel>(ProductionCollection.PlantOrderSession.OrderBy(x => x.PlantOrder.Number).Select(x => x.PlantOrder).ToList());
+                FilteredProductionOrders = new ObservableCollection<PlantOrderModel>(ProductionCollection.PlantOrderSession.OrderBy(x => x.PlantOrder?.Number).Select(x => x?.PlantOrder).ToList());
                 ListView.ItemsSource = FilteredProductionOrders;
             }
 

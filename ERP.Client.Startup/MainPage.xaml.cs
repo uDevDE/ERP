@@ -26,6 +26,7 @@ using ERP.Client.ViewModel;
 using ERP.Client.Startup.View;
 using Newtonsoft.Json;
 using AutoMapper.Mappers;
+using Windows.ApplicationModel;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
@@ -63,6 +64,15 @@ namespace ERP.Client.Startup
 
             Client = new LocalClient();
             AdministrationViewModel = new AdministrationViewModel();
+        }
+
+        private static string GetAppVersion()
+        {
+            Package package = Package.Current;
+            PackageId packageId = package.Id;
+            PackageVersion version = packageId.Version;
+
+            return string.Format("{0}.{1}.{2}.{3}", version.Major, version.Minor, version.Build, version.Revision);
         }
 
         private void EnableLoadingControl(string message)
@@ -224,6 +234,10 @@ namespace ERP.Client.Startup
                 await dialog.ShowAsync();
             }
 
+            var tempFolder = Windows.Storage.ApplicationData.Current.TemporaryFolder;
+            var d = new MessageDialog(tempFolder.Path);
+            await d.ShowAsync();
+
             Proxy.DeviceId = deviceId;
         }
 
@@ -236,8 +250,10 @@ namespace ERP.Client.Startup
             });
         }
 
-        private void ServiceCallback_AuthorizedFailedEvent(AuthorisationType authorisationType)
+        private async void ServiceCallback_AuthorizedFailedEvent(AuthorisationType authorisationType)
         {
+            var d = new MessageDialog("FAILED");
+            await d.ShowAsync();
             switch (authorisationType)
             {
                 case AuthorisationType.AuthorizeBlocked:
@@ -268,6 +284,9 @@ namespace ERP.Client.Startup
         {
             await Dispatcher.RunTaskAsync(async () =>
             {
+                var d = new MessageDialog("SUCCESS");
+                await d.ShowAsync();
+
                 var list = await Proxy.GetAllEmployeesByDevice();
                 foreach (var item in list)
                 {

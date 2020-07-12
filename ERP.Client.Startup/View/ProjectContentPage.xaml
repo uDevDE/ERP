@@ -94,11 +94,14 @@
                         </PivotItem.Header>
                     </PivotItem>
                 </Pivot>-->
-                <!--<Grid>
+                <!--Source="https://mozilla.github.io/pdf.js/es5/web/viewer.html"-->
+                <Grid>
+
                     <WebView x:Name="PdfViewerControl" LoadCompleted="PdfViewerControl_LoadCompleted"
-                             Source="https://mozilla.github.io/pdf.js/es5/web/viewer.html"/>
-                </Grid>-->
-                <Grid x:Name="PdfContentViewGrid"/>
+                             Source="ms-appx-web:///Assets/PdfViewer/web/viewer.html"/>
+                </Grid>
+                <!--<pdfViewer:PdfWebViewControl Uri="9755___21107-8-1-MP10MP20-FEN.pdf" />-->
+                <!--<Grid x:Name="PdfContentViewGrid"/>-->
             </PivotItem>
 
             <PivotItem Header="Materialanforderungen">
@@ -213,6 +216,9 @@
                             Click="ButtonCreateProfiles_Click">
                         <SymbolIcon Symbol="SwitchApps"/>
                     </Button>
+
+                    <Button x:Name="ButtonLoadPdf" Content="Test" VerticalAlignment="Top" HorizontalAlignment="Left"
+                            Click="ButtonLoadPdf_Click" Margin="20 0 0 0"/>
                 </StackPanel>
 
                 <ListView RelativePanel.Below="ButtonCollectionGrid" Margin="0 20 0 0" SelectedIndex="0"

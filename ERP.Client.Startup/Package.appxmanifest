@@ -9,8 +9,8 @@
 
   <Identity
     Name="24a1d726-b9c5-4869-a20d-ecfd7769ece3"
-    Publisher="CN=Mike1"
-    Version="1.0.0.0" />
+    Publisher="CN=Mike Undorf"
+    Version="1.0.1.0" />
 
   <mp:PhoneIdentity PhoneProductId="24a1d726-b9c5-4869-a20d-ecfd7769ece3" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
 

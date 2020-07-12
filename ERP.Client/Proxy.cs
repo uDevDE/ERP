@@ -80,7 +80,8 @@ namespace ERP.Client
 #if DEBUG
                 var uri = "net.tcp://localhost:6565/NRService";
 #else
-                var uri = "net.tcp://167.86.73.240:6565/NRService";
+                //var uri = "net.tcp://167.86.73.240:6565/NRService";
+                var uri = "net.tcp://localhost:6565/NRService";
 #endif
                 ServiceCallback = new NRServiceCallback();
                 var callback = new InstanceContext(ServiceCallback);
