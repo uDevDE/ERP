@@ -238,7 +238,7 @@
       <Version>4.4.1</Version>
     </PackageReference>
     <PackageReference Include="System.ServiceModel.Primitives">
-      <Version>4.4.1</Version>
+      <Version>4.4.4</Version>
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
