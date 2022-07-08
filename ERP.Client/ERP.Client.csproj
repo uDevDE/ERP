@@ -235,7 +235,7 @@
       <Version>1.3.9</Version>
     </PackageReference>
     <PackageReference Include="System.ServiceModel.Http">
-      <Version>4.4.1</Version>
+      <Version>4.4.4</Version>
     </PackageReference>
     <PackageReference Include="System.ServiceModel.Primitives">
       <Version>4.4.1</Version>
